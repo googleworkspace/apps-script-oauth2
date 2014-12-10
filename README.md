@@ -50,8 +50,9 @@ object each time you want to use it. The example below shows how to create a
 service for the Google Drive API.
 
     function getDriveService() {
-      // Create a new service with the given name. The name will be used when persisting the
-      // authorized token, so ensure it is unique within the scope of the property store.
+      // Create a new service with the given name. The name will be used when 
+      // persisting the authorized token, so ensure it is unique within the 
+      // scope of the property store.
       return OAuth2.createService('drive')
 
           // Set the endpoint URLs, which are the same for all Google services.
@@ -65,8 +66,8 @@ service for the Google Drive API.
           // Set the project key of the script using this library.
           .setProjectKey('...')
 
-          // Set the name of the callback function in the script referenced above that should be
-          // invoked to complete the OAuth flow.
+          // Set the name of the callback function in the script referenced 
+          // above that should be invoked to complete the OAuth flow.
           .setCallbackFunction('authCallback')
 
           // Set the property store where authorized tokens should be persisted.
@@ -75,9 +76,17 @@ service for the Google Drive API.
           // Set the scopes to request (space-separated for Google services).
           .setScope('https://www.googleapis.com/auth/drive')
 
-          // Set any additional OAuth2 parameters, in this case requesting offline access and
-          // forcing the approval prompt to be shown.
+          // Below are Google-specific OAuth2 parameters.
+
+          // Sets the login hint, which will prevent the account chooser screen 
+          // from being shown to users logged in with multiple accounts.
+          .setParam('login_hint', Session.getActiveUser.getEmail())
+
+          // Requests offline access.
           .setParam('access_type', 'offline')
+
+          // Forces the approval prompt every time. This is useful for testing,
+          // but not desirable in a production application.
           .setParam('approval_prompt', 'force');
     }
 
