@@ -172,7 +172,7 @@ JSON is set as default if no token format is choosen.
        .setTokenUrl('https://github.com/login/oauth/access_token')
        .setClientId(PropertiesService.getScriptProperties().getProperty('ghClient_Id'))
        .setClientSecret(PropertiesService.getScriptProperties().getProperty('ghClient_Secret'))
-       .setProjectKey('MFiKVY_UbWVN0OvyDZTwvash00DPSBbB3')
+       .setProjectKey('MFiKVY_UbWVN0VVVDZTwvash00DPSBbB3')
        .setCallbackFunction('authCallback')
        .setPropertyStore(PropertiesService.getUserProperties())
        .setScope('gist,repo,user')
