@@ -150,8 +150,8 @@ request in the "Authorization" header.
 ### 5. Reseting the Access Token
 
 If you have an access token set and need to remove it from the property store
-you can remove it with the reset() command. Before you can call reset you need
-to pass the property store.
+you can remove it with the 'reset()' function. Before you can call reset you need
+to set the property store.
 
     function clearService(){
       OAuth2.createService('drive')
@@ -159,11 +159,11 @@ to pass the property store.
       .reset();
     }
 
-### 6. Setting the Token format mode
+### 6. Setting the Token Format
 
 OAuth services can return a token in two ways: as JSON or an URL encoded
-string. You can set what format the the token is in with the setTokenFormat(Mode).
-There are two ENUMS to set the mode: TOKEN_FORMAT.FORM_URL_ENCODED and TOKEN_FORMAT.JSON.
+string. You can set what format the the token is in with the 'setTokenFormat(Format)'.
+There are two ENUMS to set the mode: 'TOKEN_FORMAT.FORM_URL_ENCODED' and 'TOKEN_FORMAT.JSON'.
 JSON is set as default if no token format is choosen. 
 
     function gitService() {
