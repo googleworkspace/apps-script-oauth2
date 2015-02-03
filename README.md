@@ -170,9 +170,9 @@ to set the property store.
 ####Setting the Token Format
 
 OAuth services can return a token in two ways: as JSON or an URL encoded
-string. You can set what format the the token is in with `setTokenFormat(tokenFormat)`.
+string. You can set which format the token is in with `setTokenFormat(tokenFormat)`.
 There are two ENUMS to set the mode: `TOKEN_FORMAT.FORM_URL_ENCODED` and `TOKEN_FORMAT.JSON`.
-JSON is set as default if no token format is choosen. 
+JSON is set as default if no token format is chosen. 
 
     function gitService() {
       return OAuth2.createService('git')
