@@ -147,10 +147,42 @@ request in the "Authorization" header.
       ...
     }
 
-
 ## Compatiblity
 
 This library was designed to work with any OAuth2 provider, but because of small
 differences in how they implement the standard it may be that some APIs
 aren't compatible. If you find an API that it does't work with, open an issue or
 fix the problem yourself and make a pull request against the source code.
+
+## Other features 
+####Reseting the Access Token
+
+If you have an access token set and need to remove it from the property store
+you can remove it with the `reset()` function. Before you can call reset you need
+to set the property store.
+
+    function clearService(){
+      OAuth2.createService('drive')
+      .setPropertyStore(PropertiesService.getUserProperties())
+      .reset();
+    }
+
+####Setting the Token Format
+
+OAuth services can return a token in two ways: as JSON or an URL encoded
+string. You can set which format the token is in with `setTokenFormat(tokenFormat)`.
+There are two ENUMS to set the mode: `TOKEN_FORMAT.FORM_URL_ENCODED` and `TOKEN_FORMAT.JSON`.
+JSON is set as default if no token format is chosen. 
+
+    function gitService() {
+      return OAuth2.createService('git')
+       .setAuthorizationBaseUrl('https://github.com/login/oauth/authorize')
+       .setTokenUrl('https://github.com/login/oauth/access_token')
+       .setClientId('...')
+       .setClientSecret('...')
+       .setProjectKey('...')
+       .setCallbackFunction('authCallback')
+       .setPropertyStore(PropertiesService.getUserProperties())
+       .setScope('gist,repo,user')
+      .setTokenFormat(OAuth2.TOKEN_FORMAT.FORM_URL_ENCODED);
+    }
