@@ -147,7 +147,15 @@ request in the "Authorization" header.
       ...
     }
 
-### 5. Reseting the Access Token
+## Compatiblity
+
+This library was designed to work with any OAuth2 provider, but because of small
+differences in how they implement the standard it may be that some APIs
+aren't compatible. If you find an API that it does't work with, open an issue or
+fix the problem yourself and make a pull request against the source code.
+
+## Other features 
+####Reseting the Access Token
 
 If you have an access token set and need to remove it from the property store
 you can remove it with the `reset()` function. Before you can call reset you need
@@ -159,7 +167,7 @@ to set the property store.
       .reset();
     }
 
-### 6. Setting the Token Format
+####Setting the Token Format
 
 OAuth services can return a token in two ways: as JSON or an URL encoded
 string. You can set what format the the token is in with `setTokenFormat(tokenFormat)`.
@@ -170,20 +178,11 @@ JSON is set as default if no token format is choosen.
       return OAuth2.createService('git')
        .setAuthorizationBaseUrl('https://github.com/login/oauth/authorize')
        .setTokenUrl('https://github.com/login/oauth/access_token')
-       .setClientId(PropertiesService.getScriptProperties().getProperty('ghClient_Id'))
-       .setClientSecret(PropertiesService.getScriptProperties().getProperty('ghClient_Secret'))
-       .setProjectKey('MFiKVY_UbWVN0VVVDZTwvash00DPSBbB3')
+       .setClientId('...')
+       .setClientSecret('...')
+       .setProjectKey('...')
        .setCallbackFunction('authCallback')
        .setPropertyStore(PropertiesService.getUserProperties())
        .setScope('gist,repo,user')
       .setTokenFormat(OAuth2.TOKEN_FORMAT.FORM_URL_ENCODED);
     }
-
-
-
-## Compatiblity
-
-This library was designed to work with any OAuth2 provider, but because of small
-differences in how they implement the standard it may be that some APIs
-aren't compatible. If you find an API that it does't work with, open an issue or
-fix the problem yourself and make a pull request against the source code.
