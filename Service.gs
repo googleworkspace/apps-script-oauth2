@@ -85,11 +85,11 @@ Service_.prototype.setProjectKey = function(projectKey) {
  * called when the user completes the authorization flow on the service provider's website.
  * The callback accepts a request parameter, which should be passed to this service's
  * <code>handleCallback()</code> method to complete the process.
- * @param {string} callbackFunctionName The name of the callback function.
+ * @param {Object} callbackFunction The callback function.
  * @return {Service_} This service, for chaining.
  */
-Service_.prototype.setCallbackFunction = function(callbackFunctionName) {
-  this.callbackFunctionName_ = callbackFunctionName;
+Service_.prototype.setCallbackFunction = function(callbackFunction) {
+  this.callbackFunction_ = callbackFunction;
   return this;
 };
 
@@ -182,13 +182,13 @@ Service_.prototype.getAuthorizationUrl = function() {
   validate_({
     'Client ID': this.clientId_,
     'Project key': this.projectKey_,
-    'Callback function name': this.callbackFunctionName_,
+    'Callback function name': this.callbackFunction_,
     'Authorization base URL': this.authorizationBaseUrl_
   });
 
   var redirectUri = getRedirectUri(this.projectKey_);
   var state = ScriptApp.newStateToken()
-      .withMethod(this.callbackFunctionName_)
+      .withMethod(this.callbackFunction_)
       .withArgument('serviceName', this.serviceName_)
       .withTimeout(3600)
       .createToken();
