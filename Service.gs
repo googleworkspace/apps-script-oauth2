@@ -60,8 +60,8 @@ Service_.prototype.setTokenUrl = function(tokenUrl) {
 };
 
 /**
- * Sets the format of the returned token. Default: Service_.TOKEN_FORMAT.JSON.
- * @param {TOKEN_FORMAT} tokenFormat The format of the returned token.
+ * Sets the format of the returned token. Default: OAuth2.TOKEN_FORMAT.JSON.
+ * @param {OAuth2.TOKEN_FORMAT} tokenFormat The format of the returned token.
  * @return {Service_} This service, for chaining.
  */
 Service_.prototype.setTokenFormat = function(tokenFormat) {
@@ -226,6 +226,9 @@ Service_.prototype.handleCallback = function(callbackRequest) {
   var redirectUri = getRedirectUri(this.projectKey_);
   var response = UrlFetchApp.fetch(this.tokenUrl_, {
     method: 'post',
+    headers: {
+      'Accept': this.tokenFormat_
+    },
     payload: {
       code: code,
       client_id: this.clientId_,
@@ -235,6 +238,8 @@ Service_.prototype.handleCallback = function(callbackRequest) {
     },
     muteHttpExceptions: true
   });
+  Logger.log(response.getAllHeaders());
+  Logger.log('Response:' + response.getContentText());
   var token = this.parseToken_(response.getContentText());
   if (response.getResponseCode() != 200) {
     var reason = token.error ? token.error : response.getResponseCode();
@@ -258,7 +263,7 @@ Service_.prototype.hasAccess = function() {
   var expires_in = token.expires_in || token.expires;
   if (expires_in) {
     var expires_time = token.granted_time + expires_in;
-    var now = getTimeInSeconds_();
+    var now = getTimeInSeconds_(new Date());
     if (expires_time - now < Service_.EXPIRATION_BUFFER_SECONDS_) {
       if (token.refresh_token) {
         this.refresh_();
@@ -317,7 +322,7 @@ Service_.prototype.parseToken_ = function(content) {
   } else {
     throw 'Unknown token format: ' + this.tokenFormat_;
   }
-  token.granted_time = getTimeInSeconds_();
+  token.granted_time = getTimeInSeconds_(new Date());
   return token;
 };
 
@@ -338,6 +343,9 @@ Service_.prototype.refresh_ = function() {
   }
   var response = UrlFetchApp.fetch(this.tokenUrl_, {
     method: 'post',
+    headers: {
+      'Accept': this.tokenFormat_
+    },
     payload: {
       refresh_token: token.refresh_token,
       client_id: this.clientId_,
@@ -410,4 +418,3 @@ Service_.prototype.getToken_ = function() {
 Service_.prototype.getPropertyKey = function(serviceName) {
   return 'oauth2.' + serviceName;
 };
-

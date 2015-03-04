@@ -26,8 +26,8 @@ var _ = Underscore.load();
  * @type {Object.<string, string>
  */
 var TOKEN_FORMAT = {
-  JSON: 'json',
-  FORM_URL_ENCODED: 'form-urlencoded'
+  JSON: 'application/json',
+  FORM_URL_ENCODED: 'application/x-www-form-urlencoded'
 };
 
 /**
