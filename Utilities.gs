@@ -58,9 +58,11 @@ function isEmpty_(value) {
 }
 
 /**
- * Gets the current time in seconds, rounded down to the nearest second.
+ * Gets the time in seconds, rounded down to the nearest second.
+ * @param {Date} date The Date object to convert.
+ * @returns {Number} The number of seconds since the epoch.
  * @private
  */
-function getTimeInSeconds_() {
-  return Math.floor(new Date().getTime() / 1000);
+function getTimeInSeconds_(date) {
+  return Math.floor(date.getTime() / 1000);
 }
