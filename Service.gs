@@ -28,6 +28,7 @@ var Service_ = function(serviceName) {
   this.serviceName_ = serviceName;
   this.params_ = {};
   this.tokenFormat_ = TOKEN_FORMAT.JSON;
+  this.stateParameterLocation_ = STATE_PARAMETER_LOCATION.AUTHORIZATION_URL;
 };
 
 /**
@@ -66,6 +67,18 @@ Service_.prototype.setTokenUrl = function(tokenUrl) {
  */
 Service_.prototype.setTokenFormat = function(tokenFormat) {
   this.tokenFormat_ = tokenFormat;
+  return this;
+};
+
+/**
+ * Sets the location of the state parameter, which is required by the
+ * /usercallback endpoint.
+ * Default: OAuth2.STATE_PARAMETER_LOCATION.AUTHORIZATION_URL.
+ * @param {STATE_PARAMETER_LOCATION} tokenFormat The format of the returned token.
+ * @return {Service_} This service, for chaining.
+ */
+Service_.prototype.setStateParameterLocation = function(stateParameterLocation) {
+  this.stateParameterLocation_ = stateParameterLocation
   return this;
 };
 
@@ -194,10 +207,16 @@ Service_.prototype.getAuthorizationUrl = function() {
       .createToken();
   var params = {
     client_id: this.clientId_,
-    response_type: 'code',
-    redirect_uri: redirectUri,
-    state: state
+    response_type: 'code'
   };
+  if (this.stateParameterLocation_ == STATE_PARAMETER_LOCATION.AUTHORIZATION_URL) {
+    params['state'] = state;
+  } else {
+    redirectUri = buildUrl_(redirectUri, {
+      state: state
+    });
+  }
+  params['redirect_uri'] = redirectUri;
   params = _.extend(params, this.params_);
   return buildUrl_(this.authorizationBaseUrl_, params);
 };
@@ -327,9 +346,8 @@ Service_.prototype.parseToken_ = function(content) {
 /**
  * Refreshes a token that has expired. This is only possible if offline access was
  * requested when the token was authorized.
- * @private
  */
-Service_.prototype.refresh_ = function() {
+Service_.prototype.refresh = function() {
   validate_({
     'Client ID': this.clientId_,
     'Client Secret': this.clientSecret_,
