@@ -327,9 +327,8 @@ Service_.prototype.parseToken_ = function(content) {
 /**
  * Refreshes a token that has expired. This is only possible if offline access was
  * requested when the token was authorized.
- * @private
  */
-Service_.prototype.refresh_ = function() {
+Service_.prototype.refresh = function() {
   validate_({
     'Client ID': this.clientId_,
     'Client Secret': this.clientSecret_,
