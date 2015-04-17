@@ -264,7 +264,7 @@ Service_.prototype.hasAccess = function() {
     var now = getTimeInSeconds_(new Date());
     if (expires_time - now < Service_.EXPIRATION_BUFFER_SECONDS_) {
       if (token.refresh_token) {
-        this.refresh_();
+        this.refresh();
       } else {
         return false;
       }
