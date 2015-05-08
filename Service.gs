@@ -29,6 +29,7 @@ var Service_ = function(serviceName) {
   this.params_ = {};
   this.tokenFormat_ = TOKEN_FORMAT.JSON;
   this.tokenHeaders_ = null;
+  this.projectKey_ = ScriptApp.getProjectKey();
 };
 
 /**
@@ -86,6 +87,7 @@ Service_.prototype.setTokenHeaders = function(tokenHeaders) {
  * The project key can be found in the Script Editor UI under "File > Project properties".
  * @param {string} projectKey The project key of the project containing the callback function.
  * @return {Service_} This service, for chaining.
+ * @deprecated The project key is now be determined automatically.
  */
 Service_.prototype.setProjectKey = function(projectKey) {
   this.projectKey_ = projectKey;

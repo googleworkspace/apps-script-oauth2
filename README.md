@@ -63,9 +63,6 @@ service for the Google Drive API.
           .setClientId('...')
           .setClientSecret('...')
 
-          // Set the project key of the script using this library.
-          .setProjectKey('...')
-
           // Set the name of the callback function in the script referenced
           // above that should be invoked to complete the OAuth flow.
           .setCallbackFunction('authCallback')
