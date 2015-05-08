@@ -28,6 +28,7 @@ var Service_ = function(serviceName) {
   this.serviceName_ = serviceName;
   this.params_ = {};
   this.tokenFormat_ = TOKEN_FORMAT.JSON;
+  this.tokenHeaders_ = null;
 };
 
 /**
@@ -66,6 +67,17 @@ Service_.prototype.setTokenUrl = function(tokenUrl) {
  */
 Service_.prototype.setTokenFormat = function(tokenFormat) {
   this.tokenFormat_ = tokenFormat;
+  return this;
+};
+
+/**
+ * Sets the additional HTTP headers that should be sent when retrieving or
+ * refreshing the access token.
+ * @param Object.<string,string> tokenHeaders A map of header names to values.
+ * @return {Service_} This service, for chaining.
+ */
+Service_.prototype.setTokenHeaders = function(tokenHeaders) {
+  this.tokenHeaders_ = tokenHeaders;
   return this;
 };
 
@@ -224,11 +236,15 @@ Service_.prototype.handleCallback = function(callbackRequest) {
     'Token URL': this.tokenUrl_
   });
   var redirectUri = getRedirectUri(this.projectKey_);
+  var headers = {
+    'Accept': this.tokenFormat_
+  };
+  if (this.tokenHeaders_) {
+    headers = _.extend(headers, this.tokenHeaders_);
+  }
   var response = UrlFetchApp.fetch(this.tokenUrl_, {
     method: 'post',
-    headers: {
-      'Accept': this.tokenFormat_
-    },
+    headers: headers,
     payload: {
       code: code,
       client_id: this.clientId_,
@@ -338,11 +354,15 @@ Service_.prototype.refresh = function() {
   if (!token.refresh_token) {
     throw 'Offline access is required.';
   }
+  var headers = {
+    'Accept': this.tokenFormat_
+  };
+  if (this.tokenHeaders_) {
+    headers = _.extend(headers, this.tokenHeaders_);
+  }
   var response = UrlFetchApp.fetch(this.tokenUrl_, {
     method: 'post',
-    headers: {
-      'Accept': this.tokenFormat_
-    },
+    headers: headers,
     payload: {
       refresh_token: token.refresh_token,
       client_id: this.clientId_,
