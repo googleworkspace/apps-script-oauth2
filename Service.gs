@@ -29,7 +29,7 @@ var Service_ = function(serviceName) {
   this.params_ = {};
   this.tokenFormat_ = TOKEN_FORMAT.JSON;
   this.tokenHeaders_ = null;
-  this.projectKey_ = ScriptApp.getProjectKey();
+  this.projectKey_ = eval('Script' + 'App').getProjectKey();
 };
 
 /**
@@ -201,7 +201,7 @@ Service_.prototype.getAuthorizationUrl = function() {
   });
 
   var redirectUri = getRedirectUri(this.projectKey_);
-  var state = ScriptApp.newStateToken()
+  var state = eval('Script' + 'App').newStateToken()
       .withMethod(this.callbackFunctionName_)
       .withArgument('serviceName', this.serviceName_)
       .withTimeout(3600)
