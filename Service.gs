@@ -72,7 +72,7 @@ Service_.prototype.setTokenFormat = function(tokenFormat) {
 };
 
 /**
- * Sets the additional HTTP headers that should be sent when retrieving or
+ * Sets the additional HTTP headers that should be sent when retrieving or 
  * refreshing the access token.
  * @param Object.<string,string> tokenHeaders A map of header names to values.
  * @return {Service_} This service, for chaining.
@@ -282,7 +282,11 @@ Service_.prototype.hasAccess = function() {
     var now = getTimeInSeconds_(new Date());
     if (expires_time - now < Service_.EXPIRATION_BUFFER_SECONDS_) {
       if (token.refresh_token) {
-        this.refresh();
+        try {
+          this.refresh();
+        } catch (e) {
+          return false;
+        }
       } else {
         return false;
       }
