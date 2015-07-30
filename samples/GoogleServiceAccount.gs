@@ -1,4 +1,4 @@
-var PRIVATE_KEY = '...';
+var PRIVATE_KEY = '-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n';
 var CLIENT_EMAIL = '...';
 var USER_EMAIL = '...';
 
