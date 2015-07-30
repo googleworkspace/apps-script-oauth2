@@ -185,3 +185,19 @@ if no token format is chosen.
        .setScope('gist,repo,user')
       .setTokenFormat(OAuth2.TOKEN_FORMAT.FORM_URL_ENCODED);
     }
+
+#### Service Accounts
+
+This library supports the service account authorization flow, also known as the
+[JSON Web Token (JWT) Profile](https://tools.ietf.org/html/draft-ietf-oauth-jwt-bearer-12).
+This is a two-legged OAuth flow that doesn't require a user to visit a URL and
+authorize access.
+
+One common use for service accounts with Google APIs is
+[domain-wide delegation](https://developers.google.com/identity/protocols/OAuth2ServiceAccount#delegatingauthority).
+This process allows a Google Apps for Work/EDU domain administrator to grant an
+application access to all the users within the domain. When the application
+wishes to access the resources of a particular user, it uses the service account
+authorization flow to obtain an access token. See the sample
+[`GoogleServiceAccount.gs`](https://github.com/googlesamples/apps-script-oauth2/blob/master/samples/GoogleServiceAccount.gs)
+for more information.

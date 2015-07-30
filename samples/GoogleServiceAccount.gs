@@ -50,6 +50,7 @@ function getService() {
       // Set the property store where authorized tokens should be persisted.
       .setPropertyStore(PropertiesService.getScriptProperties())
 
-      // Set the scope and additional Google-specific parameters.
+      // Set the scope. This must match one of the scopes configured during the
+      // setup of domain-wide delegation.
       .setScope('https://www.googleapis.com/auth/drive');
 }
