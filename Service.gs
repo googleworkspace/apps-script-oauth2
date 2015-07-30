@@ -30,6 +30,7 @@ var Service_ = function(serviceName) {
   this.tokenFormat_ = TOKEN_FORMAT.JSON;
   this.tokenHeaders_ = null;
   this.projectKey_ = eval('Script' + 'App').getProjectKey();
+  this.expirationMinutes_ = 60;
 };
 
 /**
@@ -72,7 +73,7 @@ Service_.prototype.setTokenFormat = function(tokenFormat) {
 };
 
 /**
- * Sets the additional HTTP headers that should be sent when retrieving or 
+ * Sets the additional HTTP headers that should be sent when retrieving or
  * refreshing the access token.
  * @param Object.<string,string> tokenHeaders A map of header names to values.
  * @return {Service_} This service, for chaining.
@@ -186,6 +187,48 @@ Service_.prototype.setParam = function(name, value) {
 };
 
 /**
+ * Sets the private key to use for Service Account authorization.
+ * @param {string} privateKey The private key.
+ * @return {Service_} This service, for chaining.
+ */
+Service_.prototype.setPrivateKey = function(privateKey) {
+  this.privateKey_ = privateKey;
+  return this;
+};
+
+/**
+ * Sets the issuer (iss) value to use for Service Account authorization.
+ * If not set the client ID will be used instead.
+ * @param {string} issuer This issuer value
+ * @return {Service_} This service, for chaining.
+ */
+Service_.prototype.setIssuer = function(issuer) {
+  this.issuer_ = issuer;
+  return this;
+};
+
+/**
+ * Sets the subject (sub) value to use for Service Account authorization.
+ * @param {string} subject This subject value
+ * @return {Service_} This service, for chaining.
+ */
+Service_.prototype.setSubject = function(subject) {
+  this.subject_ = subject;
+  return this;
+};
+
+/**
+ * Sets number of minutes that a token obtained through Service Account authorization should be valid.
+ * Default: 60 minutes.
+ * @param {string} expirationMinutes The expiration duration in minutes.
+ * @return {Service_} This service, for chaining.
+ */
+Service_.prototype.setExpirationMinutes = function(expirationMinutes) {
+  this.expirationMinutes_ = expirationMinutes;
+  return this;
+};
+
+/**
  * Gets the authorization URL. The first step in getting an OAuth2 token is to
  * have the user visit this URL and approve the authorization request. The
  * user will then be redirected back to your application using the
@@ -273,23 +316,23 @@ Service_.prototype.handleCallback = function(callbackRequest) {
  */
 Service_.prototype.hasAccess = function() {
   var token = this.getToken_();
-  if (!token) {
-    return false;
-  }
-  var expires_in = token.expires_in || token.expires;
-  if (expires_in) {
-    var expires_time = token.granted_time + expires_in;
-    var now = getTimeInSeconds_(new Date());
-    if (expires_time - now < Service_.EXPIRATION_BUFFER_SECONDS_) {
-      if (token.refresh_token) {
-        try {
-          this.refresh();
-        } catch (e) {
-          return false;
-        }
-      } else {
+  if (!token || this.isExpired_(token)) {
+    if (token && token.refresh_token) {
+      try {
+        this.refresh();
+      } catch (e) {
+        this.lastError_ = e;
         return false;
       }
+    } else if (this.privateKey_) {
+      try {
+        this.exchangeJwt_();
+      } catch (e) {
+        this.lastError_ = e;
+        return false;
+      }
+    } else {
+      return false;
     }
   }
   return true;
@@ -316,7 +359,16 @@ Service_.prototype.reset = function() {
   validate_({
     'Property store': this.propertyStore_
   });
-  this.propertyStore_.deleteProperty(this.getPropertyKey(this.serviceName_));
+  this.propertyStore_.deleteProperty(this.getPropertyKey_(this.serviceName_));
+};
+
+/**
+ * Gets the last error that occurred this execution when trying to automatically refresh
+ * or generate an access token.
+ * @return {Exception} An error, if any.
+ */
+Service_.prototype.getLastError = function() {
+  return this.lastError_;
 };
 
 /**
@@ -397,7 +449,7 @@ Service_.prototype.saveToken_ = function(token) {
   validate_({
     'Property store': this.propertyStore_
   });
-  var key = this.getPropertyKey(this.serviceName_);
+  var key = this.getPropertyKey_(this.serviceName_);
   var value = JSON.stringify(token);
   this.propertyStore_.setProperty(key, value);
   if (this.cache_) {
@@ -414,7 +466,7 @@ Service_.prototype.getToken_ = function() {
   validate_({
     'Property store': this.propertyStore_
   });
-  var key = this.getPropertyKey(this.serviceName_);
+  var key = this.getPropertyKey_(this.serviceName_);
   var token;
   if (this.cache_) {
     token = this.cache_.get(key);
@@ -438,6 +490,91 @@ Service_.prototype.getToken_ = function() {
  * @return {string} The property key.
  * @private
  */
-Service_.prototype.getPropertyKey = function(serviceName) {
+Service_.prototype.getPropertyKey_ = function(serviceName) {
   return 'oauth2.' + serviceName;
+};
+
+/**
+ * Determines if a retrieved token is still valid.
+ * @param {Object} token The token to validate.
+ * @return {boolean} True if it has expired, false otherwise.
+ * @private
+ */
+Service_.prototype.isExpired_ = function(token) {
+  var expires_in = token.expires_in || token.expires;
+  if (!expires_in) {
+    return false;
+  } else {
+    var expires_time = token.granted_time + expires_in;
+    var now = getTimeInSeconds_(new Date());
+    return expires_time - now < Service_.EXPIRATION_BUFFER_SECONDS_;
+  }
+};
+
+/**
+ * Uses the service account flow to exchange a signed JSON Web Token (JWT) for an
+ * access token.
+ */
+Service_.prototype.exchangeJwt_ = function() {
+  validate_({
+    'Token URL': this.tokenUrl_
+  });
+  var jwt = this.createJwt_();
+  var headers = {
+    'Accept': this.tokenFormat_
+  };
+  if (this.tokenHeaders_) {
+    headers = _.extend(headers, this.tokenHeaders_);
+  }
+  var response = UrlFetchApp.fetch(this.tokenUrl_, {
+    method: 'post',
+    headers: headers,
+    payload: {
+      assertion: jwt,
+      grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer'
+    },
+    muteHttpExceptions: true
+  });
+  var token = this.parseToken_(response.getContentText());
+  if (response.getResponseCode() != 200) {
+    var reason = token.error ? token.error : response.getResponseCode();
+    throw 'Error retrieving token: ' + reason;
+  }
+  this.saveToken_(token);
+};
+
+/**
+ * Creates a signed JSON Web Token (JWT) for use with Service Account authorization.
+ * @return {string} The signed JWT.
+ * @private
+ */
+Service_.prototype.createJwt_ = function() {
+  validate_({
+    'Private key': this.privateKey_,
+    'Token URL': this.tokenUrl_,
+    'Issuer or Client ID': this.issuer_ || this.clientId_
+  });
+  var header = {
+    alg: 'RS256',
+    typ: 'JWT'
+  };
+  var now = new Date();
+  var expires = new Date(now.getTime());
+  expires.setMinutes(expires.getMinutes() + this.expirationMinutes_);
+  var claimSet = {
+    iss: this.issuer_ || this.clientId_,
+    aud: this.tokenUrl_,
+    exp: Math.round(expires.getTime() / 1000),
+    iat: Math.round(now.getTime() / 1000)
+  };
+  if (this.subject_) {
+    claimSet['sub'] = this.subject_;
+  }
+  if (this.params_['scope']) {
+   claimSet['scope'] =  this.params_['scope'];
+  }
+  var toSign = Utilities.base64EncodeWebSafe(JSON.stringify(header)) + '.' + Utilities.base64EncodeWebSafe(JSON.stringify(claimSet));
+  var signatureBytes = Utilities.computeRsaSha256Signature(toSign, this.privateKey_);
+  var signature = Utilities.base64EncodeWebSafe(signatureBytes);
+  return toSign + '.' + signature;
 };
