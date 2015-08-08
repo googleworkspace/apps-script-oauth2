@@ -73,7 +73,7 @@ Service_.prototype.setTokenFormat = function(tokenFormat) {
 };
 
 /**
- * Sets the additional HTTP headers that should be sent when retrieving or
+ * Sets the additional HTTP headers that should be sent when retrieving or 
  * refreshing the access token.
  * @param Object.<string,string> tokenHeaders A map of header names to values.
  * @return {Service_} This service, for chaining.
@@ -197,7 +197,7 @@ Service_.prototype.setPrivateKey = function(privateKey) {
 };
 
 /**
- * Sets the issuer (iss) value to use for Service Account authorization.
+ * Sets the issuer (iss) value to use for Service Account authorization. 
  * If not set the client ID will be used instead.
  * @param {string} issuer This issuer value
  * @return {Service_} This service, for chaining.
@@ -208,7 +208,7 @@ Service_.prototype.setIssuer = function(issuer) {
 };
 
 /**
- * Sets the subject (sub) value to use for Service Account authorization.
+ * Sets the subject (sub) value to use for Service Account authorization. 
  * @param {string} subject This subject value
  * @return {Service_} This service, for chaining.
  */
@@ -505,7 +505,7 @@ Service_.prototype.isExpired_ = function(token) {
   if (!expires_in) {
     return false;
   } else {
-    var expires_time = token.granted_time + expires_in;
+    var expires_time = token.granted_time + Number(expires_in);
     var now = getTimeInSeconds_(new Date());
     return expires_time - now < Service_.EXPIRATION_BUFFER_SECONDS_;
   }
