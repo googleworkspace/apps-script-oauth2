@@ -153,7 +153,7 @@ fix the problem yourself and make a pull request against the source code.
 
 ## Other features
 
-#### Resetting the Access Token
+#### Resetting the access token
 
 If you have an access token set and need to remove it from the property store
 you can remove it with the `reset()` function. Before you can call reset you
@@ -165,7 +165,7 @@ need to set the property store.
       .reset();
     }
 
-#### Setting the Token Format
+#### Setting the token format
 
 OAuth services can return a token in two ways: as JSON or an URL encoded
 string. You can set which format the token is in with
@@ -173,18 +173,18 @@ string. You can set which format the token is in with
 `TOKEN_FORMAT.FORM_URL_ENCODED` and `TOKEN_FORMAT.JSON`. JSON is set as default
 if no token format is chosen.
 
-    function gitService() {
-      return OAuth2.createService('git')
-       .setAuthorizationBaseUrl('https://github.com/login/oauth/authorize')
-       .setTokenUrl('https://github.com/login/oauth/access_token')
-       .setClientId('...')
-       .setClientSecret('...')
-       .setProjectKey('...')
-       .setCallbackFunction('authCallback')
-       .setPropertyStore(PropertiesService.getUserProperties())
-       .setScope('gist,repo,user')
-      .setTokenFormat(OAuth2.TOKEN_FORMAT.FORM_URL_ENCODED);
-    }
+#### Setting additional token headers
+
+Some services, such as the FitBit API, require you to set an Authorization
+header on access token requests. The `setTokenHeaders()` method allows you
+to pass in a JavaScript object of additional header key/value pairs to be used
+in these requests.
+
+    .setTokenHeaders({
+      'Authorization': 'Basic ' + Utilities.base64Encode(CLIENT_ID + ':' + CLIENT_SECRET)
+    });
+
+See the [FitBit sample](samples/FitBit.gs) for the compelte code.
 
 #### Service Accounts
 
@@ -199,5 +199,5 @@ This process allows a Google Apps for Work/EDU domain administrator to grant an
 application access to all the users within the domain. When the application
 wishes to access the resources of a particular user, it uses the service account
 authorization flow to obtain an access token. See the sample
-[`GoogleServiceAccount.gs`](https://github.com/googlesamples/apps-script-oauth2/blob/master/samples/GoogleServiceAccount.gs)
-for more information.
+[`GoogleServiceAccount.gs`](samples/GoogleServiceAccount.gs) for more
+information.
