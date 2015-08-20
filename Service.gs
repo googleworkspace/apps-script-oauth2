@@ -73,7 +73,7 @@ Service_.prototype.setTokenFormat = function(tokenFormat) {
 };
 
 /**
- * Sets the additional HTTP headers that should be sent when retrieving or 
+ * Sets the additional HTTP headers that should be sent when retrieving or
  * refreshing the access token.
  * @param Object.<string,string> tokenHeaders A map of header names to values.
  * @return {Service_} This service, for chaining.
@@ -197,7 +197,7 @@ Service_.prototype.setPrivateKey = function(privateKey) {
 };
 
 /**
- * Sets the issuer (iss) value to use for Service Account authorization. 
+ * Sets the issuer (iss) value to use for Service Account authorization.
  * If not set the client ID will be used instead.
  * @param {string} issuer This issuer value
  * @return {Service_} This service, for chaining.
@@ -208,7 +208,7 @@ Service_.prototype.setIssuer = function(issuer) {
 };
 
 /**
- * Sets the subject (sub) value to use for Service Account authorization. 
+ * Sets the subject (sub) value to use for Service Account authorization.
  * @param {string} subject This subject value
  * @return {Service_} This service, for chaining.
  */
@@ -301,7 +301,10 @@ Service_.prototype.handleCallback = function(callbackRequest) {
   });
   var token = this.parseToken_(response.getContentText());
   if (response.getResponseCode() != 200) {
-    var reason = token.error ? token.error : response.getResponseCode();
+    var reason = token.error;
+    if (!reason) {
+      reason = response.getResponseCode() + ': ' + JSON.stringify(token);
+    }
     throw 'Error retrieving token: ' + reason;
   }
   this.saveToken_(token);
@@ -431,8 +434,11 @@ Service_.prototype.refresh = function() {
   });
   var newToken = this.parseToken_(response.getContentText());
   if (response.getResponseCode() != 200) {
-    var reason = newToken.error ? newToken.error : response.getResponseCode();
-    throw 'Error refreshing token: ' + reason;
+    var reason = newToken.error;
+    if (!reason) {
+      reason = response.getResponseCode() + ': ' + JSON.stringify(newToken);
+    }
+    throw 'Error retrieving token: ' + reason;
   }
   if (!newToken.refresh_token) {
     newToken.refresh_token = token.refresh_token;
@@ -537,7 +543,10 @@ Service_.prototype.exchangeJwt_ = function() {
   });
   var token = this.parseToken_(response.getContentText());
   if (response.getResponseCode() != 200) {
-    var reason = token.error ? token.error : response.getResponseCode();
+    var reason = token.error;
+    if (!reason) {
+      reason = response.getResponseCode() + ': ' + JSON.stringify(token);
+    }
     throw 'Error retrieving token: ' + reason;
   }
   this.saveToken_(token);
