@@ -299,14 +299,7 @@ Service_.prototype.handleCallback = function(callbackRequest) {
     },
     muteHttpExceptions: true
   });
-  var token = this.parseToken_(response.getContentText());
-  if (response.getResponseCode() != 200) {
-    var reason = token.error;
-    if (!reason) {
-      reason = response.getResponseCode() + ': ' + JSON.stringify(token);
-    }
-    throw 'Error retrieving token: ' + reason;
-  }
+  var token = this.getTokenFromResponse_(response);
   this.saveToken_(token);
   return true;
 };
@@ -375,6 +368,24 @@ Service_.prototype.getLastError = function() {
 };
 
 /**
+ * Gets the token from a UrlFetchApp response.
+ * @param {UrlFetchApp.HTTPResponse} response The response object.
+ * @return {Object} The parsed token.
+ * @throws If the token cannot be parsed or the response contained an error.
+ */
+Service_.prototype.getTokenFromResponse_ = function(response) {
+  var token = this.parseToken_(response.getContentText());
+  if (response.getResponseCode() != 200 || token.error) {
+    var reason = [token.error, token.error_description, token.error_uri].filter(Boolean).join(', ');
+    if (!reason) {
+      reason = response.getResponseCode() + ': ' + JSON.stringify(token);
+    }
+    throw 'Error retrieving token: ' + reason;
+  }
+  return token;
+};
+
+/**
  * Parses the token using the service's token format.
  * @param {string} content The serialized token content.
  * @return {Object} The parsed token.
@@ -432,14 +443,7 @@ Service_.prototype.refresh = function() {
     },
     muteHttpExceptions: true
   });
-  var newToken = this.parseToken_(response.getContentText());
-  if (response.getResponseCode() != 200) {
-    var reason = newToken.error;
-    if (!reason) {
-      reason = response.getResponseCode() + ': ' + JSON.stringify(newToken);
-    }
-    throw 'Error retrieving token: ' + reason;
-  }
+  var newToken = this.getTokenFromResponse_(response);
   if (!newToken.refresh_token) {
     newToken.refresh_token = token.refresh_token;
   }
@@ -541,14 +545,7 @@ Service_.prototype.exchangeJwt_ = function() {
     },
     muteHttpExceptions: true
   });
-  var token = this.parseToken_(response.getContentText());
-  if (response.getResponseCode() != 200) {
-    var reason = token.error;
-    if (!reason) {
-      reason = response.getResponseCode() + ': ' + JSON.stringify(token);
-    }
-    throw 'Error retrieving token: ' + reason;
-  }
+  var token = this.getTokenFromResponse_(response);
   this.saveToken_(token);
 };
 
