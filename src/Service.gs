@@ -399,7 +399,7 @@ Service_.prototype.parseToken_ = function(content) {
     } catch (e) {
       throw 'Token response not valid JSON: ' + e;
     }
-  } else if (this.tokenFormat_ = TOKEN_FORMAT.FORM_URL_ENCODED) {
+  } else if (this.tokenFormat_ == TOKEN_FORMAT.FORM_URL_ENCODED) {
     token = content.split('&').reduce(function(result, pair) {
       var parts = pair.split('=');
       result[decodeURIComponent(parts[0])] = decodeURIComponent(parts[1]);
