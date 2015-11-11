@@ -56,5 +56,5 @@ if (module) {
   module.exports = {
     createService: createService,
     getRedirectUri: getRedirectUri
-  }
+  };
 }

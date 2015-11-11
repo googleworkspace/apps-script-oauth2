@@ -53,7 +53,7 @@ function validate_(params) {
  * @private
  */
 function isEmpty_(value) {
-  return value == null || value == undefined ||
+  return value === null || value === undefined ||
       ((_.isObject(value) || _.isString(value)) && _.isEmpty(value));
 }
 

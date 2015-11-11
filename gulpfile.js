@@ -6,6 +6,8 @@ var gulpif = require('gulp-if');
 var del = require('del');
 var bump = require('gulp-bump');
 var rename = require("gulp-rename");
+var jshint = require('gulp-jshint');
+var stylish = require('jshint-stylish');
 
 gulp.task('release', ['clean', 'dist'], function() {
   gulp.src('./package.json')
@@ -29,4 +31,10 @@ gulp.task('clean', function() {
   del([
     'dist/*'
   ]);
+});
+
+gulp.task('lint', function() {
+  return gulp.src('src/*.gs')
+    .pipe(jshint())
+    .pipe(jshint.reporter(stylish));
 });

@@ -16,6 +16,10 @@
  * @fileoverview Contains the Service_ class.
  */
 
+// Disable JSHint warnings for the use of eval(), since it's required to prevent
+// scope issues in Apps Script.
+// jshint evil:true
+
 /**
  * Creates a new OAuth2 service.
  * @param {string} serviceName The name of the service.
@@ -170,7 +174,7 @@ Service_.prototype.setCache = function(cache) {
  */
 Service_.prototype.setScope = function(scope, opt_separator) {
   var separator = opt_separator || ' ';
-  this.params_['scope'] = _.isArray(scope) ? scope.join(separator) : scope;
+  this.params_.scope = _.isArray(scope) ? scope.join(separator) : scope;
   return this;
 };
 
@@ -574,10 +578,10 @@ Service_.prototype.createJwt_ = function() {
     iat: Math.round(now.getTime() / 1000)
   };
   if (this.subject_) {
-    claimSet['sub'] = this.subject_;
+    claimSet.sub = this.subject_;
   }
-  if (this.params_['scope']) {
-   claimSet['scope'] =  this.params_['scope'];
+  if (this.params_.scope) {
+   claimSet.scope =  this.params_.scope;
   }
   var toSign = Utilities.base64EncodeWebSafe(JSON.stringify(header)) + '.' + Utilities.base64EncodeWebSafe(JSON.stringify(claimSet));
   var signatureBytes = Utilities.computeRsaSha256Signature(toSign, this.privateKey_);
