@@ -46,7 +46,7 @@ Using the library to generate an OAuth2 token has the following basic steps.
 ### 1. Create the OAuth2 service
 
 The OAuth2Service class contains the configuration information for a given
-OAuth2 provider, including it's endpoints, client IDs and secrets, etc. This
+OAuth2 provider, including its endpoints, client IDs and secrets, etc. This
 information is not persisted to any data store, so you'll need to create this
 object each time you want to use it. The example below shows how to create a
 service for the Google Drive API.
