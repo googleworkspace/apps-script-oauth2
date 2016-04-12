@@ -188,6 +188,39 @@ in these requests.
 
 See the [FitBit sample](samples/FitBit.gs) for the compelte code.
 
+#### Modifying the access token payload
+Similar to Setting additional token headers, some services, such as the Smartsheet API, require you to [add a hash to the access token request payloads](http://smartsheet-platform.github.io/api-docs/?javascript#oauth-flow). The `setTokenPayloadHandler` method allows you to pass in a function to modify the payload of an access token request before the request is sent to the token endpoint:
+ 
+ 
+    // Set the handler for adding Smartsheet's required SHA hash parameter to the payload:
+    .setTokenPayloadHandler(smartsheetTokenHandler)
+    ...
+    function smartsheetTokenHandler(payload) {
+        var codeOrRefreshToken = payload.code ? payload.code : payload.refresh_token;
+        var input = SMARTSHEET_CLIENT_SECRET + "|" + codeOrRefreshToken;
+        var hash = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256,
+                                                input,
+                                                Utilities.Charset.UTF_8);
+        hash = hash.map(function(val) {
+            // Google appears to treat these as signed bytes, but we need them unsigned...
+            if (val < 0)
+            val += 256;
+            var str = val.toString(16);
+            // pad to two hex digits:
+            if (str.length == 1)
+            str = '0' + str;
+            return str;
+        });
+        payload.hash = hash.join("");
+        // Smartsheet doesn't need the client secret sent (secret is verified by the hash)
+        if (payload.client_secret) {
+            delete payload.client_secret;
+        }
+        return payload;  
+    }
+
+    
+
 #### Service Accounts
 
 This library supports the service account authorization flow, also known as the
