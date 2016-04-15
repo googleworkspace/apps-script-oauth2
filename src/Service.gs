@@ -88,6 +88,16 @@ Service_.prototype.setTokenHeaders = function(tokenHeaders) {
 };
 
 /**
+ * Sets an additional function to invoke on the payload of the access token request.
+ * @param Object tokenHandler A function to invoke on the payload of the request for an access token.
+ * @return {Service_} This service, for chaining.
+ */
+Service_.prototype.setTokenPayloadHandler = function(tokenHandler) {
+  this.tokenPayloadHandler_ = tokenHandler;
+  return this; 
+};
+
+/**
  * Sets the project key of the script that contains the authorization callback function (required).
  * The project key can be found in the Script Editor UI under "File > Project properties".
  * @param {string} projectKey The project key of the project containing the callback function.
@@ -291,16 +301,21 @@ Service_.prototype.handleCallback = function(callbackRequest) {
   if (this.tokenHeaders_) {
     headers = _.extend(headers, this.tokenHeaders_);
   }
+  var tokenPayload = {
+    code: code,
+    client_id: this.clientId_,
+    client_secret: this.clientSecret_,
+    redirect_uri: redirectUri,
+    grant_type: 'authorization_code'
+  };
+  if (this.tokenPayloadHandler_) {
+    tokenPayload = this.tokenPayloadHandler_(tokenPayload);
+    Logger.log('Token payload from tokenPayloadHandler: %s', JSON.stringify(tokenPayload));
+  }
   var response = UrlFetchApp.fetch(this.tokenUrl_, {
     method: 'post',
     headers: headers,
-    payload: {
-      code: code,
-      client_id: this.clientId_,
-      client_secret: this.clientSecret_,
-      redirect_uri: redirectUri,
-      grant_type: 'authorization_code'
-    },
+    payload: tokenPayload,
     muteHttpExceptions: true
   });
   var token = this.getTokenFromResponse_(response);
@@ -380,7 +395,7 @@ Service_.prototype.getLastError = function() {
 Service_.prototype.getTokenFromResponse_ = function(response) {
   var token = this.parseToken_(response.getContentText());
   if (response.getResponseCode() != 200 || token.error) {
-    var reason = [token.error, token.error_description, token.error_uri].filter(Boolean).join(', ');
+    var reason = [token.error, token.message, token.error_description, token.error_uri].filter(Boolean).join(', ');
     if (!reason) {
       reason = response.getResponseCode() + ': ' + JSON.stringify(token);
     }
@@ -436,15 +451,20 @@ Service_.prototype.refresh = function() {
   if (this.tokenHeaders_) {
     headers = _.extend(headers, this.tokenHeaders_);
   }
-  var response = UrlFetchApp.fetch(this.tokenUrl_, {
-    method: 'post',
-    headers: headers,
-    payload: {
+  var tokenPayload = {
       refresh_token: token.refresh_token,
       client_id: this.clientId_,
       client_secret: this.clientSecret_,
       grant_type: 'refresh_token'
-    },
+  };
+  if (this.tokenPayloadHandler_) {
+    tokenPayload = this.tokenPayloadHandler_(tokenPayload);
+    Logger.log('Token payload from tokenPayloadHandler (refresh): %s', JSON.stringify(tokenPayload));
+  }
+  var response = UrlFetchApp.fetch(this.tokenUrl_, {
+    method: 'post',
+    headers: headers,
+    payload: tokenPayload,
     muteHttpExceptions: true
   });
   var newToken = this.getTokenFromResponse_(response);

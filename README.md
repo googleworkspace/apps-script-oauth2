@@ -186,7 +186,16 @@ in these requests.
       'Authorization': 'Basic ' + Utilities.base64Encode(CLIENT_ID + ':' + CLIENT_SECRET)
     });
 
-See the [FitBit sample](samples/FitBit.gs) for the compelte code.
+See the [FitBit sample](samples/FitBit.gs) for the complete code.
+
+#### Modifying the access token payload
+Similar to Setting additional token headers, some services, such as the Smartsheet API, require you to [add a hash to the access token request payloads](http://smartsheet-platform.github.io/api-docs/?javascript#oauth-flow). The `setTokenPayloadHandler` method allows you to pass in a function to modify the payload of an access token request before the request is sent to the token endpoint:
+ 
+ 
+    // Set the handler for modifying the access token request payload:
+    .setTokenPayloadHandler(myTokenHandler)
+
+See the [Smartsheet sample](samples/Smartsheet.gs) for the complete code.
 
 #### Service Accounts
 
