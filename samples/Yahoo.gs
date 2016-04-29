@@ -8,7 +8,7 @@ var CLIENT_ID = '...';
 var CLIENT_SECRET = '...';
 
 /**
-* Authorizes and makes a request to the LinkedIn API.
+* Authorizes and makes a request to the Yahoo API.
 */
 
 function run() {
@@ -45,15 +45,15 @@ function getService() {
   // Set the endpoint URLs.
   .setAuthorizationBaseUrl('https://api.login.yahoo.com/oauth2/request_auth')
   .setTokenUrl('https://api.login.yahoo.com/oauth2/get_token')
-  
+
   // Set the client ID and secret.
   .setClientId(CLIENT_ID)
   .setClientSecret(CLIENT_SECRET)
-  
+
   // Set the name of the callback function that should be invoked to complete
   // the OAuth flow.
   .setCallbackFunction('authCallback')
-  
+
   // Set the property store where authorized tokens should be persisted.
   .setPropertyStore(PropertiesService.getUserProperties());
 }
