@@ -1,5 +1,5 @@
 /**
- * Extend your community - Meetup. Meetup API
+ * Meetup API Guides:
  * http://www.meetup.com/meetup_api/
  * http://www.meetup.com/meetup_api/auth/#oauth2
  */
@@ -25,7 +25,7 @@ function run() {
   } else {
     var authorizationUrl = service.getAuthorizationUrl();
     Logger.log('Open the following URL and re-run the script: %s',
-      authorizationUrl);
+        authorizationUrl);
   }
 }
 
@@ -42,20 +42,20 @@ function reset() {
  */
 function getService() {
   return OAuth2.createService('Meetup')
-    // Set the endpoint URLs.
-    .setAuthorizationBaseUrl('https://secure.meetup.com/oauth2/authorize')
-    .setTokenUrl('https://secure.meetup.com/oauth2/access')
+      // Set the endpoint URLs.
+      .setAuthorizationBaseUrl('https://secure.meetup.com/oauth2/authorize')
+      .setTokenUrl('https://secure.meetup.com/oauth2/access')
 
-  // Set the client ID and secret.
-  .setClientId(CLIENT_ID)
-    .setClientSecret(CLIENT_SECRET)
+      // Set the client ID and secret.
+      .setClientId(CLIENT_ID)
+        .setClientSecret(CLIENT_SECRET)
 
-  // Set the name of the callback function that should be invoked to complete
-  // the OAuth flow.
-  .setCallbackFunction('authCallback')
+      // Set the name of the callback function that should be invoked to complete
+      // the OAuth flow.
+      .setCallbackFunction('authCallback')
 
-  // Set the property store where authorized tokens should be persisted.
-  .setPropertyStore(PropertiesService.getUserProperties());
+      // Set the property store where authorized tokens should be persisted.
+      .setPropertyStore(PropertiesService.getUserProperties());
 }
 
 /**
