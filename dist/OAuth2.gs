@@ -159,7 +159,7 @@ Service_.prototype.setTokenHeaders = function(tokenHeaders) {
  */
 Service_.prototype.setTokenPayloadHandler = function(tokenHandler) {
   this.tokenPayloadHandler_ = tokenHandler;
-  return this; 
+  return this;
 };
 
 /**
@@ -322,7 +322,7 @@ Service_.prototype.getAuthorizationUrl = function() {
     'Authorization base URL': this.authorizationBaseUrl_
   });
 
-  var redirectUri = getRedirectUri(this.projectKey_);
+  var redirectUri = this.getRedirectUri();
   var state = eval('Script' + 'App').newStateToken()
       .withMethod(this.callbackFunctionName_)
       .withArgument('serviceName', this.serviceName_)
@@ -359,7 +359,7 @@ Service_.prototype.handleCallback = function(callbackRequest) {
     'Project key': this.projectKey_,
     'Token URL': this.tokenUrl_
   });
-  var redirectUri = getRedirectUri(this.projectKey_);
+  var redirectUri = this.getRedirectUri();
   var headers = {
     'Accept': this.tokenFormat_
   };
@@ -452,10 +452,20 @@ Service_.prototype.getLastError = function() {
 };
 
 /**
+ * Gets the last error that occurred this execution when trying to automatically refresh
+ * or generate an access token.
+ * @return {Exception} An error, if any.
+ */
+Service_.prototype.getRedirectUri = function() {
+  return getRedirectUri(this.projectKey_);
+};
+
+/**
  * Gets the token from a UrlFetchApp response.
  * @param {UrlFetchApp.HTTPResponse} response The response object.
  * @return {Object} The parsed token.
  * @throws If the token cannot be parsed or the response contained an error.
+ * @private
  */
 Service_.prototype.getTokenFromResponse_ = function(response) {
   var token = this.parseToken_(response.getContentText());
