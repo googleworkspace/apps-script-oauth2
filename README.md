@@ -38,6 +38,13 @@ Where `{PROJECT KEY}` is the key of the script that is using this library. You
 can find your script's project key in the Apps Script code editor by clicking on
 the menu item "File > Project properties".
 
+**Warning**: Due to an
+[open issue](https://code.google.com/p/google-apps-script-issues/issues/detail?id=6098)
+in Apps Script, the project key shown in the Project properties dialog
+doesn't match the version the library uses. You can call the service's
+`getRedirectUri()` method to view the exact URL that the service will use when
+performing the OAuth flow. Register this version in addition to or in place of
+the version that uses the key shown in the dialog.
 
 ## Usage
 
@@ -190,8 +197,8 @@ See the [FitBit sample](samples/FitBit.gs) for the complete code.
 
 #### Modifying the access token payload
 Similar to Setting additional token headers, some services, such as the Smartsheet API, require you to [add a hash to the access token request payloads](http://smartsheet-platform.github.io/api-docs/?javascript#oauth-flow). The `setTokenPayloadHandler` method allows you to pass in a function to modify the payload of an access token request before the request is sent to the token endpoint:
- 
- 
+
+
     // Set the handler for modifying the access token request payload:
     .setTokenPayloadHandler(myTokenHandler)
 

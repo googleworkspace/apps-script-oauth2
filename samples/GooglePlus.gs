@@ -38,18 +38,18 @@ function getService() {
       // Set the endpoint URLs.
       .setAuthorizationBaseUrl('https://accounts.google.com/o/oauth2/auth')
       .setTokenUrl('https://accounts.google.com/o/oauth2/token')
-  
+
       // Set the client ID and secret.
       .setClientId(CLIENT_ID)
       .setClientSecret(CLIENT_SECRET)
-  
+
       // Set the name of the callback function that should be invoked to complete
       // the OAuth flow.
       .setCallbackFunction('authCallback')
 
       // Set the property store where authorized tokens should be persisted.
       .setPropertyStore(PropertiesService.getUserProperties())
-  
+
       // Set the scope and additional Google-specific parameters.
       .setScope('profile')
       .setParam('access_type', 'offline')
@@ -68,4 +68,12 @@ function authCallback(request) {
   } else {
     return HtmlService.createHtmlOutput('Denied');
   }
+}
+
+/**
+ * Logs the redict URI to register in the Google Developers Console.
+ */
+function logRedirectUri() {
+  var service = getService();
+  Logger.log(service.getRedirectUri());
 }
