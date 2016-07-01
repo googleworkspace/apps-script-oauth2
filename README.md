@@ -46,6 +46,14 @@ doesn't match the version the library uses. You can call the service's
 performing the OAuth flow. Register this version in addition to or in place of
 the version that uses the key shown in the dialog.
 
+      /**
+       * Logs the redict URI to register in the Google Developers Console, etc.
+       */
+      function logRedirectUri() {
+        var service = getService();
+        Logger.log(service.getRedirectUri());
+      }
+
 ## Usage
 
 Using the library to generate an OAuth2 token has the following basic steps.
