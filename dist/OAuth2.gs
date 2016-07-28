@@ -35,6 +35,15 @@ var TOKEN_FORMAT = {
 };
 
 /**
+ * The supported locations for passing the state parameter.
+ * @type {Object.<string, string>}
+ */
+var STATE_PARAMETER_LOCATION = {
+  AUTHORIZATION_URL: 'authorization-url',
+  REDIRECT_URL: 'redirect-url'
+};
+
+/**
  * Creates a new OAuth2 service with the name specified. It's usually best to create and
  * configure your service once at the start of your script, and then reference them during
  * the different phases of the authorization flow.
@@ -48,19 +57,12 @@ function createService(serviceName) {
 /**
  * Returns the redirect URI that will be used for a given script. Often this URI
  * needs to be entered into a configuration screen of your OAuth provider.
- * @param {string} projectKey The project key of your script, which can be found in
+ * @param {string} scriptID The script ID of your script, which can be found in
  *     the Script Editor UI under "File > Project properties".
  * @return {string} The redirect URI.
  */
-function getRedirectUri(projectKey) {
-  return Utilities.formatString('https://script.google.com/macros/d/%s/usercallback', projectKey);
-}
-
-if (module) {
-  module.exports = {
-    createService: createService,
-    getRedirectUri: getRedirectUri
-  };
+function getRedirectUri(scriptId) {
+  return Utilities.formatString('https://script.google.com/macros/d/%s/usercallback', scriptId);
 }
 
 // Copyright 2014 Google Inc. All Rights Reserved.
@@ -98,7 +100,7 @@ var Service_ = function(serviceName) {
   this.params_ = {};
   this.tokenFormat_ = TOKEN_FORMAT.JSON;
   this.tokenHeaders_ = null;
-  this.projectKey_ = eval('Script' + 'App').getProjectKey();
+  this.scriptId_ = eval('Script' + 'App').getScriptId();
   this.expirationMinutes_ = 60;
 };
 
@@ -159,18 +161,6 @@ Service_.prototype.setTokenHeaders = function(tokenHeaders) {
  */
 Service_.prototype.setTokenPayloadHandler = function(tokenHandler) {
   this.tokenPayloadHandler_ = tokenHandler;
-  return this;
-};
-
-/**
- * Sets the project key of the script that contains the authorization callback function (required).
- * The project key can be found in the Script Editor UI under "File > Project properties".
- * @param {string} projectKey The project key of the project containing the callback function.
- * @return {Service_} This service, for chaining.
- * @deprecated The project key is now be determined automatically.
- */
-Service_.prototype.setProjectKey = function(projectKey) {
-  this.projectKey_ = projectKey;
   return this;
 };
 
@@ -310,19 +300,19 @@ Service_.prototype.setExpirationMinutes = function(expirationMinutes) {
 /**
  * Gets the authorization URL. The first step in getting an OAuth2 token is to
  * have the user visit this URL and approve the authorization request. The
- * user will then be redirected back to your application using the
- * project key and callback function name specified, so that the flow may continue.
+ * user will then be redirected back to your application using callback function
+ * name specified, so that the flow may continue.
  * @returns {string} The authorization URL.
  */
 Service_.prototype.getAuthorizationUrl = function() {
   validate_({
     'Client ID': this.clientId_,
-    'Project key': this.projectKey_,
+    'Script ID': this.scriptId_,
     'Callback function name': this.callbackFunctionName_,
     'Authorization base URL': this.authorizationBaseUrl_
   });
 
-  var redirectUri = this.getRedirectUri();
+  var redirectUri = getRedirectUri(this.scriptId_);
   var state = eval('Script' + 'App').newStateToken()
       .withMethod(this.callbackFunctionName_)
       .withArgument('serviceName', this.serviceName_)
@@ -356,10 +346,10 @@ Service_.prototype.handleCallback = function(callbackRequest) {
   validate_({
     'Client ID': this.clientId_,
     'Client Secret': this.clientSecret_,
-    'Project key': this.projectKey_,
+    'Script ID': this.scriptId_,
     'Token URL': this.tokenUrl_
   });
-  var redirectUri = this.getRedirectUri();
+  var redirectUri = getRedirectUri(this.scriptId_);
   var headers = {
     'Accept': this.tokenFormat_
   };
@@ -457,7 +447,7 @@ Service_.prototype.getLastError = function() {
  * @return {Exception} An error, if any.
  */
 Service_.prototype.getRedirectUri = function() {
-  return getRedirectUri(this.projectKey_);
+  return getRedirectUri(this.scriptId_);
 };
 
 /**

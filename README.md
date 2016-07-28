@@ -14,8 +14,9 @@ in your project. To add it to your script, do the following in the Apps Script
 code editor:
 
 1. Click on the menu item "Resources > Libraries..."
-2. In the "Find a Library" text box, enter the project key
-   `MswhXl8fVhTFUH_Q3UOJbXvxhMjh3Sh48` and click the "Select" button.
+2. In the "Find a Library" text box, enter the script ID
+   `1B7FSrk5Zi6L1rSxxTDgDEUsPzlukDsi4KGuTMorsTQHhGBzBkMun4iDF` and click the
+   "Select" button.
 3. Choose a version in the dropdown box (usually best to pick the latest
    version).
 4. Click the "Save" button.
@@ -32,22 +33,17 @@ URL that users will be redirected to after they've authorized the token. For
 this library (and the Apps Script functionality in general) the URL will always
 be in the following format:
 
-    https://script.google.com/macros/d/{PROJECT KEY}/usercallback
+    https://script.google.com/macros/d/{SCRIPT ID}/usercallback
 
-Where `{PROJECT KEY}` is the key of the script that is using this library. You
-can find your script's project key in the Apps Script code editor by clicking on
+Where `{SCRIPT ID}` is the ID of the script that is using this library. You
+can find your script's ID in the Apps Script code editor by clicking on
 the menu item "File > Project properties".
 
-**Warning**: Due to an
-[open issue](https://code.google.com/p/google-apps-script-issues/issues/detail?id=6098)
-in Apps Script, the project key shown in the Project properties dialog
-doesn't match the version the library uses. You can call the service's
-`getRedirectUri()` method to view the exact URL that the service will use when
-performing the OAuth flow. Register this version in addition to or in place of
-the version that uses the key shown in the dialog.
+Alternatively you can call the service's `getRedirectUri()` method to view the
+exact URL that the service will use when performing the OAuth flow:
 
       /**
-       * Logs the redict URI to register in the Google Developers Console, etc.
+       * Logs the redict URI to register.
        */
       function logRedirectUri() {
         var service = getService();

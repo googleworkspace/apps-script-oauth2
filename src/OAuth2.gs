@@ -17,8 +17,8 @@
  * any required setup.
  */
 
-// Load the Underscore.js library. This library was added using the project
-// key "MGwgKN2Th03tJ5OdmlzB8KPxhMjh3Sh48".
+// Load the Underscore.js library. This library was added using the script
+// ID "1I21uLOwDKdyF3_W_hvh6WXiIKWJWno8yG9lB8lf1VBnZFQ6jAAhyNTRG".
 var _ = Underscore.load();
 
 /**
@@ -28,6 +28,15 @@ var _ = Underscore.load();
 var TOKEN_FORMAT = {
   JSON: 'application/json',
   FORM_URL_ENCODED: 'application/x-www-form-urlencoded'
+};
+
+/**
+ * The supported locations for passing the state parameter.
+ * @type {Object.<string, string>}
+ */
+var STATE_PARAMETER_LOCATION = {
+  AUTHORIZATION_URL: 'authorization-url',
+  REDIRECT_URL: 'redirect-url'
 };
 
 /**
@@ -44,17 +53,10 @@ function createService(serviceName) {
 /**
  * Returns the redirect URI that will be used for a given script. Often this URI
  * needs to be entered into a configuration screen of your OAuth provider.
- * @param {string} projectKey The project key of your script, which can be found in
+ * @param {string} scriptID The script ID of your script, which can be found in
  *     the Script Editor UI under "File > Project properties".
  * @return {string} The redirect URI.
  */
-function getRedirectUri(projectKey) {
-  return Utilities.formatString('https://script.google.com/macros/d/%s/usercallback', projectKey);
-}
-
-if (module) {
-  module.exports = {
-    createService: createService,
-    getRedirectUri: getRedirectUri
-  };
+function getRedirectUri(scriptId) {
+  return Utilities.formatString('https://script.google.com/macros/d/%s/usercallback', scriptId);
 }
