@@ -27,5 +27,10 @@
   },
   "dependencies": {
     "underscore": "^1.8.3"
+  },
+  "scripts": {
+    "postversion": "gulp dist",
+    "dist": "gulp dist",
+    "lint": "gulp lint"
   }
 }

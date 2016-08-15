@@ -21,8 +21,8 @@
  * any required setup.
  */
 
-// Load the Underscore.js library. This library was added using the project
-// key "MGwgKN2Th03tJ5OdmlzB8KPxhMjh3Sh48".
+// Load the Underscore.js library. This library was added using the script
+// ID "1I21uLOwDKdyF3_W_hvh6WXiIKWJWno8yG9lB8lf1VBnZFQ6jAAhyNTRG".
 
 
 /**
@@ -63,6 +63,13 @@ function createService(serviceName) {
  */
 function getRedirectUri(scriptId) {
   return Utilities.formatString('https://script.google.com/macros/d/%s/usercallback', scriptId);
+}
+
+if (module) {
+  module.exports = {
+    createService: createService,
+    getRedirectUri: getRedirectUri
+  };
 }
 
 // Copyright 2014 Google Inc. All Rights Reserved.

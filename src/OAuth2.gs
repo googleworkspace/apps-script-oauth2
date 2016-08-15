@@ -60,3 +60,10 @@ function createService(serviceName) {
 function getRedirectUri(scriptId) {
   return Utilities.formatString('https://script.google.com/macros/d/%s/usercallback', scriptId);
 }
+
+if (module) {
+  module.exports = {
+    createService: createService,
+    getRedirectUri: getRedirectUri
+  };
+}
