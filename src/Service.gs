@@ -393,7 +393,14 @@ Service_.prototype.getRedirectUri = function() {
 Service_.prototype.getTokenFromResponse_ = function(response) {
   var token = this.parseToken_(response.getContentText());
   if (response.getResponseCode() != 200 || token.error) {
-    var reason = [token.error, token.message, token.error_description, token.error_uri].filter(Boolean).join(', ');
+    var reason = [
+      token.error,
+      token.message,
+      token.error_description,
+      token.error_uri
+    ].filter(Boolean).map(function(part) {
+      return typeof(part) == 'string' ? part : JSON.stringify(part);
+    }).join(', ');
     if (!reason) {
       reason = response.getResponseCode() + ': ' + JSON.stringify(token);
     }
