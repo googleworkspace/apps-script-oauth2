@@ -138,8 +138,10 @@ to the user.
       }
     }
 
-**Note:** In an Apps Script UI it's not possible to automatically close a window
-or tab, so you'll need to direct the user to close it themselves.
+If the authorization URL was opened by the Apps Script UI (via a link, button, etc)
+it's  possible to automatically close the window/tab using `window.top.close()`.
+You can see an example of this in the sample add-on's 
+[Callback.html](samples/Add-on/Callback.html#L47).
 
 ### 4. Get the access token
 
