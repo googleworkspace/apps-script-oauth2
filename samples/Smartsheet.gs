@@ -2,7 +2,7 @@ var CLIENT_ID = '...';
 var CLIENT_SECRET = '...';
 
 /**
- * Authorizes and makes a request to the GitHub API.
+ * Authorizes and makes a request to the Smartsheet API.
  */
 function run() {
   var service = getService();
