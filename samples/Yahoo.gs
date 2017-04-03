@@ -14,7 +14,7 @@ var CLIENT_SECRET = '...';
 function run() {
   var service = getService();
   if (service.hasAccess()) {
-    var url = 'https://social.yahooapis.com/v1/user/abcdef123/profile?format=json';
+    var url = 'https://social.yahooapis.com/v1/user/me/profile?format=json';
     var response = UrlFetchApp.fetch(url, {
       headers: {
         'Authorization': 'Bearer ' + service.getAccessToken()
