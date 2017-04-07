@@ -65,7 +65,7 @@ object each time you want to use it. The example below shows how to create a
 service for the Google Drive API.
 
 ```js
-    function getDriveService() {
+function getDriveService() {
   // Create a new service with the given name. The name will be used when
   // persisting the authorized token, so ensure it is unique within the
   // scope of the property store.
