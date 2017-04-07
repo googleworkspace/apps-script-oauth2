@@ -122,7 +122,7 @@ function showSidebar() {
     var page = template.evaluate();
     DocumentApp.getUi().showSidebar(page);
   } else {
-  ...
+  // ...
   }
 }
 ```
@@ -165,7 +165,7 @@ function makeRequest() {
       Authorization: 'Bearer ' + driveService.getAccessToken()
     }
   });
-  ...
+  // ...
 }
 ```
 
@@ -187,8 +187,8 @@ need to set the property store.
 ```js
 function clearService(){
   OAuth2.createService('drive')
-  .setPropertyStore(PropertiesService.getUserProperties())
-  .reset();
+      .setPropertyStore(PropertiesService.getUserProperties())
+      .reset();
 }
 ```
 
