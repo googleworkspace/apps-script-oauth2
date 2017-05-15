@@ -23,7 +23,7 @@ var _ = Underscore.load();
 
 /**
  * The supported formats for the returned OAuth2 token.
- * @type {Object.<string, string>
+ * @type {Object.<string, string>}
  */
 var TOKEN_FORMAT = {
   JSON: 'application/json',
