@@ -27,7 +27,7 @@
 
 /**
  * The supported formats for the returned OAuth2 token.
- * @type {Object.<string, string>
+ * @type {Object.<string, string>}
  */
 var TOKEN_FORMAT = {
   JSON: 'application/json',
@@ -65,7 +65,7 @@ function getRedirectUri(scriptId) {
   return Utilities.formatString('https://script.google.com/macros/d/%s/usercallback', scriptId);
 }
 
-if (module) {
+if (typeof module === 'object') {
   module.exports = {
     createService: createService,
     getRedirectUri: getRedirectUri
@@ -466,7 +466,8 @@ Service_.prototype.getRedirectUri = function() {
  */
 Service_.prototype.getTokenFromResponse_ = function(response) {
   var token = this.parseToken_(response.getContentText());
-  if (response.getResponseCode() != 200 || token.error) {
+  var resCode = response.getResponseCode();
+  if ( !(resCode >= 200 && resCode < 300) || token.error) {
     var reason = [
       token.error,
       token.message,
@@ -476,7 +477,7 @@ Service_.prototype.getTokenFromResponse_ = function(response) {
       return typeof(part) == 'string' ? part : JSON.stringify(part);
     }).join(', ');
     if (!reason) {
-      reason = response.getResponseCode() + ': ' + JSON.stringify(token);
+      reason = resCode + ': ' + JSON.stringify(token);
     }
     throw 'Error retrieving token: ' + reason;
   }

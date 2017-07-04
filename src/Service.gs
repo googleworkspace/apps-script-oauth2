@@ -392,7 +392,8 @@ Service_.prototype.getRedirectUri = function() {
  */
 Service_.prototype.getTokenFromResponse_ = function(response) {
   var token = this.parseToken_(response.getContentText());
-  if (response.getResponseCode() != 200 || token.error) {
+  var resCode = response.getResponseCode();
+  if ( resCode < 200 || resCode >= 300 || token.error) {
     var reason = [
       token.error,
       token.message,
@@ -402,7 +403,7 @@ Service_.prototype.getTokenFromResponse_ = function(response) {
       return typeof(part) == 'string' ? part : JSON.stringify(part);
     }).join(', ');
     if (!reason) {
-      reason = response.getResponseCode() + ': ' + JSON.stringify(token);
+      reason = resCode + ': ' + JSON.stringify(token);
     }
     throw 'Error retrieving token: ' + reason;
   }
