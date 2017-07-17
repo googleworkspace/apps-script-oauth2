@@ -146,9 +146,9 @@ function authCallback(request) {
 }
 ```
 
-If the authorization URL was opened by the Apps Script UI (via a link, button, etc)
-it's  possible to automatically close the window/tab using `window.top.close()`.
-You can see an example of this in the sample add-on's 
+If the authorization URL was opened by the Apps Script UI (via a link, button, 
+etc) it's  possible to automatically close the window/tab using 
+`window.top.close()`. You can see an example of this in the sample add-on's 
 [Callback.html](samples/Add-on/Callback.html#L47).
 
 ### 4. Get the access token
@@ -216,7 +216,13 @@ in these requests.
 See the [FitBit sample](samples/FitBit.gs) for the complete code.
 
 #### Modifying the access token payload
-Similar to Setting additional token headers, some services, such as the Smartsheet API, require you to [add a hash to the access token request payloads](http://smartsheet-platform.github.io/api-docs/?javascript#oauth-flow). The `setTokenPayloadHandler` method allows you to pass in a function to modify the payload of an access token request before the request is sent to the token endpoint:
+
+Similar to Setting additional token headers, some services, such as the 
+Smartsheet API, require you to 
+[add a hash to the access token request payloads](http://smartsheet-platform.github.io/api-docs/?javascript#oauth-flow).
+The `setTokenPayloadHandler` method allows you to pass in a function to modify 
+the payload of an access token request before the request is sent to the token 
+endpoint:
 
 ```js
 // Set the handler for modifying the access token request payload:
@@ -240,3 +246,10 @@ wishes to access the resources of a particular user, it uses the service account
 authorization flow to obtain an access token. See the sample
 [`GoogleServiceAccount.gs`](samples/GoogleServiceAccount.gs) for more
 information.
+
+## Breaking changes
+
+* Version 20 - Switched from using project keys to script IDs throughout the 
+library. When upgrading from an older version, ensure the callback URL 
+registered with the OAuth provider is updated to use the format 
+`https://script.google.com/macros/d/{SCRIPT ID}/usercallback`.
