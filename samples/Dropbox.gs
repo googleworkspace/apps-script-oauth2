@@ -7,11 +7,15 @@ var CLIENT_SECRET = '...';
 function run() {
   var service = getService();
   if (service.hasAccess()) {
-    var url = 'https://api.dropboxapi.com/1/account/info';
+    var url = 'https://api.dropboxapi.com/2/users/get_current_account';
     var response = UrlFetchApp.fetch(url, {
       headers: {
         Authorization: 'Bearer ' + service.getAccessToken()
-      }
+      },
+      method: 'post',
+      // The Content-Type header must be set to an empty string when passing no
+      // JSON payload.
+      contentType: ''
     });
     var result = JSON.parse(response.getContentText());
     Logger.log(JSON.stringify(result, null, 2));
@@ -36,15 +40,15 @@ function reset() {
 function getService() {
   return OAuth2.createService('Dropbox')
       // Set the endpoint URLs.
-      .setAuthorizationBaseUrl('https://www.dropbox.com/1/oauth2/authorize')
-      .setTokenUrl('https://api.dropboxapi.com/1/oauth2/token')
+      .setAuthorizationBaseUrl('https://www.dropbox.com/oauth2/authorize')
+      .setTokenUrl('https://api.dropboxapi.com/oauth2/token')
 
       // Set the client ID and secret.
       .setClientId(CLIENT_ID)
       .setClientSecret(CLIENT_SECRET)
 
-      // Set the name of the callback function that should be invoked to complete
-      // the OAuth flow.
+      // Set the name of the callback function that should be invoked to
+      // complete the OAuth flow.
       .setCallbackFunction('authCallback')
 
       // Set the property store where authorized tokens should be persisted.
