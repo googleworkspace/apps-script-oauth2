@@ -500,7 +500,6 @@ Service_.prototype.saveToken_ = function(token) {
 /**
  * Gets the token from the service's property store or cache.
  * @return {Object} The token, or null if no token was found.
- * @private
  */
 Service_.prototype.getToken = function() {
   validate_({
