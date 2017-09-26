@@ -318,7 +318,7 @@ Service_.prototype.handleCallback = function(callbackRequest) {
  * @return {boolean} true if the user has access to the service, false otherwise.
  */
 Service_.prototype.hasAccess = function() {
-  var token = this.getToken_();
+  var token = this.getToken();
   if (!token || this.isExpired_(token)) {
     if (token && token.refresh_token) {
       try {
@@ -351,7 +351,7 @@ Service_.prototype.getAccessToken = function() {
   if (!this.hasAccess()) {
     throw 'Access not granted or expired.';
   }
-  var token = this.getToken_();
+  var token = this.getToken();
   return token.access_token;
 };
 
@@ -447,7 +447,7 @@ Service_.prototype.refresh = function() {
     'Client Secret': this.clientSecret_,
     'Token URL': this.tokenUrl_
   });
-  var token = this.getToken_();
+  var token = this.getToken();
   if (!token.refresh_token) {
     throw 'Offline access is required.';
   }
@@ -502,7 +502,7 @@ Service_.prototype.saveToken_ = function(token) {
  * @return {Object} The token, or null if no token was found.
  * @private
  */
-Service_.prototype.getToken_ = function() {
+Service_.prototype.getToken = function() {
   validate_({
     'Property store': this.propertyStore_
   });
