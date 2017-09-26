@@ -1,8 +1,6 @@
 /**
- *
  * VK's Auth flow https://vk.com/dev/authcode_flow_user
  * Scopes list https://vk.com/dev/permissions
- * Be careful. Implicit Flow's Methods are not used on the server side. They will always return "error_code": 15, "error_msg": "Access denied: no access to call this method"
  */
 
 var CLIENT_ID = '...';
@@ -55,8 +53,7 @@ function getService() {
       .setPropertyStore(PropertiesService.getUserProperties())
 
       // Set the scope and additional specific parameters if its are supported
-      .setScope('groups,offline')
-      .setParam('approval_prompt', 'force');
+      .setScope('groups,offline');
 }
 
 /**
