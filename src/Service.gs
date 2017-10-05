@@ -334,6 +334,13 @@ Service_.prototype.hasAccess = function() {
         this.lastError_ = e;
         return false;
       }
+    } else if (this.params_.grant_type === 'client_credentials'){
+      try {
+        this.requestCCG_();
+      } catch (e) {
+        this.lastError_ = e;
+        return false;
+      }
     } else {
       return false;
     }
@@ -548,6 +555,38 @@ Service_.prototype.isExpired_ = function(token) {
     var now = getTimeInSeconds_(new Date());
     return expires_time - now < Service_.EXPIRATION_BUFFER_SECONDS_;
   }
+};
+
+/**
+ * Uses Client Credentials Grant flow for getting an access token.
+ * https://tools.ietf.org/html/rfc6749#section-4.4
+ */
+Service_.prototype.requestCCG_ = function() {
+  validate_({
+    'Token URL': this.tokenUrl_
+  });
+  var headers = {
+    'Accept': this.tokenFormat_
+  };
+  if (this.tokenHeaders_) {
+    headers = _.extend(headers, this.tokenHeaders_);
+  }
+  var tokenPayload = {
+    scope: this.params_.scope,
+    grant_type: 'client_credentials'
+  };
+  if (this.tokenPayloadHandler_) {
+    tokenPayload = this.tokenPayloadHandler_(tokenPayload);
+    Logger.log('Token payload from tokenPayloadHandler: %s', JSON.stringify(tokenPayload));
+  }
+  var response = UrlFetchApp.fetch(this.tokenUrl_, {
+    method: 'post',
+    headers: headers,
+    payload: tokenPayload,
+    muteHttpExceptions: true
+  });
+  var token = this.getTokenFromResponse_(response);
+  this.saveToken_(token);
 };
 
 /**
