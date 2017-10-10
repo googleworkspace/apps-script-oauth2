@@ -362,7 +362,11 @@ Service_.prototype.reset = function() {
   validate_({
     'Property store': this.propertyStore_
   });
-  this.propertyStore_.deleteProperty(this.getPropertyKey_(this.serviceName_));
+  var key = this.getPropertyKey_(this.serviceName_);
+  this.propertyStore_.deleteProperty(key);
+  if (this.cache_) {
+    this.cache_.remove(key);
+  }
 };
 
 /**
