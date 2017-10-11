@@ -1,4 +1,31 @@
-// Copyright 2014 Google Inc. All Rights Reserved.
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Service.gs</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Service.gs</h1>
+
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// Copyright 2014 Google Inc. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -79,7 +106,7 @@ Service_.prototype.setTokenFormat = function(tokenFormat) {
 /**
  * Sets the additional HTTP headers that should be sent when retrieving or
  * refreshing the access token.
- * @param {Object.<string,string>} tokenHeaders A map of header names to values.
+ * @param Object.&lt;string,string> tokenHeaders A map of header names to values.
  * @return {Service_} This service, for chaining.
  */
 Service_.prototype.setTokenHeaders = function(tokenHeaders) {
@@ -88,19 +115,8 @@ Service_.prototype.setTokenHeaders = function(tokenHeaders) {
 };
 
 /**
- * @callback tokenHandler
- * @param tokenPayload {Object} A hash of parameters to be sent to the token URL.
- * @param tokenPayload.code {string} The authorization code.
- * @param tokenPayload.client_id {string} The client ID.
- * @param tokenPayload.client_secret {string} The client secret.
- * @param tokenPayload.redirect_uri {string} The redirect URI.
- * @param tokenPayload.grant_type {string} The type of grant requested.
- * @returns {Object} A modified hash of parameters to be sent to the token URL.
- */
-
-/**
  * Sets an additional function to invoke on the payload of the access token request.
- * @param tokenHandler {tokenHandler} tokenHandler A function to invoke on the payload of the request for an access token.
+ * @param Object tokenHandler A function to invoke on the payload of the request for an access token.
  * @return {Service_} This service, for chaining.
  */
 Service_.prototype.setTokenPayloadHandler = function(tokenHandler) {
@@ -112,7 +128,7 @@ Service_.prototype.setTokenPayloadHandler = function(tokenHandler) {
  * Sets the name of the authorization callback function (required). This is the function that will be
  * called when the user completes the authorization flow on the service provider's website.
  * The callback accepts a request parameter, which should be passed to this service's
- * <code>handleCallback()</code> method to complete the process.
+ * &lt;code>handleCallback()&lt;/code> method to complete the process.
  * @param {string} callbackFunctionName The name of the callback function.
  * @return {Service_} This service, for chaining.
  */
@@ -139,7 +155,7 @@ Service_.prototype.setClientId = function(clientId) {
 
 /**
  * Sets the client secret to use for the OAuth flow (required). See the documentation for
- * <code>setClientId()</code> for more information on how to create client IDs
+ * &lt;code>setClientId()&lt;/code> for more information on how to create client IDs
  * and secrets.
  * @param {string} clientSecret The client secret to use for the OAuth flow.
  * @return {Service_} This service, for chaining.
@@ -177,7 +193,7 @@ Service_.prototype.setCache = function(cache) {
  * Sets the scope or scopes to request during the authorization flow (optional). If the scope value
  * is an array it will be joined using the separator before being sent to the server, which is
  * is a space character by default.
- * @param {string|Array.<string>} scope The scope or scopes to request.
+ * @param {string|Array.&lt;string>} scope The scope or scopes to request.
  * @param {string} opt_separator The optional separator to use when joining multiple scopes. Default: space.
  * @return {Service_} This service, for chaining.
  */
@@ -331,7 +347,7 @@ Service_.prototype.handleCallback = function(callbackRequest) {
 Service_.prototype.hasAccess = function() {
   var token = this.getToken();
   if (!token || this.isExpired_(token)) {
-    if (token && token.refresh_token) {
+    if (token &amp;&amp; token.refresh_token) {
       try {
         this.refresh();
       } catch (e) {
@@ -386,9 +402,9 @@ Service_.prototype.getLastError = function() {
 };
 
 /**
- * Returns the redirect URI that will be used for this service. Often this URI
- * needs to be entered into a configuration screen of your OAuth provider.
- * @return {string} The redirect URI.
+ * Gets the last error that occurred this execution when trying to automatically refresh
+ * or generate an access token.
+ * @return {Exception} An error, if any.
  */
 Service_.prototype.getRedirectUri = function() {
   return getRedirectUri(this.scriptId_);
@@ -404,7 +420,7 @@ Service_.prototype.getRedirectUri = function() {
 Service_.prototype.getTokenFromResponse_ = function(response) {
   var token = this.parseToken_(response.getContentText());
   var resCode = response.getResponseCode();
-  if ( resCode < 200 || resCode >= 300 || token.error) {
+  if ( resCode &lt; 200 || resCode >= 300 || token.error) {
     var reason = [
       token.error,
       token.message,
@@ -436,7 +452,7 @@ Service_.prototype.parseToken_ = function(content) {
       throw 'Token response not valid JSON: ' + e;
     }
   } else if (this.tokenFormat_ == TOKEN_FORMAT.FORM_URL_ENCODED) {
-    token = content.split('&').reduce(function(result, pair) {
+    token = content.split('&amp;').reduce(function(result, pair) {
       var parts = pair.split('=');
       result[decodeURIComponent(parts[0])] = decodeURIComponent(parts[1]);
       return result;
@@ -557,14 +573,13 @@ Service_.prototype.isExpired_ = function(token) {
   } else {
     var expires_time = token.granted_time + Number(expires_in);
     var now = getTimeInSeconds_(new Date());
-    return expires_time - now < Service_.EXPIRATION_BUFFER_SECONDS_;
+    return expires_time - now &lt; Service_.EXPIRATION_BUFFER_SECONDS_;
   }
 };
 
 /**
  * Uses the service account flow to exchange a signed JSON Web Token (JWT) for an
  * access token.
- * @private
  */
 Service_.prototype.exchangeJwt_ = function() {
   validate_({
@@ -625,3 +640,26 @@ Service_.prototype.createJwt_ = function() {
   var signature = Utilities.base64EncodeWebSafe(signatureBytes);
   return toSign + '.' + signature;
 };
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="Service_.html">Service_</a></li></ul><h3>Global</h3><ul><li><a href="global.html#createService">createService</a></li><li><a href="global.html#getRedirectUri">getRedirectUri</a></li><li><a href="global.html#STATE_PARAMETER_LOCATION">STATE_PARAMETER_LOCATION</a></li><li><a href="global.html#TOKEN_FORMAT">TOKEN_FORMAT</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Fri Oct 06 2017 21:26:53 GMT-0400 (EDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

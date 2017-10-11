@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Home</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Home</h1>
+
+    
+
+
+
+    
+
+
+    <h3> </h3>
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+    <section>
+        <article><h1>OAuth2 for Apps Script</h1><p>OAuth2 for Apps Script is a library for Google Apps Script that provides the
+ability to create and authorize OAuth2 tokens as well as refresh them when they
+expire. This library uses Apps Script's new
+<a href="https://developers.google.com/apps-script/reference/script/state-token-builder">StateTokenBuilder</a>
+and <code>/usercallback</code> endpoint to handle the redirects.</p>
+<h2>Setup</h2><p>This library is already published as an Apps Script, making it easy to include
+in your project. To add it to your script, do the following in the Apps Script
+code editor:</p>
+<ol>
+<li>Click on the menu item &quot;Resources &gt; Libraries...&quot;</li>
+<li>In the &quot;Find a Library&quot; text box, enter the script ID
+<code>1B7FSrk5Zi6L1rSxxTDgDEUsPzlukDsi4KGuTMorsTQHhGBzBkMun4iDF</code> and click the
+&quot;Select&quot; button.</li>
+<li>Choose a version in the dropdown box (usually best to pick the latest
+version).</li>
+<li>Click the &quot;Save&quot; button.</li>
+</ol>
+<p>Alternatively, you can copy and paste the files in the <a href="dist"><code>/dist</code></a> directory
+directly into your script project.</p>
+<h2>Redirect URI</h2><p>Before you can start authenticating against an OAuth2 provider, you usually need
+to register your application and retrieve the client ID and secret. Often
+these registration screens require you to enter a &quot;Redirect URI&quot;, which is the
+URL that users will be redirected to after they've authorized the token. For
+this library (and the Apps Script functionality in general) the URL will always
+be in the following format:</p>
+<pre class="prettyprint source"><code>https://script.google.com/macros/d/{SCRIPT ID}/usercallback</code></pre><p>Where <code>{SCRIPT ID}</code> is the ID of the script that is using this library. You
+can find your script's ID in the Apps Script code editor by clicking on
+the menu item &quot;File &gt; Project properties&quot;.</p>
+<p>Alternatively you can call the service's <code>getRedirectUri()</code> method to view the
+exact URL that the service will use when performing the OAuth flow:</p>
+<pre class="prettyprint source lang-js"><code>/**
+ * Logs the redict URI to register.
+ */
+function logRedirectUri() {
+  var service = getService();
+  Logger.log(service.getRedirectUri());
+}</code></pre><h2>Usage</h2><p>Using the library to generate an OAuth2 token has the following basic steps.</p>
+<h3>1. Create the OAuth2 service</h3><p>The OAuth2Service class contains the configuration information for a given
+OAuth2 provider, including its endpoints, client IDs and secrets, etc. This
+information is not persisted to any data store, so you'll need to create this
+object each time you want to use it. The example below shows how to create a
+service for the Google Drive API.</p>
+<pre class="prettyprint source lang-js"><code>function getDriveService() {
+  // Create a new service with the given name. The name will be used when
+  // persisting the authorized token, so ensure it is unique within the
+  // scope of the property store.
+  return OAuth2.createService('drive')
+
+      // Set the endpoint URLs, which are the same for all Google services.
+      .setAuthorizationBaseUrl('https://accounts.google.com/o/oauth2/auth')
+      .setTokenUrl('https://accounts.google.com/o/oauth2/token')
+
+      // Set the client ID and secret, from the Google Developers Console.
+      .setClientId('...')
+      .setClientSecret('...')
+
+      // Set the name of the callback function in the script referenced
+      // above that should be invoked to complete the OAuth flow.
+      .setCallbackFunction('authCallback')
+
+      // Set the property store where authorized tokens should be persisted.
+      .setPropertyStore(PropertiesService.getUserProperties())
+
+      // Set the scopes to request (space-separated for Google services).
+      .setScope('https://www.googleapis.com/auth/drive')
+
+      // Below are Google-specific OAuth2 parameters.
+
+      // Sets the login hint, which will prevent the account chooser screen
+      // from being shown to users logged in with multiple accounts.
+      .setParam('login_hint', Session.getActiveUser().getEmail())
+
+      // Requests offline access.
+      .setParam('access_type', 'offline')
+
+      // Forces the approval prompt every time. This is useful for testing,
+      // but not desirable in a production application.
+      .setParam('approval_prompt', 'force');
+}</code></pre><h3>2. Direct the user to the authorization URL</h3><p>Apps Script UI's are not allowed to redirect the user's window to a new URL, so
+you'll need to present the authorization URL as a link for the user to click.
+The URL is generated by the service, using the function <code>getAuthorizationUrl()</code>.</p>
+<pre class="prettyprint source lang-js"><code>function showSidebar() {
+  var driveService = getDriveService();
+  if (!driveService.hasAccess()) {
+    var authorizationUrl = driveService.getAuthorizationUrl();
+    var template = HtmlService.createTemplate(
+        '&lt;a href=&quot;&lt;?= authorizationUrl ?>&quot; target=&quot;_blank&quot;>Authorize&lt;/a>. ' +
+        'Reopen the sidebar when the authorization is complete.');
+    template.authorizationUrl = authorizationUrl;
+    var page = template.evaluate();
+    DocumentApp.getUi().showSidebar(page);
+  } else {
+  // ...
+  }
+}</code></pre><h3>3. Handle the callback</h3><p>When the user completes the OAuth2 flow, the callback function you specified
+for your service will be invoked. This callback function should pass its
+request object to the service's <code>handleCallback</code> function, and show a message
+to the user.</p>
+<pre class="prettyprint source lang-js"><code>function authCallback(request) {
+  var driveService = getDriveService();
+  var isAuthorized = driveService.handleCallback(request);
+  if (isAuthorized) {
+    return HtmlService.createHtmlOutput('Success! You can close this tab.');
+  } else {
+    return HtmlService.createHtmlOutput('Denied. You can close this tab');
+  }
+}</code></pre><p>If the authorization URL was opened by the Apps Script UI (via a link, button, 
+etc) it's  possible to automatically close the window/tab using 
+<code>window.top.close()</code>. You can see an example of this in the sample add-on's 
+<a href="samples/Add-on/Callback.html#L47">Callback.html</a>.</p>
+<h3>4. Get the access token</h3><p>Now that the service is authorized you can use its access token to make
+reqests to the API. The access token can be passed along with a <code>UrlFetchApp</code>
+request in the &quot;Authorization&quot; header.</p>
+<pre class="prettyprint source lang-js"><code>function makeRequest() {
+  var driveService = getDriveService();
+  var response = UrlFetchApp.fetch('https://www.googleapis.com/drive/v2/files?maxResults=10', {
+    headers: {
+      Authorization: 'Bearer ' + driveService.getAccessToken()
+    }
+  });
+  // ...
+}</code></pre><h2>Compatiblity</h2><p>This library was designed to work with any OAuth2 provider, but because of small
+differences in how they implement the standard it may be that some APIs
+aren't compatible. If you find an API that it does't work with, open an issue or
+fix the problem yourself and make a pull request against the source code.</p>
+<h2>Other features</h2><h4>Resetting the access token</h4><p>If you have an access token set and need to remove it from the property store
+you can remove it with the <code>reset()</code> function. Before you can call reset you
+need to set the property store.</p>
+<pre class="prettyprint source lang-js"><code>function clearService(){
+  OAuth2.createService('drive')
+      .setPropertyStore(PropertiesService.getUserProperties())
+      .reset();
+}</code></pre><h4>Setting the token format</h4><p>OAuth services can return a token in two ways: as JSON or an URL encoded
+string. You can set which format the token is in with
+<code>setTokenFormat(tokenFormat)</code>. There are two ENUMS to set the mode:
+<code>TOKEN_FORMAT.FORM_URL_ENCODED</code> and <code>TOKEN_FORMAT.JSON</code>. JSON is set as default
+if no token format is chosen.</p>
+<h4>Setting additional token headers</h4><p>Some services, such as the FitBit API, require you to set an Authorization
+header on access token requests. The <code>setTokenHeaders()</code> method allows you
+to pass in a JavaScript object of additional header key/value pairs to be used
+in these requests.</p>
+<pre class="prettyprint source lang-js"><code>.setTokenHeaders({
+  'Authorization': 'Basic ' + Utilities.base64Encode(CLIENT_ID + ':' + CLIENT_SECRET)
+});</code></pre><p>See the <a href="samples/FitBit.gs">FitBit sample</a> for the complete code.</p>
+<h4>Modifying the access token payload</h4><p>Similar to Setting additional token headers, some services, such as the 
+Smartsheet API, require you to 
+<a href="http://smartsheet-platform.github.io/api-docs/?javascript#oauth-flow">add a hash to the access token request payloads</a>.
+The <code>setTokenPayloadHandler</code> method allows you to pass in a function to modify 
+the payload of an access token request before the request is sent to the token 
+endpoint:</p>
+<pre class="prettyprint source lang-js"><code>// Set the handler for modifying the access token request payload:
+.setTokenPayloadHandler(myTokenHandler)</code></pre><p>See the <a href="samples/Smartsheet.gs">Smartsheet sample</a> for the complete code.</p>
+<h4>Service Accounts</h4><p>This library supports the service account authorization flow, also known as the
+<a href="https://tools.ietf.org/html/draft-ietf-oauth-jwt-bearer-12">JSON Web Token (JWT) Profile</a>.
+This is a two-legged OAuth flow that doesn't require a user to visit a URL and
+authorize access.</p>
+<p>One common use for service accounts with Google APIs is
+<a href="https://developers.google.com/identity/protocols/OAuth2ServiceAccount#delegatingauthority">domain-wide delegation</a>.
+This process allows a Google Apps for Work/EDU domain administrator to grant an
+application access to all the users within the domain. When the application
+wishes to access the resources of a particular user, it uses the service account
+authorization flow to obtain an access token. See the sample
+<a href="samples/GoogleServiceAccount.gs"><code>GoogleServiceAccount.gs</code></a> for more
+information.</p>
+<h2>Breaking changes</h2><ul>
+<li>Version 20 - Switched from using project keys to script IDs throughout the 
+library. When upgrading from an older version, ensure the callback URL 
+registered with the OAuth provider is updated to use the format 
+<code>https://script.google.com/macros/d/{SCRIPT ID}/usercallback</code>.</li>
+</ul></article>
+    </section>
+
+
+
+
+
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>OAuth2.gs</h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description">Contains the methods exposed by the library, and performs
+any required setup.</div>
+        
+
+        
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>Service.gs</h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description">Contains the Service_ class.</div>
+        
+
+        
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>Utilities.gs</h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description">Contains utility methods used by the library.</div>
+        
+
+        
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Service_.html">Service_</a></li></ul><h3>Global</h3><ul><li><a href="global.html#createService">createService</a></li><li><a href="global.html#getRedirectUri">getRedirectUri</a></li><li><a href="global.html#STATE_PARAMETER_LOCATION">STATE_PARAMETER_LOCATION</a></li><li><a href="global.html#TOKEN_FORMAT">TOKEN_FORMAT</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Oct 11 2017 08:46:47 GMT-0400 (EDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
