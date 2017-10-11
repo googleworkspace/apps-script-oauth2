@@ -178,6 +178,11 @@ fix the problem yourself and make a pull request against the source code.
 
 ## Other features
 
+See below for some features of the library you may need to utilize depending on
+the specifics of the OAuth provider you are connecting to. See the [generated
+reference documentation](http://googlesamples.github.io/apps-script-oauth2/Service_.html)
+for a complete list of methods available.
+
 #### Resetting the access token
 
 If you have an access token set and need to remove it from the property store
