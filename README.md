@@ -258,3 +258,5 @@ information.
 library. When upgrading from an older version, ensure the callback URL 
 registered with the OAuth provider is updated to use the format 
 `https://script.google.com/macros/d/{SCRIPT ID}/usercallback`.
+* Version 22 - Renamed `Service.getToken_()` to `Service.getToken()`, since
+there OAuth providers that return important information in the token response.
