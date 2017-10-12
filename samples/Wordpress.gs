@@ -7,7 +7,7 @@ var CLIENT_SECRET = '...';
 function run() {
   var service = getService();
   if (service.hasAccess()) {
-    var blogId = service.getToken_().blog_id;
+    var blogId = service.getToken().blog_id;
     var url = 'https://public-api.wordpress.com/rest/v1.1/sites/' + blogId + '/posts';
     var response = UrlFetchApp.fetch(url, {
       headers: {
