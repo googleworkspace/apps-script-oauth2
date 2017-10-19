@@ -242,6 +242,38 @@ Service_.prototype.setExpirationMinutes = function(expirationMinutes) {
 };
 
 /**
+ * Sets the consumer secret to use for grant flow authorization.
+ * @param {string} consummerSecret The consumer secret.
+ * @return {Service_} This service, for chaining.
+ */
+Service_.prototype.setConsumerSecret = function(consummerSecret) {
+  this.consumerSecret_ = consummerSecret;
+  return this;
+};
+
+/**
+ * Sets the consumer key to use for grant flow authorization.
+ * If not set the client ID will be used instead.
+ * @param {string} consumerKey This consumer key
+ * @return {Service_} This service, for chaining.
+ */
+Service_.prototype.setConsumerKey = function(consumerKey) {
+  this.consumerKey_ = consumerKey;
+  return this;
+};
+
+/**
+ * Sets the grant_type for an extension of grant flow authorization
+ * @param {string} grantType The extension grant type.
+ * @return {Service_} This service, for chaining.
+ */
+
+Service_.prototype.setGrantType = function(grantType) {
+  this.grantType_ = grantType;
+  return this;
+};
+
+/**
  * Gets the authorization URL. The first step in getting an OAuth2 token is to
  * have the user visit this URL and approve the authorization request. The
  * user will then be redirected back to your application using callback function
@@ -345,7 +377,7 @@ Service_.prototype.hasAccess = function() {
         this.lastError_ = e;
         return false;
       }
-    } else if (this.params_.grant_type === 'client_credentials'){
+    } else if (this.consumerSecret_){
       try {
         this.requestCCG_();
       } catch (e) {
@@ -667,4 +699,38 @@ Service_.prototype.createJwt_ = function() {
   var signatureBytes = Utilities.computeRsaSha256Signature(toSign, this.privateKey_);
   var signature = Utilities.base64EncodeWebSafe(signatureBytes);
   return toSign + '.' + signature;
+};
+
+/**
+ * Uses Client Credentials Grant flow for getting an access token.
+ * https://tools.ietf.org/html/rfc6749#section-4.4
+ */
+Service_.prototype.requestCCG_ = function() {
+  validate_({
+    'Token URL': this.tokenUrl_
+  });
+  var consumerKey = this.consumerKey_ || this.clientId_;
+  var headers = {
+    'Accept': this.tokenFormat_,
+    'Authorization': 'Basic ' + Utilities.base64Encode(consumerKey + ':' + this.consumerSecret_)
+  };
+  if (this.tokenHeaders_) {
+    headers = _.extend(headers, this.tokenHeaders_);
+  }
+  var tokenPayload = {
+    scope: this.params_.scope,
+    grant_type: 'client_credentials' || this.grantType_
+  };
+  if (this.tokenPayloadHandler_) {
+    tokenPayload = this.tokenPayloadHandler_(tokenPayload);
+    Logger.log('Token payload from tokenPayloadHandler: %s', JSON.stringify(tokenPayload));
+  }
+  var response = UrlFetchApp.fetch(this.tokenUrl_, {
+    method: 'post',
+    headers: headers,
+    payload: tokenPayload,
+    muteHttpExceptions: true
+  });
+  var token = this.getTokenFromResponse_(response);
+  this.saveToken_(token);
 };
