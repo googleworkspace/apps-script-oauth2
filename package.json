@@ -1,6 +1,6 @@
 {
   "name": "apps-script-oauth2",
-  "version": "1.22.0",
+  "version": "1.23.0",
   "description": "OAuth2 for Apps Script is a library for Google Apps Script that provides the ability to create and authorize OAuth2 tokens as well as refresh them when they expire.",
   "repository": {
     "type": "git",
@@ -23,6 +23,7 @@
     "gulp-jshint": "^1.12.0",
     "gulp-rename": "^1.2.2",
     "gulp-strip-line": "0.0.1",
+    "jsdoc": "^3.5.5",
     "jshint-stylish": "^2.0.1"
   },
   "dependencies": {
@@ -31,6 +32,7 @@
   "scripts": {
     "postversion": "gulp dist",
     "dist": "gulp dist",
-    "lint": "gulp lint"
+    "lint": "gulp lint",
+    "doc": "jsdoc -c jsdoc.json src/*.gs README.md"
   }
 }

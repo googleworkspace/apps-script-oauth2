@@ -2,16 +2,15 @@ var CLIENT_ID = '...';
 var CLIENT_SECRET = '...';
 
 /**
- * Authorizes and makes a request to the Wordpress API.
+ * Authorizes and makes a request to the Basecamp 3 API.
  */
 function run() {
   var service = getService();
   if (service.hasAccess()) {
-    var blogId = service.getToken().blog_id;
-    var url = 'https://public-api.wordpress.com/rest/v1.1/sites/' + blogId + '/posts';
+    var url = 'https://launchpad.37signals.com/authorization.json';
     var response = UrlFetchApp.fetch(url, {
       headers: {
-        'Authorization': 'Bearer ' + service.getAccessToken()
+        Authorization: 'Bearer ' + service.getAccessToken()
       }
     });
     var result = JSON.parse(response.getContentText());
@@ -35,25 +34,25 @@ function reset() {
  * Configures the service.
  */
 function getService() {
-  return OAuth2.createService('Wordpress')
+  return OAuth2.createService('Basecamp')
       // Set the endpoint URLs.
-      .setTokenUrl('https://public-api.wordpress.com/oauth2/token')
-      .setAuthorizationBaseUrl('https://public-api.wordpress.com/oauth2/authorize')
+      .setAuthorizationBaseUrl('https://launchpad.37signals.com/authorization/new?type=web_server')
+      .setTokenUrl('https://launchpad.37signals.com/authorization/token?type=web_server')
 
       // Set the client ID and secret.
       .setClientId(CLIENT_ID)
       .setClientSecret(CLIENT_SECRET)
 
-      // Set the name of the callback function in the script referenced
-      // above that should be invoked to complete the OAuth flow.
+      // Set the name of the callback function that should be invoked to complete
+      // the OAuth flow.
       .setCallbackFunction('authCallback')
 
       // Set the property store where authorized tokens should be persisted.
-      .setPropertyStore(PropertiesService.getUserProperties());
+      .setPropertyStore(PropertiesService.getUserProperties())
 }
 
 /**
- * Handles the OAuth2 callback.
+ * Handles the OAuth callback.
  */
 function authCallback(request) {
   var service = getService();
