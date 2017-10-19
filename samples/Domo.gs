@@ -1,9 +1,8 @@
-
-var CLIENT_ID = '...';
-var CLIENT_SECRET = '...';
+var CONSUMER_KEY = '60e79f78-696e-4977-b8af-22584dee428a';
+var CONSUMER_SECRET = '4bc8eb4d4db6a3b594177c334c4916799d463594c6771dae14a3644ecb3ebc01';
 
 /**
- * Authorizes and makes a request to the Domo API.
+ * Authorizes and makes a request to the Twitter Application Only API.
  */
 function run() {
   var service = getService();
@@ -37,19 +36,13 @@ function getService() {
       // Set the endpoint URL.
       .setTokenUrl('https://api.domo.com/oauth/token')
 
-      // Set the client ID and secret.
-      .setClientId(CLIENT_ID)
-      .setClientSecret(CLIENT_SECRET)
+      // Set the consumer key and secret.
+      .setConsumerKey(CONSUMER_KEY)
+      .setConsumerSecret(CONSUMER_SECRET)
 
       // Set the property store where authorized tokens should be persisted.
       .setPropertyStore(PropertiesService.getScriptProperties())
-
+      
       // Set the scope and additional headers required by the Domo API.
-      .setScope('data user')
-      .setTokenHeaders({
-        'Authorization': 'Basic ' + Utilities.base64Encode(CLIENT_ID + ':' + CLIENT_SECRET)
-      })
-
-      // grant_type REQUIRED for this type requests. Value MUST be set to "client_credentials".
-      .setParam('grant_type', 'client_credentials');
+      .setScope('data user');
 }

@@ -1,6 +1,5 @@
-
-var CLIENT_ID = '...';
-var CLIENT_SECRET = '...';
+var CONSUMER_KEY = 'tYRP6vIZuY8K7yzy2vBnnhRxB';
+var CONSUMER_SECRET = 'YoUMS8YOR9UxPEX0ZwYx5esV7rqHXRMnuqPV0xwDGkkAKqEu0G';
 
 /**
  * Authorizes and makes a request to the Twitter Application Only API.
@@ -8,7 +7,7 @@ var CLIENT_SECRET = '...';
 function run() {
   var service = getService();
   if (service.hasAccess()) {
-    var url = 'ttps://api.twitter.com/1.1/application/rate_limit_status.json?resources=help,users,search,statuses';
+    var url = 'https://api.twitter.com/1.1/application/rate_limit_status.json?resources=help,users,search,statuses';
     var response = UrlFetchApp.fetch(url, {
       headers: {
         Authorization: 'Bearer ' + service.getAccessToken()
@@ -37,18 +36,10 @@ function getService() {
       // Set the endpoint URL.
       .setTokenUrl('https://api.twitter.com/oauth2/token')
 
-      // Set the client ID and secret.
-      .setClientId(CLIENT_ID)
-      .setClientSecret(CLIENT_SECRET)
+      // Set the consumer key and secret.
+      .setConsumerKey(CONSUMER_KEY)
+      .setConsumerSecret(CONSUMER_SECRET)
 
       // Set the property store where authorized tokens should be persisted.
-      .setPropertyStore(PropertiesService.getScriptProperties())
-
-      // Set additional headers required by the Twitter Application Only.
-      .setTokenHeaders({
-        'Authorization': 'Basic ' + Utilities.base64Encode(CLIENT_ID + ':' + CLIENT_SECRET)
-      })
-
-      // grant_type REQUIRED for this type requests. Value MUST be set to "client_credentials".
-      .setParam('grant_type', 'client_credentials');
+      .setPropertyStore(PropertiesService.getScriptProperties());
 }
