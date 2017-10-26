@@ -1,5 +1,6 @@
 /**
- * Saleforce's Auth flow https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/quickstart_oauth.htm
+ * Saleforce Auth flow
+ * @see https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/quickstart_oauth.htm
  */
 
 var CLIENT_ID = '...';
@@ -12,8 +13,8 @@ function run() {
   var service = getService();
   if (service.hasAccess()) {
     // GET requests require access_token parameter
-
-    var response = UrlFetchApp.fetch(service.getToken().instance_url + '/services/data/v24.0/chatter/users/me', {
+    var url = service.getToken().instance_url + '/services/data/v24.0/chatter/users/me';
+    var response = UrlFetchApp.fetch(url, {
       headers: {
         Authorization: 'Bearer ' + service.getAccessToken()
       }
@@ -22,8 +23,7 @@ function run() {
     Logger.log(JSON.stringify(result, null, '  '));
   } else {
     var authorizationUrl = service.getAuthorizationUrl();
-    Logger.log('Open the following URL and re-run the script: %s',
-        authorizationUrl);
+    Logger.log('Open the following URL and re-run the script: ' + authorizationUrl);
   }
 }
 
@@ -65,14 +65,6 @@ function authCallback(request) {
   if (authorized) {
     return HtmlService.createHtmlOutput('Success!');
   } else {
-    return HtmlService.createHtmlOutput('Denied');
+    return HtmlService.createHtmlOutput('Denied.');
   }
-}
-
-/**
- * Logs the redict URI to register in the Saleforce Apps Page.
- */
-function logRedirectUri() {
-  var service = getService();
-  Logger.log(service.getRedirectUri());
 }
