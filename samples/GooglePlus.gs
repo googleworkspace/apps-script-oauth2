@@ -66,7 +66,7 @@ function authCallback(request) {
   if (authorized) {
     return HtmlService.createHtmlOutput('Success!');
   } else {
-    return HtmlService.createHtmlOutput('Denied');
+    return HtmlService.createHtmlOutput('Denied.');
   }
 }
 
@@ -77,3 +77,4 @@ function logRedirectUri() {
   var service = getService();
   Logger.log(service.getRedirectUri());
 }
+

@@ -44,7 +44,7 @@ function getService() {
       // Set the endpoint URLs.
       .setAuthorizationBaseUrl('https://'.concat(SUBDOMAIN, '.zendesk.com/oauth/authorizations/new'))
       .setTokenUrl('https://'.concat(SUBDOMAIN, '.zendesk.com/oauth/tokens'))
-      
+
       // Set scope (required by Zendesk)
       .setScope('read')
 
@@ -69,6 +69,14 @@ function authCallback(request) {
   if (authorized) {
     return HtmlService.createHtmlOutput('Success!');
   } else {
-    return HtmlService.createHtmlOutput('Denied');
+    return HtmlService.createHtmlOutput('Denied.');
   }
+}
+
+/**
+ * Logs the redict URI to register.
+ */
+function logRedirectUri() {
+  var service = getService();
+  Logger.log(service.getRedirectUri());
 }

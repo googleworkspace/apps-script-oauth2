@@ -23,7 +23,8 @@ function run() {
     Logger.log(JSON.stringify(result, null, '  '));
   } else {
     var authorizationUrl = service.getAuthorizationUrl();
-    Logger.log('Open the following URL and re-run the script: ' + authorizationUrl);
+    Logger.log('Open the following URL and re-run the script: %s',
+        authorizationUrl);
   }
 }
 
@@ -67,4 +68,12 @@ function authCallback(request) {
   } else {
     return HtmlService.createHtmlOutput('Denied.');
   }
+}
+
+/**
+ * Logs the redict URI to register.
+ */
+function logRedirectUri() {
+  var service = getService();
+  Logger.log(service.getRedirectUri());
 }
