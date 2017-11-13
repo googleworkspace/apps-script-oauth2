@@ -1,6 +1,7 @@
 var assert = require('chai').assert;
 var _ = require('underscore');
 var gas = require('gas-local');
+var MockUrlFetchApp = require('./mocks/urlfetchapp');
 var MockProperties = require('./mocks/properties');
 var MockCache = require('./mocks/cache');
 
@@ -14,7 +15,8 @@ var mocks = {
     getScriptId: function() {
       return '12345';
     }
-  }
+  },
+  UrlFetchApp: new MockUrlFetchApp()
 };
 var options = {
   filter: function(f) {
@@ -113,6 +115,33 @@ describe('Service', function() {
       assert.notExists(service.token_);
       assert.notExists(cache.get(key));
       assert.notExists(properties.getProperty(key));
+    });
+  });
+
+  describe('#hasAccess()', function() {
+    it('should use the lock to prevent concurrend access', function() {
+      var token = {
+        granted_time: 0,
+        expires_in: 0,
+        refresh_token: 'bar'
+      };
+      var properties = new MockProperties({
+        'oauth2.test': JSON.stringify(token)
+      });
+
+      mocks.UrlFetchApp.delay = 1000;
+      mocks.UrlFetchApp.result = JSON.stringify({
+        access_token: 'foo'
+      });
+
+      var executions = _.range(2).map(function() {
+        var service = OAuth2.createService('test')
+          .setPropertyStore(properties)
+          .setLock(new MockLock());
+        return new Promise((resolve) => resolve(service.hasAccess()));
+      });
+
+      Promise.all(executions);
     });
   });
 });

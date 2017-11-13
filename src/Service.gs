@@ -45,6 +45,20 @@ var Service_ = function(serviceName) {
 Service_.EXPIRATION_BUFFER_SECONDS_ = 60;
 
 /**
+ * The number of seconds that a token should remain in the cache.
+ * @type {number}
+ * @private
+ */
+Service_.CACHE_EXPIRATION_SECONDS_ = 6 * 60 * 60;
+
+/**
+ * The number of seconds that a token should remain in the cache.
+ * @type {number}
+ * @private
+ */
+Service_.LOCK_EXPIRATION_MILLISECONDS_ = 30 * 1000;
+
+/**
  * Sets the service's authorization base URL (required). For Google services this URL should be
  * https://accounts.google.com/o/oauth2/auth.
  * @param {string} authorizationBaseUrl The authorization endpoint base URL.
@@ -170,6 +184,18 @@ Service_.prototype.setPropertyStore = function(propertyStore) {
  */
 Service_.prototype.setCache = function(cache) {
   this.cache_ = cache;
+  return this;
+};
+
+/**
+ * Sets the lock to use when checking and refreshing credentials (optional). Using a lock will
+ * ensure that only one execution will be able to access the stored credentials at a time. This can
+ * prevent race conditions that arise when two executions attempt to refresh an expired token.
+ * @param {LockService.Lock} cache The lock to use when accessing credentials.
+ * @return {Service_} This service, for chaining.
+ */
+Service_.prototype.setLock = function(lock) {
+  this.lock_ = lock;
   return this;
 };
 
@@ -329,6 +355,10 @@ Service_.prototype.handleCallback = function(callbackRequest) {
  * @return {boolean} true if the user has access to the service, false otherwise.
  */
 Service_.prototype.hasAccess = function() {
+  if (this.lock_) {
+    this.lock_.waitLock(Service_.LOCK_EXPIRATION_MILLISECONDS_);
+  }
+  var result = true;
   var token = this.getToken();
   if (!token || this.isExpired_(token)) {
     if (token && token.refresh_token) {
@@ -336,20 +366,21 @@ Service_.prototype.hasAccess = function() {
         this.refresh();
       } catch (e) {
         this.lastError_ = e;
-        return false;
+        result = false;
       }
     } else if (this.privateKey_) {
       try {
         this.exchangeJwt_();
       } catch (e) {
         this.lastError_ = e;
-        return false;
+        result = false;
       }
-    } else {
-      return false;
     }
   }
-  return true;
+  if (this.lock_) {
+    this.lock_.releaseLock();
+  }
+  return result;
 };
 
 /**
@@ -458,6 +489,9 @@ Service_.prototype.parseToken_ = function(content) {
  * requested when the token was authorized.
  */
 Service_.prototype.refresh = function() {
+  if (this.lock_) {
+    this.lock_.waitLock(Service_.LOCK_EXPIRATION_MILLISECONDS_);
+  }
   validate_({
     'Client ID': this.clientId_,
     'Client Secret': this.clientSecret_,
@@ -494,6 +528,9 @@ Service_.prototype.refresh = function() {
     newToken.refresh_token = token.refresh_token;
   }
   this.saveToken_(newToken);
+  if (this.lock_) {
+    this.lock_.releaseLock();
+  }
 };
 
 /**
@@ -509,7 +546,7 @@ Service_.prototype.saveToken_ = function(token) {
   var value = JSON.stringify(token);
   this.propertyStore_.setProperty(key, value);
   if (this.cache_) {
-    this.cache_.put(key, value, 21600);
+    this.cache_.put(key, value, Service_.CACHE_EXPIRATION_SECONDS_);
   }
   this.token_ = token;
 };
@@ -541,7 +578,7 @@ Service_.prototype.getToken = function() {
   // Check PropertiesService store.
   if ((token = this.propertyStore_.getProperty(key))) {
     if (this.cache_) {
-      this.cache_.put(key, token, 21600);
+      this.cache_.put(key, token, Service_.CACHE_EXPIRATION_SECONDS_);
     }
     token = JSON.parse(token);
     this.token_ = token;
