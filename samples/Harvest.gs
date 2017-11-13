@@ -2,15 +2,19 @@ var CLIENT_ID = '...';
 var CLIENT_SECRET = '...';
 
 /**
- * Authorizes and makes a request to the Google+ API.
+ * Authorizes and makes a request to the Harvest API.
  */
 function run() {
   var service = getService();
   if (service.hasAccess()) {
-    var url = 'https://www.googleapis.com/plus/v1/people/me';
+    var accountId = PropertiesService.getUserProperties()
+        .getProperty('Harvest-Account-Id');
+    var url = 'https://api.harvestapp.com/v2/users/me';
     var response = UrlFetchApp.fetch(url, {
       headers: {
-        Authorization: 'Bearer ' + service.getAccessToken()
+        'Authorization': 'Bearer ' + service.getAccessToken(),
+        'User-Agent': 'Apps Script Sample',
+        'Harvest-Account-Id': accountId
       }
     });
     var result = JSON.parse(response.getContentText());
@@ -34,27 +38,21 @@ function reset() {
  * Configures the service.
  */
 function getService() {
-  return OAuth2.createService('GooglePlus')
+  return OAuth2.createService('Harvest')
       // Set the endpoint URLs.
-      .setAuthorizationBaseUrl('https://accounts.google.com/o/oauth2/auth')
-      .setTokenUrl('https://accounts.google.com/o/oauth2/token')
+      .setAuthorizationBaseUrl('https://id.getharvest.com/oauth2/authorize')
+      .setTokenUrl('https://id.getharvest.com/api/v1/oauth2/token')
 
       // Set the client ID and secret.
       .setClientId(CLIENT_ID)
       .setClientSecret(CLIENT_SECRET)
 
-      // Set the name of the callback function that should be invoked to complete
-      // the OAuth flow.
+      // Set the name of the callback function that should be invoked to
+      // complete the OAuth flow.
       .setCallbackFunction('authCallback')
 
       // Set the property store where authorized tokens should be persisted.
       .setPropertyStore(PropertiesService.getUserProperties())
-
-      // Set the scope and additional Google-specific parameters.
-      .setScope('profile')
-      .setParam('access_type', 'offline')
-      .setParam('approval_prompt', 'force')
-      .setParam('login_hint', Session.getActiveUser().getEmail());
 }
 
 /**
@@ -64,6 +62,13 @@ function authCallback(request) {
   var service = getService();
   var authorized = service.handleCallback(request);
   if (authorized) {
+    // Gets the authorized account ID from the scope string. Assumes the
+    // application is configured to work with single accounts. Has the format
+    // "harvest:{ACCOUNT_ID}".
+    var scope = request.parameter['scope'];
+    var accountId = scope.split(':')[1];
+    PropertiesService.getUserProperties()
+        .setProperty('Harvest-Account-Id', accountId);
     return HtmlService.createHtmlOutput('Success!');
   } else {
     return HtmlService.createHtmlOutput('Denied.');
@@ -71,10 +76,9 @@ function authCallback(request) {
 }
 
 /**
- * Logs the redict URI to register in the Google Developers Console.
+ * Logs the redict URI to register.
  */
 function logRedirectUri() {
   var service = getService();
   Logger.log(service.getRedirectUri());
 }
-

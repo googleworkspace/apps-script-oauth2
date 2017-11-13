@@ -1,20 +1,26 @@
+/**
+ * Saleforce Auth flow
+ * @see https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/quickstart_oauth.htm
+ */
+
 var CLIENT_ID = '...';
 var CLIENT_SECRET = '...';
 
 /**
- * Authorizes and makes a request to the Google+ API.
+ * Authorizes and makes a request to the Saleforce API.
  */
 function run() {
   var service = getService();
   if (service.hasAccess()) {
-    var url = 'https://www.googleapis.com/plus/v1/people/me';
+    // GET requests require access_token parameter
+    var url = service.getToken().instance_url + '/services/data/v24.0/chatter/users/me';
     var response = UrlFetchApp.fetch(url, {
       headers: {
         Authorization: 'Bearer ' + service.getAccessToken()
       }
     });
     var result = JSON.parse(response.getContentText());
-    Logger.log(JSON.stringify(result, null, 2));
+    Logger.log(JSON.stringify(result, null, '  '));
   } else {
     var authorizationUrl = service.getAuthorizationUrl();
     Logger.log('Open the following URL and re-run the script: %s',
@@ -34,10 +40,10 @@ function reset() {
  * Configures the service.
  */
 function getService() {
-  return OAuth2.createService('GooglePlus')
+  return OAuth2.createService('Saleforce')
       // Set the endpoint URLs.
-      .setAuthorizationBaseUrl('https://accounts.google.com/o/oauth2/auth')
-      .setTokenUrl('https://accounts.google.com/o/oauth2/token')
+      .setAuthorizationBaseUrl('https://login.salesforce.com/services/oauth2/authorize')
+      .setTokenUrl('https://login.salesforce.com/services/oauth2/token')
 
       // Set the client ID and secret.
       .setClientId(CLIENT_ID)
@@ -48,13 +54,7 @@ function getService() {
       .setCallbackFunction('authCallback')
 
       // Set the property store where authorized tokens should be persisted.
-      .setPropertyStore(PropertiesService.getUserProperties())
-
-      // Set the scope and additional Google-specific parameters.
-      .setScope('profile')
-      .setParam('access_type', 'offline')
-      .setParam('approval_prompt', 'force')
-      .setParam('login_hint', Session.getActiveUser().getEmail());
+      .setPropertyStore(PropertiesService.getUserProperties());
 }
 
 /**
@@ -71,10 +71,9 @@ function authCallback(request) {
 }
 
 /**
- * Logs the redict URI to register in the Google Developers Console.
+ * Logs the redict URI to register.
  */
 function logRedirectUri() {
   var service = getService();
   Logger.log(service.getRedirectUri());
 }
-

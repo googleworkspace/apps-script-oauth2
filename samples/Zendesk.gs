@@ -1,13 +1,19 @@
+/*
+* Zendesk OAuth Guide:
+* https://support.zendesk.com/hc/en-us/articles/203663836
+*/
+
 var CLIENT_ID = '...';
 var CLIENT_SECRET = '...';
+var SUBDOMAIN = '...'
 
 /**
- * Authorizes and makes a request to the Google+ API.
+ * Authorizes and makes a request to the Zendesk API.
  */
 function run() {
   var service = getService();
   if (service.hasAccess()) {
-    var url = 'https://www.googleapis.com/plus/v1/people/me';
+    var url = 'https://'.concat(SUBDOMAIN, '.zendesk.com/api/v2/tickets/recent.json');
     var response = UrlFetchApp.fetch(url, {
       headers: {
         Authorization: 'Bearer ' + service.getAccessToken()
@@ -34,10 +40,13 @@ function reset() {
  * Configures the service.
  */
 function getService() {
-  return OAuth2.createService('GooglePlus')
+  return OAuth2.createService('Zendesk')
       // Set the endpoint URLs.
-      .setAuthorizationBaseUrl('https://accounts.google.com/o/oauth2/auth')
-      .setTokenUrl('https://accounts.google.com/o/oauth2/token')
+      .setAuthorizationBaseUrl('https://'.concat(SUBDOMAIN, '.zendesk.com/oauth/authorizations/new'))
+      .setTokenUrl('https://'.concat(SUBDOMAIN, '.zendesk.com/oauth/tokens'))
+
+      // Set scope (required by Zendesk)
+      .setScope('read')
 
       // Set the client ID and secret.
       .setClientId(CLIENT_ID)
@@ -49,12 +58,6 @@ function getService() {
 
       // Set the property store where authorized tokens should be persisted.
       .setPropertyStore(PropertiesService.getUserProperties())
-
-      // Set the scope and additional Google-specific parameters.
-      .setScope('profile')
-      .setParam('access_type', 'offline')
-      .setParam('approval_prompt', 'force')
-      .setParam('login_hint', Session.getActiveUser().getEmail());
 }
 
 /**
@@ -71,10 +74,9 @@ function authCallback(request) {
 }
 
 /**
- * Logs the redict URI to register in the Google Developers Console.
+ * Logs the redict URI to register.
  */
 function logRedirectUri() {
   var service = getService();
   Logger.log(service.getRedirectUri());
 }
-

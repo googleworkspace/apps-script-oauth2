@@ -412,11 +412,12 @@ Service_.prototype.reset = function() {
   validate_({
     'Property store': this.propertyStore_
   });
-  var key = this.getPropertyKey_(this.serviceName_);
+  var key = this.getPropertyKey_();
   this.propertyStore_.deleteProperty(key);
   if (this.cache_) {
     this.cache_.remove(key);
   }
+  this.token_ = null;
 };
 
 /**
@@ -543,12 +544,13 @@ Service_.prototype.saveToken_ = function(token) {
   validate_({
     'Property store': this.propertyStore_
   });
-  var key = this.getPropertyKey_(this.serviceName_);
+  var key = this.getPropertyKey_();
   var value = JSON.stringify(token);
   this.propertyStore_.setProperty(key, value);
   if (this.cache_) {
     this.cache_.put(key, value, 21600);
   }
+  this.token_ = token;
 };
 
 /**
@@ -559,22 +561,34 @@ Service_.prototype.getToken = function() {
   validate_({
     'Property store': this.propertyStore_
   });
-  var key = this.getPropertyKey_(this.serviceName_);
+
+  // Check in-memory cache.
+  if (this.token_) {
+    return this.token_;
+  }
+
+  var key = this.getPropertyKey_();
   var token;
-  if (this.cache_) {
-    token = this.cache_.get(key);
+
+  // Check CacheService cache.
+  if (this.cache_ && (token = this.cache_.get(key))) {
+    token = JSON.parse(token);
+    this.token_ = token;
+    return token;
   }
-  if (!token) {
-    token = this.propertyStore_.getProperty(key);
-  }
-  if (token) {
+
+  // Check PropertiesService store.
+  if ((token = this.propertyStore_.getProperty(key))) {
     if (this.cache_) {
       this.cache_.put(key, token, 21600);
     }
-    return JSON.parse(token);
-  } else {
-    return null;
+    token = JSON.parse(token);
+    this.token_ = token;
+    return token;
   }
+
+  // Not found.
+  return null;
 };
 
 /**
@@ -583,8 +597,8 @@ Service_.prototype.getToken = function() {
  * @return {string} The property key.
  * @private
  */
-Service_.prototype.getPropertyKey_ = function(serviceName) {
-  return 'oauth2.' + serviceName;
+Service_.prototype.getPropertyKey_ = function() {
+  return 'oauth2.' + this.serviceName_;
 };
 
 /**

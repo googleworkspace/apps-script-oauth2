@@ -1,5 +1,5 @@
-var CLIENT_ID;
-var CLIENT_SECRET;
+var CLIENT_ID = '...';
+var CLIENT_SECRET = '...';
 
 /**
  * Authorizes and makes a request to the Medium API.
@@ -69,6 +69,14 @@ function authCallback_(request) {
   if (authorized) {
     return HtmlService.createHtmlOutput('Success!');
   } else {
-    return HtmlService.createHtmlOutput('Denied');
+    return HtmlService.createHtmlOutput('Denied.');
   }
+}
+
+/**
+ * Logs the redict URI to register.
+ */
+function logRedirectUri() {
+  var service = getService();
+  Logger.log(service.getRedirectUri());
 }

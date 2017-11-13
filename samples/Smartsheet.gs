@@ -49,10 +49,10 @@ function getService() {
 
       // Set the property store where authorized tokens should be persisted.
       .setPropertyStore(PropertiesService.getUserProperties())
-  
+
       // Scopes to request
       .setScope('READ_SHEETS')
-            
+
       // Set the handler for adding Smartsheet's required SHA hash parameter to the payload:
       .setTokenPayloadHandler(smartsheetTokenHandler)
 }
@@ -66,7 +66,7 @@ function authCallback(request) {
   if (authorized) {
     return HtmlService.createHtmlOutput('Success!');
   } else {
-    return HtmlService.createHtmlOutput('Denied');
+    return HtmlService.createHtmlOutput('Denied.');
   }
 }
 
@@ -94,5 +94,13 @@ function smartsheetTokenHandler(payload) {
   if (payload.client_secret) {
     delete payload.client_secret;
   }
-  return payload;  
+  return payload;
+}
+
+/**
+ * Logs the redict URI to register.
+ */
+function logRedirectUri() {
+  var service = getService();
+  Logger.log(service.getRedirectUri());
 }

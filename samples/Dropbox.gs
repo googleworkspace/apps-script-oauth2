@@ -67,7 +67,7 @@ function authCallback(request) {
   if (authorized) {
     return HtmlService.createHtmlOutput('Success!');
   } else {
-    return HtmlService.createHtmlOutput('Denied');
+    return HtmlService.createHtmlOutput('Denied.');
   }
 }
 
