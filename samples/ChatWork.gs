@@ -9,7 +9,7 @@ function run() {
     if (service.hasAccess()) {
         var response = UrlFetchApp.fetch('https://api.chatwork.com/v2/me', {
             headers: {
-                Authorization: 'Bearer ' + chatWorkService.getAccessToken()
+                Authorization: 'Bearer ' + service.getAccessToken()
             }
         });
         var result = JSON.parse(response.getContentText());
