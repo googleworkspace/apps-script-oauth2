@@ -183,7 +183,7 @@ Service_.prototype.setCache = function(cache) {
  */
 Service_.prototype.setScope = function(scope, opt_separator) {
   var separator = opt_separator || ' ';
-  this.params_.scope = _.isArray(scope) ? scope.join(separator) : scope;
+  this.params_.scope = Array.isArray(scope) ? scope.join(separator) : scope;
   return this;
 };
 

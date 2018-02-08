@@ -1,15 +1,9 @@
 var assert = require('chai').assert;
-var _ = require('underscore');
 var gas = require('gas-local');
 var MockProperties = require('./mocks/properties');
 var MockCache = require('./mocks/cache');
 
 var mocks = {
-  Underscore: {
-    load: function() {
-      return _;
-    }
-  },
   ScriptApp: {
     getScriptId: function() {
       return '12345';
