@@ -54,3 +54,19 @@ function validate_(params) {
 function getTimeInSeconds_(date) {
   return Math.floor(date.getTime() / 1000);
 }
+
+/**
+ * Copy all of the properties in the source objects over to the
+ * destination object, and return the destination object.
+ * @param {Object} destination The combined object.
+ * @param {Object} source The object who's properties are copied to the destination.
+ * @returns {Object} A combined object with the desination and source properties.
+ * @see http://underscorejs.org/#extend
+ */
+function extend_(destination, source) {
+  var keys = Object.keys(source);
+  for (var i = 0; i < keys.length; ++i) {
+    destination[keys[i]] = source[keys[i]];
+  }
+  return destination;
+}
