@@ -21,10 +21,6 @@
  * any required setup.
  */
 
-// Load the Underscore.js library. This library was added using the script
-// ID "1I21uLOwDKdyF3_W_hvh6WXiIKWJWno8yG9lB8lf1VBnZFQ6jAAhyNTRG".
-
-
 /**
  * The supported formats for the returned OAuth2 token.
  * @enum {string}
@@ -264,7 +260,7 @@ Service_.prototype.setCache = function(cache) {
  */
 Service_.prototype.setScope = function(scope, opt_separator) {
   var separator = opt_separator || ' ';
-  this.params_.scope = _.isArray(scope) ? scope.join(separator) : scope;
+  this.params_.scope = Array.isArray(scope) ? scope.join(separator) : scope;
   return this;
 };
 
@@ -766,22 +762,10 @@ function buildUrl_(url, params) {
 function validate_(params) {
   Object.keys(params).forEach(function(name) {
     var value = params[name];
-    if (isEmpty_(value)) {
+    if (!value) {
       throw Utilities.formatString('%s is required.', name);
     }
   });
-}
-
-/**
- * Returns true if the given value is empty, false otherwise. An empty value is one of
- * null, undefined, a zero-length string, a zero-length array or an object with no keys.
- * @param {?} value The value to test.
- * @returns {boolean} True if the value is empty, false otherwise.
- * @private
- */
-function isEmpty_(value) {
-  return value === null || value === undefined ||
-      ((_.isObject(value) || _.isString(value)) && _.isEmpty(value));
 }
 
 /**

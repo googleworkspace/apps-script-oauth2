@@ -17,10 +17,6 @@
  * any required setup.
  */
 
-// Load the Underscore.js library. This library was added using the script
-// ID "1I21uLOwDKdyF3_W_hvh6WXiIKWJWno8yG9lB8lf1VBnZFQ6jAAhyNTRG".
-var _ = Underscore.load();
-
 /**
  * The supported formats for the returned OAuth2 token.
  * @enum {string}
