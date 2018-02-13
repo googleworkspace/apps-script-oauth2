@@ -174,11 +174,11 @@ function makeRequest() {
 }
 ```
 
-## Compatiblity
+## Compatibility
 
 This library was designed to work with any OAuth2 provider, but because of small
 differences in how they implement the standard it may be that some APIs
-aren't compatible. If you find an API that it does't work with, open an issue or
+aren't compatible. If you find an API that it doesn't work with, open an issue or
 fix the problem yourself and make a pull request against the source code.
 
 ## Other features
@@ -271,6 +271,6 @@ there OAuth providers that return important information in the token response.
 ### You do not have permission to call fetch
 
 You are [setting explicit scopes](https://developers.google.com/apps-script/concepts/scopes#setting_explicit_scopes)
-in your manifest file but have forgotton to add the 
+in your manifest file but have forgotten to add the 
 `https://www.googleapis.com/auth/script.external_request` scope used by this library
 (and eventually the `UrlFetchApp` request you are making to an API).
