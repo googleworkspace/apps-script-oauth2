@@ -174,7 +174,7 @@ function makeRequest() {
 }
 ```
 
-## Compatiblity
+## Compatibility
 
 This library was designed to work with any OAuth2 provider, but because of small
 differences in how they implement the standard it may be that some APIs
