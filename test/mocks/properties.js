@@ -1,5 +1,5 @@
-var MockProperties = function() {
-  this.store = {};
+var MockProperties = function(opt_store) {
+  this.store = opt_store || {};
 };
 
 MockProperties.prototype.getProperty = function(key) {

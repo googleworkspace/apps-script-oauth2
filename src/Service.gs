@@ -335,7 +335,6 @@ Service_.prototype.handleCallback = function(callbackRequest) {
   };
   if (this.tokenPayloadHandler_) {
     tokenPayload = this.tokenPayloadHandler_(tokenPayload);
-    Logger.log('Token payload from tokenPayloadHandler: %s', JSON.stringify(tokenPayload));
   }
   var response = UrlFetchApp.fetch(this.tokenUrl_, {
     method: 'post',
@@ -355,9 +354,6 @@ Service_.prototype.handleCallback = function(callbackRequest) {
  * @return {boolean} true if the user has access to the service, false otherwise.
  */
 Service_.prototype.hasAccess = function() {
-  if (this.lock_) {
-    this.lock_.waitLock(Service_.LOCK_EXPIRATION_MILLISECONDS_);
-  }
   var result = true;
   var token = this.getToken();
   if (!token || this.isExpired_(token)) {
@@ -375,10 +371,9 @@ Service_.prototype.hasAccess = function() {
         this.lastError_ = e;
         result = false;
       }
+    } else {
+      result = false;
     }
-  }
-  if (this.lock_) {
-    this.lock_.releaseLock();
   }
   return result;
 };
@@ -489,14 +484,18 @@ Service_.prototype.parseToken_ = function(content) {
  * requested when the token was authorized.
  */
 Service_.prototype.refresh = function() {
-  if (this.lock_) {
-    this.lock_.waitLock(Service_.LOCK_EXPIRATION_MILLISECONDS_);
-  }
   validate_({
     'Client ID': this.clientId_,
     'Client Secret': this.clientSecret_,
     'Token URL': this.tokenUrl_
   });
+
+  // If using locking, lock the service while refreshing.
+  if (this.lock_ && !this.lock_.hasLock()) {
+    this.lock_.waitLock(Service_.LOCK_EXPIRATION_MILLISECONDS_);
+    var releaseLock = true;
+  }
+
   var token = this.getToken();
   if (!token.refresh_token) {
     throw 'Offline access is required.';
@@ -515,7 +514,6 @@ Service_.prototype.refresh = function() {
   };
   if (this.tokenPayloadHandler_) {
     tokenPayload = this.tokenPayloadHandler_(tokenPayload);
-    Logger.log('Token payload from tokenPayloadHandler (refresh): %s', JSON.stringify(tokenPayload));
   }
   var response = UrlFetchApp.fetch(this.tokenUrl_, {
     method: 'post',
@@ -528,7 +526,8 @@ Service_.prototype.refresh = function() {
     newToken.refresh_token = token.refresh_token;
   }
   this.saveToken_(newToken);
-  if (this.lock_) {
+
+  if (this.lock_ && releaseLock) {
     this.lock_.releaseLock();
   }
 };
@@ -565,28 +564,34 @@ Service_.prototype.getToken = function() {
     return this.token_;
   }
 
+  // If using locking, lock the service while retrieving the token.
+  if (this.lock_ && !this.lock_.hasLock()) {
+    this.lock_.waitLock(Service_.LOCK_EXPIRATION_MILLISECONDS_);
+    var releaseLock = true;
+  }
+
   var key = this.getPropertyKey_();
-  var token;
+  var token = null;
 
   // Check CacheService cache.
   if (this.cache_ && (token = this.cache_.get(key))) {
     token = JSON.parse(token);
     this.token_ = token;
-    return token;
-  }
 
   // Check PropertiesService store.
-  if ((token = this.propertyStore_.getProperty(key))) {
+  } else if ((token = this.propertyStore_.getProperty(key))) {
     if (this.cache_) {
       this.cache_.put(key, token, Service_.CACHE_EXPIRATION_SECONDS_);
     }
     token = JSON.parse(token);
     this.token_ = token;
-    return token;
   }
 
-  // Not found.
-  return null;
+  if (this.lock_ && releaseLock) {
+    this.lock_.releaseLock();
+  }
+
+  return token;
 };
 
 /**

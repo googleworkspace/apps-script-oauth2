@@ -1,31 +1,42 @@
+var Fiber = require('fibers');
+
 var locked = false;
+var waitingFibers = [];
 
 var MockLock = function() {
-  this.hasLock = false;
+  this.gotLock = false;
+  this.id = Math.random();
 };
 
-MockCache.prototype.waitLock = function(timeoutInMillis) {
+MockLock.prototype.waitLock = function(timeoutInMillis) {
   var start = new Date();
   do {
-    if (!locked) {
+    if (!locked || this.gotLock) {
       locked = true;
-      this.hasLock = true;
+      this.gotLock = true;
       return;
+    } else {
+      waitingFibers.push(Fiber.current);
+      Fiber.yield();
     }
-  } while (timeDiffInMillis(new Date(), start) > timeoutInMillis);
+  } while (timeDiffInMillis(new Date(), start) < timeoutInMillis);
   throw new Error('Unable to get lock');
 };
 
-MockCache.prototype.releaseLock = function() {
-  if (!this.hasLock) {
-    throw new Error('Not your lock');
-  }
+MockLock.prototype.releaseLock = function() {
   locked = false;
-  this.hasLock = false;
+  this.gotLock = false;
+  if (waitingFibers.length) {
+    waitingFibers.pop().run();
+  }
+};
+
+MockLock.prototype.hasLock = function() {
+  return this.gotLock;
 };
 
 function timeDiffInMillis(a, b) {
   return a.getTime() - b.getTime();
 }
 
-module.exports = MockCache;
+module.exports = MockLock;

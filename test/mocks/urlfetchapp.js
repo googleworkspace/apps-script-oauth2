@@ -1,22 +1,30 @@
+var Future = require('fibers/future'), wait = Future.wait;
+
 var MockUrlFetchApp = function() {
   this.delay = 0;
-  this.result = '';
+  this.resultFunction = () => '';
 };
 
 MockUrlFetchApp.prototype.fetch = function(url, opt_options) {
   var result = this.result;
   var delay = this.delay;
+  console.log('Before sleep')
   if (delay) {
-    await timeout(delay);
+    sleep(delay).wait();
   }
+  console.log('After sleep');
   return {
-    getContentText: () => result,
+    getContentText: () => this.resultFunction(),
     getResponseCode: () => 200
   };
-};
+}
 
-function timeout(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+function sleep(ms) {
+  var future = new Future;
+  setTimeout(function() {
+    future.return();
+  }, ms);
+  return future;
 }
 
 module.exports = MockUrlFetchApp;

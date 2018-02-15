@@ -1,9 +1,13 @@
+var Fiber = require('fibers');
+var Future = require('fibers/future'), wait = Future.wait;
+
 var assert = require('chai').assert;
 var _ = require('underscore');
 var gas = require('gas-local');
 var MockUrlFetchApp = require('./mocks/urlfetchapp');
 var MockProperties = require('./mocks/properties');
 var MockCache = require('./mocks/cache');
+var MockLock = require('./mocks/lock');
 
 var mocks = {
   Underscore: {
@@ -16,7 +20,8 @@ var mocks = {
       return '12345';
     }
   },
-  UrlFetchApp: new MockUrlFetchApp()
+  UrlFetchApp: new MockUrlFetchApp(),
+  __proto__: gas.globalMockDefault
 };
 var options = {
   filter: function(f) {
@@ -119,29 +124,48 @@ describe('Service', function() {
   });
 
   describe('#hasAccess()', function() {
-    it('should use the lock to prevent concurrend access', function() {
+    it('should use the lock to prevent concurrend access', function(done) {
       var token = {
-        granted_time: 0,
-        expires_in: 0,
+        granted_time: 100,
+        expires_in: 100,
         refresh_token: 'bar'
       };
       var properties = new MockProperties({
         'oauth2.test': JSON.stringify(token)
       });
 
-      mocks.UrlFetchApp.delay = 1000;
-      mocks.UrlFetchApp.result = JSON.stringify({
-        access_token: 'foo'
-      });
+      mocks.UrlFetchApp.delay = 100;
+      mocks.UrlFetchApp.resultFunction = () =>
+        JSON.stringify({
+          access_token: Math.random().toString(36)
+        });
 
-      var executions = _.range(2).map(function() {
+      var getAccessToken = function() {
         var service = OAuth2.createService('test')
+          .setClientId('abc')
+          .setClientSecret('def')
+          .setTokenUrl('http://www.example.com')
           .setPropertyStore(properties)
           .setLock(new MockLock());
-        return new Promise((resolve) => resolve(service.hasAccess()));
-      });
+        if (service.hasAccess()) {
+           return service.getAccessToken();
+        } else {
+          throw new Error('No access: ' + service.getLastError());
+        };
+      }.future();
 
-      Promise.all(executions);
+      Future.task(function() {
+        var first = getAccessToken();
+        var second = getAccessToken();
+        Future.wait(first, second);
+        return [first.get(), second.get()];
+      }).resolve(function(err, accessTokens) {
+        if (err) {
+          done(err);
+        }
+        assert.equal(accessTokens[0], accessTokens[1]);
+        done();
+      });
     });
   });
 });
