@@ -24,6 +24,11 @@ code editor:
 Alternatively, you can copy and paste the files in the [`/dist`](dist) directory
 directly into your script project.
 
+If you are [setting explicit scopes](https://developers.google.com/apps-script/concepts/scopes#setting_explicit_scopes)
+in your manifest file, ensure that the following scope is included:
+
+* `https://www.googleapis.com/auth/script.external_request`
+
 ## Redirect URI
 
 Before you can start authenticating against an OAuth2 provider, you usually need
@@ -169,11 +174,11 @@ function makeRequest() {
 }
 ```
 
-## Compatiblity
+## Compatibility
 
 This library was designed to work with any OAuth2 provider, but because of small
 differences in how they implement the standard it may be that some APIs
-aren't compatible. If you find an API that it does't work with, open an issue or
+aren't compatible. If you find an API that it doesn't work with, open an issue or
 fix the problem yourself and make a pull request against the source code.
 
 ## Other features
@@ -260,3 +265,12 @@ registered with the OAuth provider is updated to use the format
 `https://script.google.com/macros/d/{SCRIPT ID}/usercallback`.
 * Version 22 - Renamed `Service.getToken_()` to `Service.getToken()`, since
 there OAuth providers that return important information in the token response.
+
+## Troubleshooting
+
+### You do not have permission to call fetch
+
+You are [setting explicit scopes](https://developers.google.com/apps-script/concepts/scopes#setting_explicit_scopes)
+in your manifest file but have forgotten to add the 
+`https://www.googleapis.com/auth/script.external_request` scope used by this library
+(and eventually the `UrlFetchApp` request you are making to an API).

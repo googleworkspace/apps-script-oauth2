@@ -209,7 +209,7 @@ Service_.prototype.setLock = function(lock) {
  */
 Service_.prototype.setScope = function(scope, opt_separator) {
   var separator = opt_separator || ' ';
-  this.params_.scope = _.isArray(scope) ? scope.join(separator) : scope;
+  this.params_.scope = Array.isArray(scope) ? scope.join(separator) : scope;
   return this;
 };
 
@@ -294,7 +294,7 @@ Service_.prototype.getAuthorizationUrl = function() {
     redirect_uri: redirectUri,
     state: state
   };
-  params = _.extend(params, this.params_);
+  params = extend_(params, this.params_);
   return buildUrl_(this.authorizationBaseUrl_, params);
 };
 
@@ -324,7 +324,7 @@ Service_.prototype.handleCallback = function(callbackRequest) {
     'Accept': this.tokenFormat_
   };
   if (this.tokenHeaders_) {
-    headers = _.extend(headers, this.tokenHeaders_);
+    headers = extend_(headers, this.tokenHeaders_);
   }
   var tokenPayload = {
     code: code,
@@ -504,7 +504,7 @@ Service_.prototype.refresh = function() {
     'Accept': this.tokenFormat_
   };
   if (this.tokenHeaders_) {
-    headers = _.extend(headers, this.tokenHeaders_);
+    headers = extend_(headers, this.tokenHeaders_);
   }
   var tokenPayload = {
       refresh_token: token.refresh_token,
@@ -635,7 +635,7 @@ Service_.prototype.exchangeJwt_ = function() {
     'Accept': this.tokenFormat_
   };
   if (this.tokenHeaders_) {
-    headers = _.extend(headers, this.tokenHeaders_);
+    headers = extend_(headers, this.tokenHeaders_);
   }
   var response = UrlFetchApp.fetch(this.tokenUrl_, {
     method: 'post',

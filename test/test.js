@@ -2,7 +2,6 @@ var Fiber = require('fibers');
 var Future = require('fibers/future'), wait = Future.wait;
 
 var assert = require('chai').assert;
-var _ = require('underscore');
 var gas = require('gas-local');
 var MockUrlFetchApp = require('./mocks/urlfetchapp');
 var MockProperties = require('./mocks/properties');
@@ -10,11 +9,6 @@ var MockCache = require('./mocks/cache');
 var MockLock = require('./mocks/lock');
 
 var mocks = {
-  Underscore: {
-    load: function() {
-      return _;
-    }
-  },
   ScriptApp: {
     getScriptId: function() {
       return '12345';
@@ -29,7 +23,6 @@ var options = {
   }
 };
 var OAuth2 = gas.require('./src', mocks, options);
-
 
 describe('Service', function() {
   describe('#getToken()', function() {
@@ -166,6 +159,25 @@ describe('Service', function() {
         assert.equal(accessTokens[0], accessTokens[1]);
         done();
       });
+    });
+  });
+});
+
+describe('Utilities', function() {
+  describe('#extend_()', function() {
+    var extend_ = OAuth2.extend_;
+    var baseObj = {foo: [3]}; // An object with a non-primitive key-value
+    it('should extend (left) an object', function() {
+      var o = extend_(baseObj, {bar: 2});
+      assert.deepEqual(o, {foo: [3], bar: 2});
+    });
+    it('should extend (right) an object', function() {
+      var o = extend_({bar: 2}, baseObj);
+      assert.deepEqual(o, {foo: [3], bar: 2});
+    });
+    it('should extend (merge) an object', function() {
+      var o = extend_(baseObj, {foo: [100], bar: 2, baz: {}});
+      assert.deepEqual(o, {foo: [100], bar: 2, baz: {}});
     });
   });
 });

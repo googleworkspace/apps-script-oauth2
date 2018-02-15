@@ -46,7 +46,7 @@
 /**
  * Builds a complete URL from a base URL and a map of URL parameters.
  * @param {string} url The base URL.
- * @param {Object.&lt;string, string>} params The URL parameters and values.
+ * @param {Object.&lt;string, string>} params The URL pa
  * @returns {string} The complete URL.
  * @private
  */
@@ -60,28 +60,16 @@ function buildUrl_(url, params) {
 /**
  * Validates that all of the values in the object are non-empty. If an empty value is found,
  * and error is thrown using the key as the name.
- * @param {Object.&lt;string, string>} params The values to validate.
+ * @param {Object.<string, string>} params The values to validate.
  * @private
  */
 function validate_(params) {
   Object.keys(params).forEach(function(name) {
     var value = params[name];
-    if (isEmpty_(value)) {
+    if (!value) {
       throw Utilities.formatString('%s is required.', name);
     }
   });
-}
-
-/**
- * Returns true if the given value is empty, false otherwise. An empty value is one of
- * null, undefined, a zero-length string, a zero-length array or an object with no keys.
- * @param {?} value The value to test.
- * @returns {boolean} True if the value is empty, false otherwise.
- * @private
- */
-function isEmpty_(value) {
-  return value === null || value === undefined ||
-      ((_.isObject(value) || _.isString(value)) &amp;&amp; _.isEmpty(value));
 }
 
 /**

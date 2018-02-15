@@ -22,16 +22,11 @@
     "gulp-clean": "^0.3.2",
     "gulp-concat": "^2.6.1",
     "gulp-expose": "0.0.7",
-    "gulp-if": "^1.2.5",
     "gulp-jshint": "^1.12.0",
     "gulp-rename": "^1.2.2",
-    "gulp-strip-line": "0.0.1",
     "jsdoc": "^3.5.5",
     "jshint-stylish": "^2.2.1",
     "mocha": "^4.1.0"
-  },
-  "dependencies": {
-    "underscore": "^1.8.3"
   },
   "scripts": {
     "postversion": "gulp dist",

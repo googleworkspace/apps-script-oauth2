@@ -39,22 +39,10 @@ function buildUrl_(url, params) {
 function validate_(params) {
   Object.keys(params).forEach(function(name) {
     var value = params[name];
-    if (isEmpty_(value)) {
+    if (!value) {
       throw Utilities.formatString('%s is required.', name);
     }
   });
-}
-
-/**
- * Returns true if the given value is empty, false otherwise. An empty value is one of
- * null, undefined, a zero-length string, a zero-length array or an object with no keys.
- * @param {?} value The value to test.
- * @returns {boolean} True if the value is empty, false otherwise.
- * @private
- */
-function isEmpty_(value) {
-  return value === null || value === undefined ||
-      ((_.isObject(value) || _.isString(value)) && _.isEmpty(value));
 }
 
 /**
@@ -65,4 +53,20 @@ function isEmpty_(value) {
  */
 function getTimeInSeconds_(date) {
   return Math.floor(date.getTime() / 1000);
+}
+
+/**
+ * Copy all of the properties in the source objects over to the
+ * destination object, and return the destination object.
+ * @param {Object} destination The combined object.
+ * @param {Object} source The object who's properties are copied to the destination.
+ * @returns {Object} A combined object with the desination and source properties.
+ * @see http://underscorejs.org/#extend
+ */
+function extend_(destination, source) {
+  var keys = Object.keys(source);
+  for (var i = 0; i < keys.length; ++i) {
+    destination[keys[i]] = source[keys[i]];
+  }
+  return destination;
 }
