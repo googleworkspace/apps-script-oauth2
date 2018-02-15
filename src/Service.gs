@@ -67,6 +67,17 @@ Service_.prototype.setTokenUrl = function(tokenUrl) {
 };
 
 /**
+ * Sets the service's refresh URL. Some OAuth providers require a different URL
+ * to be used when generating access tokens from a refresh token.
+ * @param {string} refreshUrl The refresh endpoint URL.
+ * @return {Service_} This service, for chaining.
+ */
+Service_.prototype.setRefreshUrl = function(refreshUrl) {
+  this.refreshUrl_ = refreshUrl;
+  return this;
+};
+
+/**
  * Sets the format of the returned token. Default: OAuth2.TOKEN_FORMAT.JSON.
  * @param {OAuth2.TOKEN_FORMAT} tokenFormat The format of the returned token.
  * @return {Service_} This service, for chaining.
@@ -370,15 +381,8 @@ Service_.prototype.getAccessToken = function() {
  * Resets the service, removing access and requiring the service to be re-authorized.
  */
 Service_.prototype.reset = function() {
-  validate_({
-    'Property store': this.propertyStore_
-  });
-  var key = this.getPropertyKey_();
-  this.propertyStore_.deleteProperty(key);
-  if (this.cache_) {
-    this.cache_.remove(key);
-  }
-  this.token_ = null;
+  var storage = this.getStorage();
+  storage.removeValue(null);
 };
 
 /**
@@ -483,7 +487,9 @@ Service_.prototype.refresh = function() {
     tokenPayload = this.tokenPayloadHandler_(tokenPayload);
     Logger.log('Token payload from tokenPayloadHandler (refresh): %s', JSON.stringify(tokenPayload));
   }
-  var response = UrlFetchApp.fetch(this.tokenUrl_, {
+  // Use the refresh URL if specified, otherwise fallback to the token URL.
+  var url = this.refreshUrl_ || this.tokenUrl_;
+  var response = UrlFetchApp.fetch(url, {
     method: 'post',
     headers: headers,
     payload: tokenPayload,
@@ -497,21 +503,31 @@ Service_.prototype.refresh = function() {
 };
 
 /**
+ * Gets the storage layer for this service, used to persist tokens.
+ * Custom values associated with the service can be stored here as well.
+ * The key <code>null</code> is used to to store the token and should not
+ * be used.
+ * @return {Storage} The service's storage.
+ */
+Service_.prototype.getStorage = function() {
+  validate_({
+    'Property store': this.propertyStore_
+  });
+  if (!this.storage_) {
+    var prefix = 'oauth2.' + this.serviceName_;
+    this.storage_ = new Storage(prefix, this.propertyStore_, this.cache_);
+  }
+  return this.storage_;
+};
+
+/**
  * Saves a token to the service's property store and cache.
  * @param {Object} token The token to save.
  * @private
  */
 Service_.prototype.saveToken_ = function(token) {
-  validate_({
-    'Property store': this.propertyStore_
-  });
-  var key = this.getPropertyKey_();
-  var value = JSON.stringify(token);
-  this.propertyStore_.setProperty(key, value);
-  if (this.cache_) {
-    this.cache_.put(key, value, 21600);
-  }
-  this.token_ = token;
+  var storage = this.getStorage();
+  return storage.setValue(null, token);
 };
 
 /**
@@ -519,47 +535,8 @@ Service_.prototype.saveToken_ = function(token) {
  * @return {Object} The token, or null if no token was found.
  */
 Service_.prototype.getToken = function() {
-  validate_({
-    'Property store': this.propertyStore_
-  });
-
-  // Check in-memory cache.
-  if (this.token_) {
-    return this.token_;
-  }
-
-  var key = this.getPropertyKey_();
-  var token;
-
-  // Check CacheService cache.
-  if (this.cache_ && (token = this.cache_.get(key))) {
-    token = JSON.parse(token);
-    this.token_ = token;
-    return token;
-  }
-
-  // Check PropertiesService store.
-  if ((token = this.propertyStore_.getProperty(key))) {
-    if (this.cache_) {
-      this.cache_.put(key, token, 21600);
-    }
-    token = JSON.parse(token);
-    this.token_ = token;
-    return token;
-  }
-
-  // Not found.
-  return null;
-};
-
-/**
- * Generates the property key for a given service name.
- * @param {string} serviceName The name of the service.
- * @return {string} The property key.
- * @private
- */
-Service_.prototype.getPropertyKey_ = function() {
-  return 'oauth2.' + this.serviceName_;
+  var storage = this.getStorage();
+  return storage.getValue(null);
 };
 
 /**
