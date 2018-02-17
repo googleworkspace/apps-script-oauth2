@@ -7,13 +7,11 @@
 var CLIENT_ID = '...';
 var CLIENT_SECRET = '...';
 
-/*
+/**
  * Authorizes and makes a request to the Facebook API.
  */
-
-function run(e) {
+function run() {
   var service = getService();
-  var html = '';
   if (service.hasAccess()) {
     var url = 'https://graph.facebook.com/v2.6/me';
     var response = UrlFetchApp.fetch(url, {
@@ -34,8 +32,7 @@ function run(e) {
  * Reset the authorization state, so that it can be re-tested.
  */
 function reset() {
-  var service = getService();
-  service.reset();
+  getService().reset();
 }
 
 /**
@@ -43,20 +40,20 @@ function reset() {
  */
 function getService() {
   return OAuth2.createService('Facebook')
-      // Set the endpoint URLs.
-      .setAuthorizationBaseUrl('https://www.facebook.com/dialog/oauth')
-      .setTokenUrl('https://graph.facebook.com/v2.6/oauth/access_token')
+    // Set the endpoint URLs.
+    .setAuthorizationBaseUrl('https://www.facebook.com/dialog/oauth')
+    .setTokenUrl('https://graph.facebook.com/v2.6/oauth/access_token')
 
-      // Set the client ID and secret.
-      .setClientId(CLIENT_ID)
-      .setClientSecret(CLIENT_SECRET)
+    // Set the client ID and secret.
+    .setClientId(CLIENT_ID)
+    .setClientSecret(CLIENT_SECRET)
 
-      // Set the name of the callback function that should be invoked to complete
-      // the OAuth flow.
-      .setCallbackFunction('authCallback')
+    // Set the name of the callback function that should be invoked to complete
+    // the OAuth flow.
+    .setCallbackFunction('authCallback')
 
-      // Set the property store where authorized tokens should be persisted.
-      .setPropertyStore(PropertiesService.getUserProperties());
+    // Set the property store where authorized tokens should be persisted.
+    .setPropertyStore(PropertiesService.getUserProperties());
 }
 
 /**
@@ -76,6 +73,5 @@ function authCallback(request) {
  * Logs the redict URI to register.
  */
 function logRedirectUri() {
-  var service = getService();
-  Logger.log(service.getRedirectUri());
+  Logger.log(getService().getRedirectUri());
 }

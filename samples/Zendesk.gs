@@ -5,7 +5,7 @@
 
 var CLIENT_ID = '...';
 var CLIENT_SECRET = '...';
-var SUBDOMAIN = '...'
+var SUBDOMAIN = '...';
 
 /**
  * Authorizes and makes a request to the Zendesk API.
@@ -13,7 +13,8 @@ var SUBDOMAIN = '...'
 function run() {
   var service = getService();
   if (service.hasAccess()) {
-    var url = 'https://'.concat(SUBDOMAIN, '.zendesk.com/api/v2/tickets/recent.json');
+    var url = 'https://'
+        .concat(SUBDOMAIN, '.zendesk.com/api/v2/tickets/recent.json');
     var response = UrlFetchApp.fetch(url, {
       headers: {
         Authorization: 'Bearer ' + service.getAccessToken()
@@ -32,8 +33,7 @@ function run() {
  * Reset the authorization state, so that it can be re-tested.
  */
 function reset() {
-  var service = getService();
-  service.reset();
+  getService().reset();
 }
 
 /**
@@ -42,7 +42,8 @@ function reset() {
 function getService() {
   return OAuth2.createService('Zendesk')
       // Set the endpoint URLs.
-      .setAuthorizationBaseUrl('https://'.concat(SUBDOMAIN, '.zendesk.com/oauth/authorizations/new'))
+      .setAuthorizationBaseUrl(
+          'https://'.concat(SUBDOMAIN, '.zendesk.com/oauth/authorizations/new'))
       .setTokenUrl('https://'.concat(SUBDOMAIN, '.zendesk.com/oauth/tokens'))
 
       // Set scope (required by Zendesk)
@@ -52,12 +53,12 @@ function getService() {
       .setClientId(CLIENT_ID)
       .setClientSecret(CLIENT_SECRET)
 
-      // Set the name of the callback function that should be invoked to complete
-      // the OAuth flow.
+      // Set the name of the callback function that should be invoked to
+      // complete the OAuth flow.
       .setCallbackFunction('authCallback')
 
       // Set the property store where authorized tokens should be persisted.
-      .setPropertyStore(PropertiesService.getUserProperties())
+      .setPropertyStore(PropertiesService.getUserProperties());
 }
 
 /**
@@ -77,6 +78,5 @@ function authCallback(request) {
  * Logs the redict URI to register.
  */
 function logRedirectUri() {
-  var service = getService();
-  Logger.log(service.getRedirectUri());
+  Logger.log(getService().getRedirectUri());
 }

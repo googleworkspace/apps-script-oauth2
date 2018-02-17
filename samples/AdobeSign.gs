@@ -1,5 +1,12 @@
+/*
+ * This sample demonstrates how to configure the library for the Adobe Sign API.
+ * Instructions on how to generate OAuth keys is available here:
+ * https://www.adobe.io/apis/documentcloud/sign/docs/step-by-step-guide/configure-oauth.html
+ */
+
 var CLIENT_ID = '...';
 var CLIENT_SECRET = '...';
+var API_ACCESS_POINT_KEY = 'api_access_point';
 
 /**
  * Authorizes and makes a request to the Adobe Sign API.
@@ -8,7 +15,7 @@ function run() {
   var service = getService();
   if (service.hasAccess()) {
     // Retrieve the API access point from storage.
-    var apiAccessPoint = service.getStorage().getValue('api_access_point');
+    var apiAccessPoint = service.getStorage().getValue(API_ACCESS_POINT_KEY);
     var url = apiAccessPoint + 'api/rest/v5/users/me';
     var response = UrlFetchApp.fetch(url, {
       headers: {
@@ -31,14 +38,13 @@ function run() {
  * Reset the authorization state, so that it can be re-tested.
  */
 function reset() {
-  var service = getService();
-  service.reset();
+  getService().reset();
 }
 
 /**
  * Configures the service.
  */
-function getService(opt_apiAccessPoint) {
+function getService(optApiAccessPoint) {
   var service = OAuth2.createService('AdobeSign')
       // Set the endpoint URLs.
       .setAuthorizationBaseUrl('https://secure.echosign.com/public/oauth')
@@ -57,16 +63,16 @@ function getService(opt_apiAccessPoint) {
 
       // Set the scopes.
       .setScope('user_read');
-  
-  // Set the token and refresh URL using the API access point passed in or 
+
+  // Set the token and refresh URL using the API access point passed in or
   // stored in the token.
-  var apiAccessPoint = opt_apiAccessPoint ||
-      service.getStorage().getValue('api_access_point');
+  var apiAccessPoint = optApiAccessPoint ||
+      service.getStorage().getValue(API_ACCESS_POINT_KEY);
   if (apiAccessPoint) {
     service.setTokenUrl(apiAccessPoint + 'oauth/token');
     service.setRefreshUrl(apiAccessPoint + 'oauth/refresh');
   }
-  
+
   return service;
 }
 
@@ -75,15 +81,15 @@ function getService(opt_apiAccessPoint) {
  */
 function authCallback(request) {
   // Get the API access point specified in the URL parameters.
-  var apiAccessPoint = request.parameter.api_access_point;
+  var apiAccessPoint = request.parameter[API_ACCESS_POINT_KEY];
   var service = getService(apiAccessPoint);
   var authorized = service.handleCallback(request);
   if (authorized) {
     // Save the API access point in the service's storage.
-    service.getStorage().setValue('api_access_point', apiAccessPoint);
+    service.getStorage().setValue(API_ACCESS_POINT_KEY, apiAccessPoint);
     return HtmlService.createHtmlOutput('Success!');
   } else {
-    return HtmlService.createHtmlOutput('Denied');
+    return HtmlService.createHtmlOutput('Denied.');
   }
 }
 
@@ -91,6 +97,5 @@ function authCallback(request) {
  * Logs the redict URI to register in the Dropbox application settings.
  */
 function logRedirectUri() {
-  var service = getService();
-  Logger.log(service.getRedirectUri());
+  Logger.log(getService().getRedirectUri());
 }

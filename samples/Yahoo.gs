@@ -10,7 +10,6 @@ var CLIENT_SECRET = '...';
 /**
 * Authorizes and makes a request to the Yahoo API.
 */
-
 function run() {
   var service = getService();
   if (service.hasAccess()) {
@@ -33,8 +32,7 @@ function run() {
 * Reset the authorization state, so that it can be re-tested.
 */
 function reset() {
-  var service = getService();
-  service.reset();
+  getService().reset();
 }
 
 /**
@@ -75,6 +73,5 @@ function authCallback(request) {
  * Logs the redict URI to register.
  */
 function logRedirectUri() {
-  var service = getService();
-  Logger.log(service.getRedirectUri());
+  Logger.log(getService().getRedirectUri());
 }

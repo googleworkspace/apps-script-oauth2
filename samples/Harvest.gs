@@ -30,8 +30,7 @@ function run() {
  * Reset the authorization state, so that it can be re-tested.
  */
 function reset() {
-  var service = getService();
-  service.reset();
+  getService().reset();
 }
 
 /**
@@ -47,13 +46,13 @@ function getService() {
       .setClientId(CLIENT_ID)
       .setClientSecret(CLIENT_SECRET)
 
-      // Set the name of the callback function that should be invoked to complete
-      // the OAuth flow.
+      // Set the name of the callback function that should be invoked to
+      // complete the OAuth flow.
       .setCallbackFunction('authCallback')
 
       // Set the property store where authorized tokens should be persisted.
       .setPropertyStore(PropertiesService.getUserProperties())
-      .setCache(CacheService.getUserCache())
+      .setCache(CacheService.getUserCache());
 }
 
 /**
@@ -63,8 +62,9 @@ function authCallback(request) {
   var service = getService();
   var authorized = service.handleCallback(request);
   if (authorized) {
-    // Gets the authorized account ID from the scope string. Assumes the application is
-    // configured to work with single accounts. Has the format "harvest:{ACCOUNT_ID}".
+    // Gets the authorized account ID from the scope string. Assumes the
+    // application is configured to work with single accounts. Has the format
+    // "harvest:{ACCOUNT_ID}".
     var scope = request.parameter['scope'];
     var accountId = scope.split(':')[1];
     // Save the account ID in the service's storage.
@@ -79,6 +79,5 @@ function authCallback(request) {
  * Logs the redict URI to register.
  */
 function logRedirectUri() {
-  var service = getService();
-  Logger.log(service.getRedirectUri());
+  Logger.log(getService().getRedirectUri());
 }

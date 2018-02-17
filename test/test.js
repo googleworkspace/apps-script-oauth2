@@ -21,16 +21,16 @@ describe('Service', function() {
   describe('#getToken()', function() {
     it('should return null when no token is stored', function() {
       var service = OAuth2.createService('test')
-        .setPropertyStore(new MockProperties())
-        .setCache(new MockCache());
+          .setPropertyStore(new MockProperties())
+          .setCache(new MockCache());
 
       assert.equal(service.getToken(), null);
     });
 
     it('should return null after the service is reset', function() {
       var service = OAuth2.createService('test')
-        .setPropertyStore(new MockProperties())
-        .setCache(new MockCache());
+          .setPropertyStore(new MockProperties())
+          .setCache(new MockCache());
       var token = {
         access_token: 'foo'
       };
@@ -44,8 +44,8 @@ describe('Service', function() {
     it('should load from the cache', function() {
       var cache = new MockCache();
       var service = OAuth2.createService('test')
-        .setPropertyStore(new MockProperties())
-        .setCache(cache);
+          .setPropertyStore(new MockProperties())
+          .setCache(cache);
       var token = {
         access_token: 'foo'
       };
@@ -57,27 +57,28 @@ describe('Service', function() {
       var cache = new MockCache();
       var properties = new MockProperties();
       var service = OAuth2.createService('test')
-        .setPropertyStore(properties)
-        .setCache(cache);
+          .setPropertyStore(properties)
+          .setCache(cache);
+      var key = 'oauth2.test';
       var token = {
         access_token: 'foo'
       };
-      var key = 'oauth2.test';
       properties.setProperty(key, JSON.stringify(token));
       assert.deepEqual(service.getToken(), token);
       assert.deepEqual(JSON.parse(cache.get(key)), token);
     });
 
-    it('should not hit the cache or properties on subsequent calls', function() {
+    it('should not hit the cache or properties on subsequent calls',
+        function() {
       var cache = new MockCache();
       var properties = new MockProperties();
       var service = OAuth2.createService('test')
-        .setPropertyStore(properties)
-        .setCache(cache);
+          .setPropertyStore(properties)
+          .setCache(cache);
+      var key = 'oauth2.test';
       var token = {
         access_token: 'foo'
       };
-      var key = 'oauth2.test';
       properties.setProperty(key, JSON.stringify(token));
 
       service.getToken();
@@ -96,8 +97,8 @@ describe('Service', function() {
       var cache = new MockCache();
       var properties = new MockProperties();
       var service = OAuth2.createService('test')
-        .setPropertyStore(properties)
-        .setCache(cache);
+          .setPropertyStore(properties)
+          .setCache(cache);
       var token = {
         access_token: 'foo'
       };
@@ -115,12 +116,12 @@ describe('Service', function() {
       var cache = new MockCache();
       var properties = new MockProperties();
       var service = OAuth2.createService('test')
-        .setPropertyStore(properties)
-        .setCache(cache);
+          .setPropertyStore(properties)
+          .setCache(cache);
+      var key = 'oauth2.test';
       var token = {
         access_token: 'foo'
       };
-      var key = 'oauth2.test';
       properties.setProperty(key, JSON.stringify(token));
       cache.put(key, JSON.stringify(token));
       service.token_ = token;

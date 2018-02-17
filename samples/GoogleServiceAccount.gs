@@ -1,4 +1,5 @@
-var PRIVATE_KEY = '-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n';
+var PRIVATE_KEY =
+    '-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n';
 var CLIENT_EMAIL = '...';
 var USER_EMAIL = '...';
 
@@ -25,8 +26,7 @@ function run() {
  * Reset the authorization state, so that it can be re-tested.
  */
 function reset() {
-  var service = getService();
-  service.reset();
+  getService().reset();
 }
 
 /**

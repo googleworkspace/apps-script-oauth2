@@ -17,16 +17,18 @@
  */
 
 /**
- * Creates a new storage instance.
- * @param {string} prefix The prefix to use for keys in the properties and cache.
- * @param {PropertiesService.Properties} properties The properties instance to use.
- * @param {CacheService.Cache} opt_cache The optional cache instance to use.
+ * Creates a new storage instance, used to persist token data and access it.
+ * @param {string} prefix The prefix to use for keys in the properties and
+ *     cache.
+ * @param {PropertiesService.Properties} properties The properties instance to
+ *     use.
+ * @param {CacheService.Cache} [optCache] The optional cache instance to use.
  * @constructor
  */
-function Storage(prefix, properties, opt_cache) {
+function Storage(prefix, properties, optCache) {
   this.prefix_ = prefix;
   this.properties_ = properties;
-  this.cache_ = opt_cache;
+  this.cache_ = optCache;
   this.memory_ = {};
 }
 
@@ -42,15 +44,16 @@ Storage.CACHE_EXPIRATION_TIME_SECONDS = 21600;
  * @param {string} key The key.
  * @return {*} The stored value.
  */
-Storage.prototype.getValue = function(key) { 
+Storage.prototype.getValue = function(key) {
   // Check memory.
   if (this.memory_[key]) {
     return this.memory_[key];
   }
-  
+
   var prefixedKey = this.getPrefixedKey_(key);
-  var jsonValue, value;
-  
+  var jsonValue;
+  var value;
+
   // Check cache.
   if (this.cache_ && (jsonValue = this.cache_.get(prefixedKey))) {
     value = JSON.parse(jsonValue);
@@ -61,7 +64,8 @@ Storage.prototype.getValue = function(key) {
   // Check properties.
   if ((jsonValue = this.properties_.getProperty(prefixedKey))) {
     if (this.cache_) {
-      this.cache_.put(prefixedKey, jsonValue, Storage.CACHE_EXPIRATION_TIME_SECONDS);
+      this.cache_.put(prefixedKey,
+          jsonValue, Storage.CACHE_EXPIRATION_TIME_SECONDS);
     }
     value = JSON.parse(jsonValue);
     this.memory_[key] = value;
@@ -82,7 +86,8 @@ Storage.prototype.setValue = function(key, value) {
   var jsonValue = JSON.stringify(value);
   this.properties_.setProperty(prefixedKey, jsonValue);
   if (this.cache_) {
-    this.cache_.put(prefixedKey, jsonValue, Storage.CACHE_EXPIRATION_TIME_SECONDS);
+    this.cache_.put(prefixedKey, jsonValue,
+        Storage.CACHE_EXPIRATION_TIME_SECONDS);
   }
   this.memory_[key] = value;
 };

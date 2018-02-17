@@ -38,7 +38,6 @@ function reset() {
  * `state`.
  */
 function getService_() {
-
   return OAuth2.createService('Strava')
       // Set the endpoint URLs.
       .setAuthorizationBaseUrl('https://www.strava.com/oauth/authorize')
@@ -48,8 +47,8 @@ function getService_() {
       .setClientId(CLIENT_ID)
       .setClientSecret(CLIENT_SECRET)
 
-      // Set the name of the callback function that should be invoked to complete
-      // the OAuth flow.
+      // Set the name of the callback function that should be invoked to
+      // complete the OAuth flow.
       .setCallbackFunction('authCallback_')
 
       // Set the property store where authorized tokens should be persisted.
@@ -73,6 +72,5 @@ function authCallback_(request) {
  * Logs the redict URI to register.
  */
 function logRedirectUri() {
-  var service = getService();
-  Logger.log(service.getRedirectUri());
+  Logger.log(getService().getRedirectUri());
 }

@@ -25,8 +25,7 @@ function run() {
  * Reset the authorization state, so that it can be re-tested.
  */
 function reset() {
-  var service = getService();
-  service.reset();
+  getService().reset();
 }
 
 /**
@@ -36,7 +35,8 @@ function getService() {
   var scope = 'users.profile.me:read rooms.messages:read';
   return OAuth2.createService('ChatWork')
     // Set the endpoint URLs.
-    .setAuthorizationBaseUrl('https://www.chatwork.com/packages/oauth2/login.php')
+    .setAuthorizationBaseUrl(
+        'https://www.chatwork.com/packages/oauth2/login.php')
     .setTokenUrl('https://oauth.chatwork.com/token')
 
     // Set the client ID and secret.
@@ -50,7 +50,8 @@ function getService() {
     .setScope(scope)
 
     .setTokenHeaders({
-      'Authorization': 'Basic ' + Utilities.base64Encode(CLIENT_ID + ':' + CLIENT_SECRET)
+      'Authorization': 'Basic ' +
+          Utilities.base64Encode(CLIENT_ID + ':' + CLIENT_SECRET)
     })
     // Avoid "invalid_client error".
     // This service does not support form field authentication.
@@ -80,6 +81,5 @@ function authCallback(request) {
  * Logs the redict URI to register.
  */
 function logRedirectUri() {
-  var service = getService();
-  Logger.log(service.getRedirectUri());
+  Logger.log(getService().getRedirectUri());
 }
