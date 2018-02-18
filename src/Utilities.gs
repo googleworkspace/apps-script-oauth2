@@ -13,7 +13,7 @@
 // limitations under the License.
 
 /**
- * @fileoverview Contains utility methods used by the library.
+ * @file Contains utility methods used by the library.
  */
 
 /* exported buildUrl_ */

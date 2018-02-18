@@ -4,7 +4,7 @@ var MockCache = function() {
 };
 
 MockCache.prototype.get = function(key) {
-  this.counter++;
+  ++this.counter;
   return this.store[key];
 };
 

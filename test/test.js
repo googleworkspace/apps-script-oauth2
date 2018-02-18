@@ -84,7 +84,7 @@ describe('Service', function() {
       service.getToken();
       var cacheStart = cache.counter;
       var propertiesStart = properties.counter;
-      for (var i = 0; i < 10; i++) {
+      for (var i = 0; i < 10; ++i) {
         service.getToken();
       }
       assert.equal(cache.counter, cacheStart);
@@ -102,7 +102,6 @@ describe('Service', function() {
       var token = {
         access_token: 'foo'
       };
-
       service.saveToken_(token);
 
       var key = 'oauth2.test';

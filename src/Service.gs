@@ -13,7 +13,7 @@
 // limitations under the License.
 
 /**
- * @fileoverview Contains the Service_ class.
+ * @file Contains the Service_ class.
  */
 
 // Disable JSHint warnings for the use of eval(), since it's required to prevent
@@ -396,8 +396,7 @@ Service_.prototype.getAccessToken = function() {
  * re-authorized.
  */
 Service_.prototype.reset = function() {
-  var storage = this.getStorage();
-  storage.removeValue(null);
+  this.getStorage().removeValue(null);
 };
 
 /**
@@ -529,7 +528,7 @@ Service_.prototype.getStorage = function() {
   });
   if (!this.storage_) {
     var prefix = 'oauth2.' + this.serviceName_;
-    this.storage_ = new Storage(prefix, this.propertyStore_, this.cache_);
+    this.storage_ = new Storage_(prefix, this.propertyStore_, this.cache_);
   }
   return this.storage_;
 };
@@ -540,8 +539,7 @@ Service_.prototype.getStorage = function() {
  * @private
  */
 Service_.prototype.saveToken_ = function(token) {
-  var storage = this.getStorage();
-  storage.setValue(null, token);
+  this.getStorage().setValue(null, token);
 };
 
 /**
@@ -549,8 +547,7 @@ Service_.prototype.saveToken_ = function(token) {
  * @return {Object} The token, or null if no token was found.
  */
 Service_.prototype.getToken = function() {
-  var storage = this.getStorage();
-  return storage.getValue(null);
+  return this.getStorage().getValue(null);
 };
 
 /**

@@ -17,7 +17,7 @@
 // limitations under the License.
 
 /**
- * @fileoverview Contains the methods exposed by the library, and performs
+ * @file Contains the methods exposed by the library, and performs
  * any required setup.
  */
 
@@ -96,7 +96,7 @@ if (typeof module === 'object') {
 // limitations under the License.
 
 /**
- * @fileoverview Contains the Service_ class.
+ * @file Contains the Service_ class.
  */
 
 // Disable JSHint warnings for the use of eval(), since it's required to prevent
@@ -736,7 +736,7 @@ Service_.prototype.createJwt_ = function() {
 // limitations under the License.
 
 /**
- * @fileoverview Contains classes used to persist data and access it.
+ * @file Contains classes used to persist data and access it.
  */
 
 /**
@@ -857,7 +857,7 @@ Storage.prototype.getPrefixedKey_ = function(key) {
 // limitations under the License.
 
 /**
- * @fileoverview Contains utility methods used by the library.
+ * @file Contains utility methods used by the library.
  */
 
 /* exported buildUrl_ */

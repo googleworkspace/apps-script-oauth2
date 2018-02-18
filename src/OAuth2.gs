@@ -13,7 +13,7 @@
 // limitations under the License.
 
 /**
- * @fileoverview Contains the methods exposed by the library, and performs
+ * @file Contains the methods exposed by the library, and performs
  * any required setup.
  */
 

@@ -13,11 +13,12 @@
 // limitations under the License.
 
 /**
- * @fileoverview Contains classes used to persist data and access it.
+ * @file Contains classes used to persist data and access it.
  */
 
 /**
- * Creates a new storage instance, used to persist token data and access it.
+ * Creates a new Storage_ instance, which is used to persist OAuth tokens and
+ * related information.
  * @param {string} prefix The prefix to use for keys in the properties and
  *     cache.
  * @param {PropertiesService.Properties} properties The properties instance to
@@ -25,7 +26,7 @@
  * @param {CacheService.Cache} [optCache] The optional cache instance to use.
  * @constructor
  */
-function Storage(prefix, properties, optCache) {
+function Storage_(prefix, properties, optCache) {
   this.prefix_ = prefix;
   this.properties_ = properties;
   this.cache_ = optCache;
@@ -37,14 +38,14 @@ function Storage(prefix, properties, optCache) {
  * @type {number}
  * @private
  */
-Storage.CACHE_EXPIRATION_TIME_SECONDS = 21600;
+Storage_.CACHE_EXPIRATION_TIME_SECONDS = 21600; // 6 hours.
 
 /**
  * Gets a stored value.
  * @param {string} key The key.
  * @return {*} The stored value.
  */
-Storage.prototype.getValue = function(key) {
+Storage_.prototype.getValue = function(key) {
   // Check memory.
   if (this.memory_[key]) {
     return this.memory_[key];
@@ -62,10 +63,10 @@ Storage.prototype.getValue = function(key) {
   }
 
   // Check properties.
-  if ((jsonValue = this.properties_.getProperty(prefixedKey))) {
+  if (jsonValue = this.properties_.getProperty(prefixedKey)) {
     if (this.cache_) {
       this.cache_.put(prefixedKey,
-          jsonValue, Storage.CACHE_EXPIRATION_TIME_SECONDS);
+          jsonValue, Storage_.CACHE_EXPIRATION_TIME_SECONDS);
     }
     value = JSON.parse(jsonValue);
     this.memory_[key] = value;
@@ -81,13 +82,13 @@ Storage.prototype.getValue = function(key) {
  * @param {string} key The key.
  * @param {*} value The value.
  */
-Storage.prototype.setValue = function(key, value) {
+Storage_.prototype.setValue = function(key, value) {
   var prefixedKey = this.getPrefixedKey_(key);
   var jsonValue = JSON.stringify(value);
   this.properties_.setProperty(prefixedKey, jsonValue);
   if (this.cache_) {
     this.cache_.put(prefixedKey, jsonValue,
-        Storage.CACHE_EXPIRATION_TIME_SECONDS);
+        Storage_.CACHE_EXPIRATION_TIME_SECONDS);
   }
   this.memory_[key] = value;
 };
@@ -96,7 +97,7 @@ Storage.prototype.setValue = function(key, value) {
  * Removes a stored value.
  * @param {string} key The key.
  */
-Storage.prototype.removeValue = function(key) {
+Storage_.prototype.removeValue = function(key) {
   var prefixedKey = this.getPrefixedKey_(key);
   this.properties_.deleteProperty(prefixedKey);
   if (this.cache_) {
@@ -111,10 +112,10 @@ Storage.prototype.removeValue = function(key) {
  * @return {string} The key with the prefix applied.
  * @private
  */
-Storage.prototype.getPrefixedKey_ = function(key) {
-  if (!key) {
-    return this.prefix_;
-  } else {
+Storage_.prototype.getPrefixedKey_ = function(key) {
+  if (key) {
     return this.prefix_ + '.' + key;
+  } else {
+    return this.prefix_;
   }
 };

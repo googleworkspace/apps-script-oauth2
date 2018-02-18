@@ -199,9 +199,9 @@
 
 
 <div class="description">
-    Gets an access token for this service. This token can be used in HTTP requests
-to the service's endpoint. This method will throw an error if the user's
-access was not granted or has expired.
+    Gets an access token for this service. This token can be used in HTTP
+requests to the service's endpoint. This method will throw an error if the
+user's access was not granted or has expired.
 </div>
 
 
@@ -410,8 +410,8 @@ name specified, so that the flow may continue.
 
 
 <div class="description">
-    Gets the last error that occurred this execution when trying to automatically refresh
-or generate an access token.
+    Gets the last error that occurred this execution when trying to automatically
+refresh or generate an access token.
 </div>
 
 
@@ -610,7 +610,7 @@ needs to be entered into a configuration screen of your OAuth provider.
     
 
     
-    <h4 class="name" id="getStorage"><span class="type-signature"></span>getStorage<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="Storage.html">Storage</a>}</span></h4>
+    <h4 class="name" id="getStorage"><span class="type-signature"></span>getStorage<span class="signature">()</span><span class="type-signature"> &rarr; {Storage}</span></h4>
     
 
     
@@ -698,7 +698,7 @@ be used.
     </dt>
     <dd>
         
-<span class="param-type"><a href="Storage.html">Storage</a></span>
+<span class="param-type">Storage</span>
 
 
     </dd>
@@ -827,7 +827,8 @@ be used.
 
 
 <div class="description">
-    Completes the OAuth2 flow using the request data passed in to the callback function.
+    Completes the OAuth2 flow using the request data passed in to the callback
+function.
 </div>
 
 
@@ -879,7 +880,8 @@ be used.
 
             
 
-            <td class="description last">The request data recieved from the callback function.</td>
+            <td class="description last">The request data recieved from the callback
+    function.</td>
         </tr>
 
     
@@ -979,9 +981,9 @@ be used.
 
 
 <div class="description">
-    Determines if the service has access (has been authorized and hasn't expired).
-If offline access was granted and the previous token has expired this method attempts to
-generate a new token.
+    Determines if the service has access (has been authorized and hasn't
+expired). If offline access was granted and the previous token has expired
+this method attempts to generate a new token.
 </div>
 
 
@@ -1047,7 +1049,8 @@ generate a new token.
 
         
 <div class="param-desc">
-    true if the user has access to the service, false otherwise.
+    true if the user has access to the service, false
+    otherwise.
 </div>
 
 
@@ -1084,8 +1087,8 @@ generate a new token.
 
 
 <div class="description">
-    Refreshes a token that has expired. This is only possible if offline access was
-requested when the token was authorized.
+    Refreshes a token that has expired. This is only possible if offline access
+was requested when the token was authorized.
 </div>
 
 
@@ -1166,7 +1169,8 @@ requested when the token was authorized.
 
 
 <div class="description">
-    Resets the service, removing access and requiring the service to be re-authorized.
+    Resets the service, removing access and requiring the service to be
+re-authorized.
 </div>
 
 
@@ -1247,7 +1251,8 @@ requested when the token was authorized.
 
 
 <div class="description">
-    Sets the service's authorization base URL (required). For Google services this URL should be
+    Sets the service's authorization base URL (required). For Google services
+this URL should be
 https://accounts.google.com/o/oauth2/auth.
 </div>
 
@@ -1400,9 +1405,10 @@ https://accounts.google.com/o/oauth2/auth.
 
 
 <div class="description">
-    Sets the cache to use when persisting credentials (optional). Using a cache will reduce the need to
-read from the property store and may increase performance. In most cases this should be a private cache,
-but a public cache may be appropriate if you want to share access across users.
+    Sets the cache to use when persisting credentials (optional). Using a cache
+will reduce the need to read from the property store and may increase
+performance. In most cases this should be a private cache, but a public cache
+may be appropriate if you want to share access across users.
 </div>
 
 
@@ -1454,7 +1460,8 @@ but a public cache may be appropriate if you want to share access across users.
 
             
 
-            <td class="description last">The cache to use when persisting credentials.</td>
+            <td class="description last">The cache to use when persisting
+    credentials.</td>
         </tr>
 
     
@@ -1554,10 +1561,11 @@ but a public cache may be appropriate if you want to share access across users.
 
 
 <div class="description">
-    Sets the name of the authorization callback function (required). This is the function that will be
-called when the user completes the authorization flow on the service provider's website.
-The callback accepts a request parameter, which should be passed to this service's
-<code>handleCallback()</code> method to complete the process.
+    Sets the name of the authorization callback function (required). This is the
+function that will be called when the user completes the authorization flow
+on the service provider's website. The callback accepts a request parameter,
+which should be passed to this service's <code>handleCallback()</code> method
+to complete the process.
 </div>
 
 
@@ -1709,13 +1717,14 @@ The callback accepts a request parameter, which should be passed to this service
 
 
 <div class="description">
-    Sets the client ID to use for the OAuth flow (required). You can create client IDs in the
-"Credentials" section of a Google Developers Console project. Although you can
-use any project with this library, it may be convinient to use the project that
-was created for your script. These projects are not visible if you visit the
-console directly, but you can access it by click on the menu item
-"Resources > Advanced Google services" in the Script Editor, and then click on the link
-"Google Developers Console" in the resulting dialog.
+    Sets the client ID to use for the OAuth flow (required). You can create
+client IDs in the "Credentials" section of a Google Developers Console
+project. Although you can use any project with this library, it may be
+convinient to use the project that was created for your script. These
+projects are not visible if you visit the console directly, but you can
+access it by click on the menu item "Resources > Advanced Google services" in
+the Script Editor, and then click on the link "Google Developers Console" in
+the resulting dialog.
 </div>
 
 
@@ -1867,9 +1876,9 @@ console directly, but you can access it by click on the menu item
 
 
 <div class="description">
-    Sets the client secret to use for the OAuth flow (required). See the documentation for
-<code>setClientId()</code> for more information on how to create client IDs
-and secrets.
+    Sets the client secret to use for the OAuth flow (required). See the
+documentation for <code>setClientId()</code> for more information on how to
+create client IDs and secrets.
 </div>
 
 
@@ -2021,8 +2030,8 @@ and secrets.
 
 
 <div class="description">
-    Sets number of minutes that a token obtained through Service Account authorization should be valid.
-Default: 60 minutes.
+    Sets number of minutes that a token obtained through Service Account
+authorization should be valid. Default: 60 minutes.
 </div>
 
 
@@ -2327,8 +2336,9 @@ If not set the client ID will be used instead.
 
 
 <div class="description">
-    Sets an additional parameter to use when constructing the authorization URL (optional). See the documentation
-for your service provider for information on what parameter values they support.
+    Sets an additional parameter to use when constructing the authorization URL
+(optional). See the documentation for your service provider for information
+on what parameter values they support.
 </div>
 
 
@@ -2655,9 +2665,9 @@ for your service provider for information on what parameter values they support.
 
 
 <div class="description">
-    Sets the property store to use when persisting credentials (required). In most cases this should
-be user properties, but document or script properties may be appropriate if you want
-to share access across users.
+    Sets the property store to use when persisting credentials (required). In
+most cases this should be user properties, but document or script properties
+may be appropriate if you want to share access across users.
 </div>
 
 
@@ -2709,7 +2719,8 @@ to share access across users.
 
             
 
-            <td class="description last">The property store to use when persisting credentials.</td>
+            <td class="description last">The property store to use
+    when persisting credentials.</td>
         </tr>
 
     
@@ -2954,7 +2965,7 @@ to be used when generating access tokens from a refresh token.
     
 
     
-    <h4 class="name" id="setScope"><span class="type-signature"></span>setScope<span class="signature">(scope, opt_separator)</span><span class="type-signature"> &rarr; {<a href="Service_.html">Service_</a>}</span></h4>
+    <h4 class="name" id="setScope"><span class="type-signature"></span>setScope<span class="signature">(scope, optSeparator<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Service_.html">Service_</a>}</span></h4>
     
 
     
@@ -2962,9 +2973,9 @@ to be used when generating access tokens from a refresh token.
 
 
 <div class="description">
-    Sets the scope or scopes to request during the authorization flow (optional). If the scope value
-is an array it will be joined using the separator before being sent to the server, which is
-is a space character by default.
+    Sets the scope or scopes to request during the authorization flow (optional).
+If the scope value is an array it will be joined using the separator before
+being sent to the server, which is is a space character by default.
 </div>
 
 
@@ -2987,6 +2998,8 @@ is a space character by default.
 
         <th>Type</th>
 
+        
+        <th>Attributes</th>
         
 
         
@@ -3016,6 +3029,14 @@ is a space character by default.
             </td>
 
             
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -3026,7 +3047,7 @@ is a space character by default.
 
         <tr>
             
-                <td class="name"><code>opt_separator</code></td>
+                <td class="name"><code>optSeparator</code></td>
             
 
             <td class="type">
@@ -3039,10 +3060,21 @@ is a space character by default.
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
-            <td class="description last">The optional separator to use when joining multiple scopes. Default: space.</td>
+            <td class="description last">The optional separator to use when joining
+    multiple scopes. Default: space.</td>
         </tr>
 
     
@@ -3599,7 +3631,8 @@ refreshing the access token.
 
 
 <div class="description">
-    Sets an additional function to invoke on the payload of the access token request.
+    Sets an additional function to invoke on the payload of the access token
+request.
 </div>
 
 
@@ -3651,7 +3684,8 @@ refreshing the access token.
 
             
 
-            <td class="description last">tokenHandler A function to invoke on the payload of the request for an access token.</td>
+            <td class="description last">tokenHandler A function to invoke on the
+    payload of the request for an access token.</td>
         </tr>
 
     
@@ -3751,8 +3785,8 @@ refreshing the access token.
 
 
 <div class="description">
-    Sets the service's token URL (required). For Google services this URL should be
-https://accounts.google.com/o/oauth2/token.
+    Sets the service's token URL (required). For Google services this URL should
+be https://accounts.google.com/o/oauth2/token.
 </div>
 
 
@@ -3906,13 +3940,13 @@ https://accounts.google.com/o/oauth2/token.
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Service_.html">Service_</a></li><li><a href="Storage.html">Storage</a></li></ul><h3>Global</h3><ul><li><a href="global.html#createService">createService</a></li><li><a href="global.html#extend_">extend_</a></li><li><a href="global.html#getRedirectUri">getRedirectUri</a></li><li><a href="global.html#STATE_PARAMETER_LOCATION">STATE_PARAMETER_LOCATION</a></li><li><a href="global.html#TOKEN_FORMAT">TOKEN_FORMAT</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Service_.html">Service_</a></li><li><a href="Storage_.html">Storage_</a></li></ul><h3>Global</h3><ul><li><a href="global.html#createService">createService</a></li><li><a href="global.html#extend_">extend_</a></li><li><a href="global.html#getRedirectUri">getRedirectUri</a></li><li><a href="global.html#STATE_PARAMETER_LOCATION">STATE_PARAMETER_LOCATION</a></li><li><a href="global.html#TOKEN_FORMAT">TOKEN_FORMAT</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Feb 14 2018 22:45:11 GMT-0500 (STD)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sat Feb 17 2018 16:28:49 GMT-0500 (STD)
 </footer>
 
 <script> prettyPrint(); </script>
