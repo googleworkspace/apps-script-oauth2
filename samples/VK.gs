@@ -13,7 +13,8 @@ function run() {
   var service = getService();
   if (service.hasAccess()) {
     // GET requests require access_token parameter
-    var url = 'https://api.vk.com/method/groups.get?access_token=' + service.getAccessToken();
+    var url = 'https://api.vk.com/method/groups.get?access_token=' +
+        service.getAccessToken();
     var response = UrlFetchApp.fetch(url);
     var result = JSON.parse(response.getContentText());
     Logger.log(JSON.stringify(result, null, 2));
@@ -28,8 +29,7 @@ function run() {
  * Reset the authorization state, so that it can be re-tested.
  */
 function reset() {
-  var service = getService();
-  service.reset();
+  getService().reset();
 }
 
 /**
@@ -45,8 +45,8 @@ function getService() {
       .setClientId(CLIENT_ID)
       .setClientSecret(CLIENT_SECRET)
 
-      // Set the name of the callback function that should be invoked to complete
-      // the OAuth flow.
+      // Set the name of the callback function that should be invoked to
+      // complete the OAuth flow.
       .setCallbackFunction('authCallback')
 
       // Set the property store where authorized tokens should be persisted.
@@ -73,6 +73,5 @@ function authCallback(request) {
  * Logs the redict URI to register in the VK Aps Page https://vk.com/apps?act=manage.
  */
 function logRedirectUri() {
-  var service = getService();
-  Logger.log(service.getRedirectUri());
+  Logger.log(getService().getRedirectUri());
 }

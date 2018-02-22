@@ -188,7 +188,8 @@
 
             
 
-            <td class="description last">Pass the state token in the redirect URL, as a workaround for APIs that don't support the state parameter.</td>
+            <td class="description last">Pass the state token in the redirect URL, as a workaround for APIs that
+don't support the state parameter.</td>
         </tr>
 
     
@@ -400,9 +401,9 @@
 
 
 <div class="description">
-    Creates a new OAuth2 service with the name specified. It's usually best to create and
-configure your service once at the start of your script, and then reference them during
-the different phases of the authorization flow.
+    Creates a new OAuth2 service with the name specified. It's usually best to
+create and configure your service once at the start of your script, and then
+reference them during the different phases of the authorization flow.
 </div>
 
 
@@ -546,7 +547,192 @@ the different phases of the authorization flow.
     
 
     
-    <h4 class="name" id="getRedirectUri"><span class="type-signature"></span>getRedirectUri<span class="signature">(scriptID)</span><span class="type-signature"> &rarr; {string}</span></h4>
+    <h4 class="name" id="extend_"><span class="type-signature"></span>extend_<span class="signature">(destination, source)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Copy all of the properties in the source objects over to the
+destination object, and return the destination object.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>destination</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The combined object.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>source</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The object who's properties are copied to the
+    destination.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="http://underscorejs.org/#extend">http://underscorejs.org/#extend</a></li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    A combined object with the desination and source
+    properties.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Object</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="getRedirectUri"><span class="type-signature"></span>getRedirectUri<span class="signature">(scriptId)</span><span class="type-signature"> &rarr; {string}</span></h4>
     
 
     
@@ -591,7 +777,7 @@ needs to be entered into a configuration screen of your OAuth provider.
 
         <tr>
             
-                <td class="name"><code>scriptID</code></td>
+                <td class="name"><code>scriptId</code></td>
             
 
             <td class="type">
@@ -762,7 +948,8 @@ needs to be entered into a configuration screen of your OAuth provider.
 
             
 
-            <td class="description last">A hash of parameters to be sent to the token URL.
+            <td class="description last">A hash of parameters to be sent to the token
+    URL.
                 <h6>Properties</h6>
                 
 
@@ -1003,13 +1190,13 @@ needs to be entered into a configuration screen of your OAuth provider.
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Service_.html">Service_</a></li></ul><h3>Global</h3><ul><li><a href="global.html#createService">createService</a></li><li><a href="global.html#getRedirectUri">getRedirectUri</a></li><li><a href="global.html#STATE_PARAMETER_LOCATION">STATE_PARAMETER_LOCATION</a></li><li><a href="global.html#TOKEN_FORMAT">TOKEN_FORMAT</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Service_.html">Service_</a></li><li><a href="Storage_.html">Storage_</a></li></ul><h3>Global</h3><ul><li><a href="global.html#createService">createService</a></li><li><a href="global.html#extend_">extend_</a></li><li><a href="global.html#getRedirectUri">getRedirectUri</a></li><li><a href="global.html#STATE_PARAMETER_LOCATION">STATE_PARAMETER_LOCATION</a></li><li><a href="global.html#TOKEN_FORMAT">TOKEN_FORMAT</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Feb 07 2018 22:26:04 GMT-0800 (PST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sat Feb 17 2018 16:28:49 GMT-0500 (STD)
 </footer>
 
 <script> prettyPrint(); </script>

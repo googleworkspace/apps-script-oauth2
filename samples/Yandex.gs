@@ -31,8 +31,7 @@ function run() {
  * Reset the authorization state, so that it can be re-tested.
  */
 function reset() {
-  var service = getService();
-  service.reset();
+  getService().reset();
 }
 
 /**
@@ -48,17 +47,12 @@ function getService() {
       .setClientId(CLIENT_ID)
       .setClientSecret(CLIENT_SECRET)
 
-      // Set the name of the callback function that should be invoked to complete
-      // the OAuth flow.
+      // Set the name of the callback function that should be invoked to
+      // complete the OAuth flow.
       .setCallbackFunction('authCallback')
 
       // Set the property store where authorized tokens should be persisted.
-      .setPropertyStore(PropertiesService.getUserProperties())
-
-      // Set the scope and additional specific parameters if its are supported
-      //.setScope() // There is no need to pass a scope for the passport getting. But you need to provide the scope for specific API
-      .setParam('access_type', 'offline')
-      .setParam('approval_prompt', 'force');
+      .setPropertyStore(PropertiesService.getUserProperties());
 }
 
 /**
@@ -78,6 +72,5 @@ function authCallback(request) {
  * Logs the redict URI to register in the Yandex oAuth Page https://oauth.yandex.ru/client/new.
  */
 function logRedirectUri() {
-  var service = getService();
-  Logger.log(service.getRedirectUri());
+  Logger.log(getService().getRedirectUri());
 }

@@ -13,14 +13,15 @@
 // limitations under the License.
 
 /**
- * @fileoverview Contains utility methods used by the library.
+ * @file Contains utility methods used by the library.
  */
 
+/* exported buildUrl_ */
 /**
  * Builds a complete URL from a base URL and a map of URL parameters.
  * @param {string} url The base URL.
  * @param {Object.<string, string>} params The URL parameters and values.
- * @returns {string} The complete URL.
+ * @return {string} The complete URL.
  * @private
  */
 function buildUrl_(url, params) {
@@ -30,9 +31,10 @@ function buildUrl_(url, params) {
   return url + (url.indexOf('?') >= 0 ? '&' : '?') + paramString;
 }
 
+/* exported validate_ */
 /**
- * Validates that all of the values in the object are non-empty. If an empty value is found,
- * and error is thrown using the key as the name.
+ * Validates that all of the values in the object are non-empty. If an empty
+ * value is found, and error is thrown using the key as the name.
  * @param {Object.<string, string>} params The values to validate.
  * @private
  */
@@ -45,22 +47,26 @@ function validate_(params) {
   });
 }
 
+/* exported getTimeInSeconds_ */
 /**
  * Gets the time in seconds, rounded down to the nearest second.
  * @param {Date} date The Date object to convert.
- * @returns {Number} The number of seconds since the epoch.
+ * @return {Number} The number of seconds since the epoch.
  * @private
  */
 function getTimeInSeconds_(date) {
   return Math.floor(date.getTime() / 1000);
 }
 
+/* exported extend_ */
 /**
  * Copy all of the properties in the source objects over to the
  * destination object, and return the destination object.
  * @param {Object} destination The combined object.
- * @param {Object} source The object who's properties are copied to the destination.
- * @returns {Object} A combined object with the desination and source properties.
+ * @param {Object} source The object who's properties are copied to the
+ *     destination.
+ * @return {Object} A combined object with the desination and source
+ *     properties.
  * @see http://underscorejs.org/#extend
  */
 function extend_(destination, source) {

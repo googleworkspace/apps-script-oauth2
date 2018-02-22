@@ -1,8 +1,10 @@
 var MockProperties = function() {
   this.store = {};
+  this.counter = 0;
 };
 
 MockProperties.prototype.getProperty = function(key) {
+  ++this.counter;
   return this.store[key];
 };
 
