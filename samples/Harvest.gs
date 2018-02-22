@@ -7,8 +7,8 @@ var CLIENT_SECRET = '...';
 function run() {
   var service = getService();
   if (service.hasAccess()) {
-    var accountId = PropertiesService.getUserProperties()
-        .getProperty('Harvest-Account-Id');
+    // Retrieve the account ID from storage.
+    var accountId = service.getStorage().getValue('Harvest-Account-Id');
     var url = 'https://api.harvestapp.com/v2/users/me';
     var response = UrlFetchApp.fetch(url, {
       headers: {
@@ -30,8 +30,7 @@ function run() {
  * Reset the authorization state, so that it can be re-tested.
  */
 function reset() {
-  var service = getService();
-  service.reset();
+  getService().reset();
 }
 
 /**
@@ -53,6 +52,7 @@ function getService() {
 
       // Set the property store where authorized tokens should be persisted.
       .setPropertyStore(PropertiesService.getUserProperties())
+      .setCache(CacheService.getUserCache());
 }
 
 /**
@@ -67,8 +67,8 @@ function authCallback(request) {
     // "harvest:{ACCOUNT_ID}".
     var scope = request.parameter['scope'];
     var accountId = scope.split(':')[1];
-    PropertiesService.getUserProperties()
-        .setProperty('Harvest-Account-Id', accountId);
+    // Save the account ID in the service's storage.
+    service.getStorage().setValue('Harvest-Account-Id', accountId);
     return HtmlService.createHtmlOutput('Success!');
   } else {
     return HtmlService.createHtmlOutput('Denied.');
@@ -79,6 +79,5 @@ function authCallback(request) {
  * Logs the redict URI to register.
  */
 function logRedirectUri() {
-  var service = getService();
-  Logger.log(service.getRedirectUri());
+  Logger.log(getService().getRedirectUri());
 }

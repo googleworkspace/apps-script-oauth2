@@ -26,8 +26,7 @@ function run() {
  * Reset the authorization state, so that it can be re-tested.
  */
 function reset() {
-  var service = getService();
-  service.reset();
+  getService().reset();
 }
 
 /**
@@ -43,8 +42,8 @@ function getService() {
       .setClientId(CLIENT_ID)
       .setClientSecret(CLIENT_SECRET)
 
-      // Set the name of the callback function that should be invoked to complete
-      // the OAuth flow.
+      // Set the name of the callback function that should be invoked to
+      // complete the OAuth flow.
       .setCallbackFunction('authCallback')
 
       // Set the property store where authorized tokens should be persisted.
@@ -53,8 +52,9 @@ function getService() {
       // Scopes to request
       .setScope('READ_SHEETS')
 
-      // Set the handler for adding Smartsheet's required SHA hash parameter to the payload:
-      .setTokenPayloadHandler(smartsheetTokenHandler)
+      // Set the handler for adding Smartsheet's required SHA hash parameter to
+      // the payload:
+      .setTokenPayloadHandler(smartsheetTokenHandler);
 }
 
 /**
@@ -71,26 +71,30 @@ function authCallback(request) {
 }
 
 /**
- * Adds the Smartsheet API's required SHA256 hash parameter to the access token request payload.
+ * Adds the Smartsheet API's required SHA256 hash parameter to the access token
+ * request payload.
  */
 function smartsheetTokenHandler(payload) {
   var codeOrRefreshToken = payload.code ? payload.code : payload.refresh_token;
-  var input = CLIENT_SECRET + "|" + codeOrRefreshToken;
-  var hash = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256,
-                                          input,
-                                          Utilities.Charset.UTF_8);
+  var input = CLIENT_SECRET + '|' + codeOrRefreshToken;
+  var hash = Utilities.computeDigest(
+      Utilities.DigestAlgorithm.SHA_256, input, Utilities.Charset.UTF_8);
   hash = hash.map(function(val) {
-    // Google appears to treat these as signed bytes, but we need them unsigned...
-    if (val < 0)
+    // Google appears to treat these as signed bytes, but we need them
+    // unsigned.
+    if (val < 0) {
       val += 256;
+    }
     var str = val.toString(16);
     // pad to two hex digits:
-    if (str.length == 1)
+    if (str.length == 1) {
       str = '0' + str;
+    }
     return str;
   });
-  payload.hash = hash.join("");
-  // The Smartsheet API doesn't need the client secret sent (secret is verified by the hash)
+  payload.hash = hash.join('');
+  // The Smartsheet API doesn't need the client secret sent (secret is verified
+  // by the hash).
   if (payload.client_secret) {
     delete payload.client_secret;
   }
@@ -101,6 +105,5 @@ function smartsheetTokenHandler(payload) {
  * Logs the redict URI to register.
  */
 function logRedirectUri() {
-  var service = getService();
-  Logger.log(service.getRedirectUri());
+  Logger.log(getService().getRedirectUri());
 }

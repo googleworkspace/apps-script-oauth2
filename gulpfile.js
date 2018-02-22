@@ -1,10 +1,9 @@
-var gulp = require('gulp');
-var concat = require('gulp-concat');
-var expose = require('gulp-expose');
-var del = require('del');
-var rename = require("gulp-rename");
-var jshint = require('gulp-jshint');
-var stylish = require('jshint-stylish');
+const gulp = require('gulp');
+const concat = require('gulp-concat');
+const expose = require('gulp-expose');
+const del = require('del');
+const rename = require("gulp-rename");
+const eslint = require('gulp-eslint');
 
 gulp.task('dist', ['clean'], function() {
   gulp.src('src/*.gs')
@@ -19,8 +18,9 @@ gulp.task('clean', function() {
   ]);
 });
 
-gulp.task('lint', function() {
-  return gulp.src(['src/*.gs', 'test/**/*.js'])
-    .pipe(jshint())
-    .pipe(jshint.reporter(stylish));
+gulp.task('lint', () => {
+  return gulp.src(['src/*.gs', 'samples/*.gs', 'test/**/*.js', '!node_modules/**'])
+      .pipe(eslint())
+      .pipe(eslint.format())
+      .pipe(eslint.failAfterError());
 });

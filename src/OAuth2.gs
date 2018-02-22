@@ -13,7 +13,7 @@
 // limitations under the License.
 
 /**
- * @fileoverview Contains the methods exposed by the library, and performs
+ * @file Contains the methods exposed by the library, and performs
  * any required setup.
  */
 
@@ -38,14 +38,17 @@ var STATE_PARAMETER_LOCATION = {
    * @default
    */
   AUTHORIZATION_URL: 'authorization-url',
-  /** Pass the state token in the redirect URL, as a workaround for APIs that don't support the state parameter. */
+  /**
+   * Pass the state token in the redirect URL, as a workaround for APIs that
+   * don't support the state parameter.
+   */
   REDIRECT_URL: 'redirect-url'
 };
 
 /**
- * Creates a new OAuth2 service with the name specified. It's usually best to create and
- * configure your service once at the start of your script, and then reference them during
- * the different phases of the authorization flow.
+ * Creates a new OAuth2 service with the name specified. It's usually best to
+ * create and configure your service once at the start of your script, and then
+ * reference them during the different phases of the authorization flow.
  * @param {string} serviceName The name of the service.
  * @return {Service_} The service object.
  */
@@ -56,17 +59,20 @@ function createService(serviceName) {
 /**
  * Returns the redirect URI that will be used for a given script. Often this URI
  * needs to be entered into a configuration screen of your OAuth provider.
- * @param {string} scriptID The script ID of your script, which can be found in
+ * @param {string} scriptId The script ID of your script, which can be found in
  *     the Script Editor UI under "File > Project properties".
  * @return {string} The redirect URI.
  */
 function getRedirectUri(scriptId) {
-  return Utilities.formatString('https://script.google.com/macros/d/%s/usercallback', scriptId);
+  return Utilities.formatString(
+    'https://script.google.com/macros/d/%s/usercallback', scriptId);
 }
 
 if (typeof module === 'object') {
   module.exports = {
     createService: createService,
-    getRedirectUri: getRedirectUri
+    getRedirectUri: getRedirectUri,
+    TOKEN_FORMAT: TOKEN_FORMAT,
+    STATE_PARAMETER_LOCATION: STATE_PARAMETER_LOCATION
   };
 }

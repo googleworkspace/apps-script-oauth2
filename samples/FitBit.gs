@@ -26,8 +26,7 @@ function run() {
  * Reset the authorization state, so that it can be re-tested.
  */
 function reset() {
-  var service = getService();
-  service.reset();
+  getService().reset();
 }
 
 /**
@@ -53,7 +52,8 @@ function getService() {
       // Set the scope and additional headers required by the FitBit API.
       .setScope('profile')
       .setTokenHeaders({
-        'Authorization': 'Basic ' + Utilities.base64Encode(CLIENT_ID + ':' + CLIENT_SECRET)
+        'Authorization': 'Basic ' +
+            Utilities.base64Encode(CLIENT_ID + ':' + CLIENT_SECRET)
       });
 }
 
@@ -74,6 +74,5 @@ function authCallback(request) {
  * Logs the redict URI to register.
  */
 function logRedirectUri() {
-  var service = getService();
-  Logger.log(service.getRedirectUri());
+  Logger.log(getService().getRedirectUri());
 }

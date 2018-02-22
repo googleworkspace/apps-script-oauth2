@@ -81,7 +81,7 @@ function signOut() {
 function getGitHubProfile() {
   var service = getGitHubService();
   if (!service.hasAccess()) {
-    throw 'Error: Missing GitHub authorization.';
+    throw new Error('Error: Missing GitHub authorization.');
   }
   var url = 'https://api.github.com/user';
   var response = UrlFetchApp.fetch(url, {
@@ -98,7 +98,7 @@ function getGitHubProfile() {
 function getGitHubRepos() {
   var service = getGitHubService();
   if (!service.hasAccess()) {
-    throw 'Error: Missing GitHub authorization.';
+    throw new Error('Error: Missing GitHub authorization.');
   }
   var url = 'https://api.github.com/user/repos';
   var response = UrlFetchApp.fetch(url, {
@@ -118,21 +118,21 @@ function getGitHubService() {
       // Set the endpoint URLs.
       .setAuthorizationBaseUrl('https://github.com/login/oauth/authorize')
       .setTokenUrl('https://github.com/login/oauth/access_token')
-  
+
       // Set the client ID and secret.
       .setClientId(CLIENT_ID)
       .setClientSecret(CLIENT_SECRET)
-  
-      // Set the name of the callback function that should be invoked to complete
-      // the OAuth flow.
+
+      // Set the name of the callback function that should be invoked to
+      // complete the OAuth flow.
       .setCallbackFunction('authCallback')
 
       // Set the property store where authorized tokens should be persisted.
-      .setPropertyStore(PropertiesService.getUserProperties())
+      .setPropertyStore(PropertiesService.getUserProperties());
 }
 
 /**
- * Callback handler that is executed after an authorization attempt. 
+ * Callback handler that is executed after an authorization attempt.
  * @param {Object} request The results of API auth request.
  */
 function authCallback(request) {
