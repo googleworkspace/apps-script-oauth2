@@ -50,13 +50,6 @@ Service_.EXPIRATION_BUFFER_SECONDS_ = 60;
  * @type {number}
  * @private
  */
-Service_.CACHE_EXPIRATION_SECONDS_ = 6 * 60 * 60;
-
-/**
- * The number of seconds that a token should remain in the cache.
- * @type {number}
- * @private
- */
 Service_.LOCK_EXPIRATION_MILLISECONDS_ = 30 * 1000;
 
 /**
@@ -381,28 +374,29 @@ Service_.prototype.handleCallback = function(callbackRequest) {
  *     otherwise.
  */
 Service_.prototype.hasAccess = function() {
-  var result = true;
-  var token = this.getToken();
-  if (!token || this.isExpired_(token)) {
-    if (token && token.refresh_token) {
-      try {
-        this.refresh();
-      } catch (e) {
-        this.lastError_ = e;
-        result = false;
+  return this.lockable_(function() {
+    var token = this.getToken();
+    if (!token || this.isExpired_(token)) {
+      if (token && token.refresh_token) {
+        try {
+          this.refresh();
+        } catch (e) {
+          this.lastError_ = e;
+          return false;
+        }
+      } else if (this.privateKey_) {
+        try {
+          this.exchangeJwt_();
+        } catch (e) {
+          this.lastError_ = e;
+          return false;
+        }
+      } else {
+        return false;
       }
-    } else if (this.privateKey_) {
-      try {
-        this.exchangeJwt_();
-      } catch (e) {
-        this.lastError_ = e;
-        result = false;
-      }
-    } else {
-      result = false;
     }
-  }
-  return result;
+    return true;
+  });
 };
 
 /**
@@ -510,12 +504,6 @@ Service_.prototype.refresh = function() {
     'Token URL': this.tokenUrl_
   });
 
-  // If using locking, lock the service while refreshing.
-  if (this.lock_ && !this.lock_.hasLock()) {
-    this.lock_.waitLock(Service_.LOCK_EXPIRATION_MILLISECONDS_);
-    var releaseLock = true;
-  }
-
   var token = this.getToken();
   if (!token.refresh_token) {
     throw new Error('Offline access is required.');
@@ -548,10 +536,6 @@ Service_.prototype.refresh = function() {
     newToken.refresh_token = token.refresh_token;
   }
   this.saveToken_(newToken);
-
-  if (this.lock_ && releaseLock) {
-    this.lock_.releaseLock();
-  }
 };
 
 /**
@@ -586,16 +570,7 @@ Service_.prototype.saveToken_ = function(token) {
  * @return {Object} The token, or null if no token was found.
  */
 Service_.prototype.getToken = function() {
-  // If using locking, lock the service while retrieving the token.
-  if (this.lock_ && !this.lock_.hasLock()) {
-    this.lock_.waitLock(Service_.LOCK_EXPIRATION_MILLISECONDS_);
-    var releaseLock = true;
-  }
-  var token = this.getStorage().getValue(null);
-  if (this.lock_ && releaseLock) {
-    this.lock_.releaseLock();
-  }
-  return token;
+  return this.getStorage().getValue(null);
 };
 
 /**
@@ -682,3 +657,16 @@ Service_.prototype.createJwt_ = function() {
   var signature = Utilities.base64EncodeWebSafe(signatureBytes);
   return toSign + '.' + signature;
 };
+
+Service_.prototype.lockable_ = function(func) {
+  var releaseLock = false;
+  if (this.lock_ && !this.lock_.hasLock()) {
+    this.lock_.waitLock(Service_.LOCK_EXPIRATION_MILLISECONDS_);
+    releaseLock = true;
+  }
+  var result = func.apply(this);
+  if (this.lock_ && releaseLock) {
+    this.lock_.releaseLock();
+  }
+  return result;
+}

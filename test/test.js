@@ -138,7 +138,7 @@ describe('Service', function() {
   });
 
   describe('#hasAccess()', function() {
-    it('should use the lock to prevent concurrend access', function(done) {
+    it('should use the lock to prevent concurrent access', function(done) {
       var token = {
         granted_time: 100,
         expires_in: 100,
