@@ -658,6 +658,12 @@ Service_.prototype.createJwt_ = function() {
   return toSign + '.' + signature;
 };
 
+/**
+ * Locks access to a block of code, if a lock has been set on this service.
+ * @param {function} func The code to execute.
+ * @return {*} The result of the code block.
+ * @private
+ */
 Service_.prototype.lockable_ = function(func) {
   var releaseLock = false;
   if (this.lock_ && !this.lock_.hasLock()) {
@@ -669,4 +675,4 @@ Service_.prototype.lockable_ = function(func) {
     this.lock_.releaseLock();
   }
   return result;
-}
+};
