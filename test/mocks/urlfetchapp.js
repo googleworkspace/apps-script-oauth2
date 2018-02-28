@@ -1,17 +1,18 @@
 var Future = require('fibers/future');
 
 var MockUrlFetchApp = function() {
-  this.delay = 0;
+  this.delayFunction = () => 0;
   this.resultFunction = () => '';
 };
 
 MockUrlFetchApp.prototype.fetch = function(url, optOptions) {
-  var delay = this.delay;
+  var delay = this.delayFunction();
+  var result = this.resultFunction();
   if (delay) {
     sleep(delay).wait();
   }
   return {
-    getContentText: this.resultFunction,
+    getContentText: () => result,
     getResponseCode: () => 200
   };
 };

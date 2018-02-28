@@ -504,38 +504,40 @@ Service_.prototype.refresh = function() {
     'Token URL': this.tokenUrl_
   });
 
-  var token = this.getToken();
-  if (!token.refresh_token) {
-    throw new Error('Offline access is required.');
-  }
-  var headers = {
-    'Accept': this.tokenFormat_
-  };
-  if (this.tokenHeaders_) {
-    headers = extend_(headers, this.tokenHeaders_);
-  }
-  var tokenPayload = {
-      refresh_token: token.refresh_token,
-      client_id: this.clientId_,
-      client_secret: this.clientSecret_,
-      grant_type: 'refresh_token'
-  };
-  if (this.tokenPayloadHandler_) {
-    tokenPayload = this.tokenPayloadHandler_(tokenPayload);
-  }
-  // Use the refresh URL if specified, otherwise fallback to the token URL.
-  var url = this.refreshUrl_ || this.tokenUrl_;
-  var response = UrlFetchApp.fetch(url, {
-    method: 'post',
-    headers: headers,
-    payload: tokenPayload,
-    muteHttpExceptions: true
+  this.lockable_(function() {
+    var token = this.getToken();
+    if (!token.refresh_token) {
+      throw new Error('Offline access is required.');
+    }
+    var headers = {
+      'Accept': this.tokenFormat_
+    };
+    if (this.tokenHeaders_) {
+      headers = extend_(headers, this.tokenHeaders_);
+    }
+    var tokenPayload = {
+        refresh_token: token.refresh_token,
+        client_id: this.clientId_,
+        client_secret: this.clientSecret_,
+        grant_type: 'refresh_token'
+    };
+    if (this.tokenPayloadHandler_) {
+      tokenPayload = this.tokenPayloadHandler_(tokenPayload);
+    }
+    // Use the refresh URL if specified, otherwise fallback to the token URL.
+    var url = this.refreshUrl_ || this.tokenUrl_;
+    var response = UrlFetchApp.fetch(url, {
+      method: 'post',
+      headers: headers,
+      payload: tokenPayload,
+      muteHttpExceptions: true
+    });
+    var newToken = this.getTokenFromResponse_(response);
+    if (!newToken.refresh_token) {
+      newToken.refresh_token = token.refresh_token;
+    }
+    this.saveToken_(newToken);
   });
-  var newToken = this.getTokenFromResponse_(response);
-  if (!newToken.refresh_token) {
-    newToken.refresh_token = token.refresh_token;
-  }
-  this.saveToken_(newToken);
 };
 
 /**

@@ -147,7 +147,7 @@ describe('Service', function() {
       var properties = new MockProperties();
       properties.setProperty('oauth2.test', JSON.stringify(token));
 
-      mocks.UrlFetchApp.delay = 100;
+      mocks.UrlFetchApp.delayFunction = () => 100;
       mocks.UrlFetchApp.resultFunction = () =>
         JSON.stringify({
           access_token: Math.random().toString(36)
@@ -181,7 +181,68 @@ describe('Service', function() {
       });
     });
   });
+
+  describe('#refresh()', function() {
+    /*
+      A race condition can occur when two executions attempt to refresh the
+      token at the same time. Some OAuth implementations only allow one
+      valid access token at a time, so we need to ensure that the last access
+      token granted is the one that is persisted. To replicate this, we have the
+      first exeuction wait longer for it's response to return through the
+      "network" and have the second execution get it's response back sooner.
+    */
+    it('should use the lock to prevent race conditions', function(done) {
+      var token = {
+        granted_time: 100,
+        expires_in: 100,
+        refresh_token: 'bar'
+      };
+      var properties = new MockProperties();
+      properties.setProperty('oauth2.test', JSON.stringify(token));
+
+      var count = 0;
+      mocks.UrlFetchApp.resultFunction = function() {
+        return JSON.stringify({
+          access_token: 'token' + count++
+        });
+      };
+      var delayGenerator = function*() {
+        yield 100;
+        yield 10;
+      }();
+      mocks.UrlFetchApp.delayFunction = function() {
+        return delayGenerator.next().value;
+      };
+
+      var refreshToken = function() {
+        var service = OAuth2.createService('test')
+            .setClientId('abc')
+            .setClientSecret('def')
+            .setTokenUrl('http://www.example.com')
+            .setPropertyStore(properties)
+            .setLock(new MockLock());
+        service.refresh();
+      }.future();
+
+      Future.task(function() {
+        var first = refreshToken();
+        var second = refreshToken();
+        Future.wait(first, second);
+        return [first.get(), second.get()];
+      }).resolve(function(err) {
+        if (err) {
+          done(err);
+        }
+        var storedToken = JSON.parse(properties.getProperty('oauth2.test'));
+        assert.equal(storedToken.access_token, 'token1');
+        done();
+      });
+    });
+  });
+
 });
+
+
 
 describe('Utilities', function() {
   describe('#extend_()', function() {
