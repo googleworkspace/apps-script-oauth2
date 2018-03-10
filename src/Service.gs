@@ -46,7 +46,7 @@ var Service_ = function(serviceName) {
 Service_.EXPIRATION_BUFFER_SECONDS_ = 60;
 
 /**
- * The number of seconds that a token should remain in the cache.
+ * The number of milliseconds that a token should remain in the cache.
  * @type {number}
  * @private
  */
@@ -181,6 +181,7 @@ Service_.prototype.setClientSecret = function(clientSecret) {
  * @param {PropertiesService.Properties} propertyStore The property store to use
  *     when persisting credentials.
  * @return {Service_} This service, for chaining.
+ * @see https://developers.google.com/apps-script/reference/properties/
  */
 Service_.prototype.setPropertyStore = function(propertyStore) {
   this.propertyStore_ = propertyStore;
@@ -195,6 +196,7 @@ Service_.prototype.setPropertyStore = function(propertyStore) {
  * @param {CacheService.Cache} cache The cache to use when persisting
  *     credentials.
  * @return {Service_} This service, for chaining.
+ * @see https://developers.google.com/apps-script/reference/cache/
  */
 Service_.prototype.setCache = function(cache) {
   this.cache_ = cache;
@@ -208,6 +210,7 @@ Service_.prototype.setCache = function(cache) {
  * when two executions attempt to refresh an expired token.
  * @param {LockService.Lock} lock The lock to use when accessing credentials.
  * @return {Service_} This service, for chaining.
+ * @see https://developers.google.com/apps-script/reference/lock/
  */
 Service_.prototype.setLock = function(lock) {
   this.lock_ = lock;
@@ -510,7 +513,7 @@ Service_.prototype.refresh = function() {
       throw new Error('Offline access is required.');
     }
     var headers = {
-      'Accept': this.tokenFormat_
+      Accept: this.tokenFormat_
     };
     if (this.tokenHeaders_) {
       headers = extend_(headers, this.tokenHeaders_);
@@ -661,7 +664,7 @@ Service_.prototype.createJwt_ = function() {
 };
 
 /**
- * Locks access to a block of code, if a lock has been set on this service.
+ * Locks access to a block of code if a lock has been set on this service.
  * @param {function} func The code to execute.
  * @return {*} The result of the code block.
  * @private

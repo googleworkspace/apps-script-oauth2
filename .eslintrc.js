@@ -11,6 +11,7 @@ module.exports = {
   },
   "rules": {
     "comma-dangle": "off",
-    "no-var": "off"
+    "no-var": "off",
+    "generator-star-spacing": ["error", {"anonymous": "neither"}],
   }
 };

@@ -1,3 +1,8 @@
+/**
+ * @file Mocks out Apps Script's UrlFetchApp, using the fibers library to
+ * emulate concurrent executions.
+ */
+
 var Future = require('fibers/future');
 
 var MockUrlFetchApp = function() {
@@ -18,7 +23,7 @@ MockUrlFetchApp.prototype.fetch = function(url, optOptions) {
 };
 
 function sleep(ms) {
-  var future = new Future;
+  var future = new Future();
   setTimeout(function() {
     future.return();
   }, ms);

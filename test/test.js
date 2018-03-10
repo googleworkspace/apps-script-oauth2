@@ -47,44 +47,45 @@ describe('Service', function() {
     });
 
     it('should load from the cache', function() {
-      var cache = new MockCache();
-      var service = OAuth2.createService('test')
-          .setPropertyStore(new MockProperties())
-          .setCache(cache);
       var token = {
         access_token: 'foo'
       };
-      cache.put('oauth2.test', JSON.stringify(token));
+      var cache = new MockCache({
+        'oauth2.test': JSON.stringify(token)
+      });
+      var service = OAuth2.createService('test')
+          .setPropertyStore(new MockProperties())
+          .setCache(cache);
       assert.deepEqual(service.getToken(), token);
     });
 
     it('should load from the properties and set the cache', function() {
-      var cache = new MockCache();
-      var properties = new MockProperties();
-      var service = OAuth2.createService('test')
-          .setPropertyStore(properties)
-          .setCache(cache);
-      var key = 'oauth2.test';
       var token = {
         access_token: 'foo'
       };
-      properties.setProperty(key, JSON.stringify(token));
+      var cache = new MockCache();
+      var properties = new MockProperties({
+        'oauth2.test': JSON.stringify(token)
+      });
+      var service = OAuth2.createService('test')
+          .setPropertyStore(properties)
+          .setCache(cache);
+
       assert.deepEqual(service.getToken(), token);
-      assert.deepEqual(JSON.parse(cache.get(key)), token);
+      assert.deepEqual(JSON.parse(cache.get('oauth2.test')), token);
     });
 
     it('should not hit the cache or properties on subsequent calls',
         function() {
       var cache = new MockCache();
-      var properties = new MockProperties();
+      var properties = new MockProperties({
+        'oauth2.test': JSON.stringify({
+          access_token: 'foo'
+        })
+      });
       var service = OAuth2.createService('test')
           .setPropertyStore(properties)
           .setCache(cache);
-      var key = 'oauth2.test';
-      var token = {
-        access_token: 'foo'
-      };
-      properties.setProperty(key, JSON.stringify(token));
 
       service.getToken();
       var cacheStart = cache.counter;
@@ -144,14 +145,14 @@ describe('Service', function() {
         expires_in: 100,
         refresh_token: 'bar'
       };
-      var properties = new MockProperties();
-      properties.setProperty('oauth2.test', JSON.stringify(token));
+      var properties = new MockProperties({
+        'oauth2.test': JSON.stringify(token)
+      });
 
       mocks.UrlFetchApp.delayFunction = () => 100;
-      mocks.UrlFetchApp.resultFunction = () =>
-        JSON.stringify({
-          access_token: Math.random().toString(36)
-        });
+      mocks.UrlFetchApp.resultFunction = () => JSON.stringify({
+        access_token: Math.random().toString(36)
+      });
 
       var getAccessToken = function() {
         var service = OAuth2.createService('test')
@@ -197,8 +198,9 @@ describe('Service', function() {
         expires_in: 100,
         refresh_token: 'bar'
       };
-      var properties = new MockProperties();
-      properties.setProperty('oauth2.test', JSON.stringify(token));
+      var properties = new MockProperties({
+        'oauth2.test': JSON.stringify(token)
+      });
 
       var count = 0;
       mocks.UrlFetchApp.resultFunction = function() {
@@ -215,13 +217,13 @@ describe('Service', function() {
       };
 
       var refreshToken = function() {
-        var service = OAuth2.createService('test')
+        OAuth2.createService('test')
             .setClientId('abc')
             .setClientSecret('def')
             .setTokenUrl('http://www.example.com')
             .setPropertyStore(properties)
-            .setLock(new MockLock());
-        service.refresh();
+            .setLock(new MockLock())
+            .refresh();
       }.future();
 
       Future.task(function() {
@@ -239,10 +241,7 @@ describe('Service', function() {
       });
     });
   });
-
 });
-
-
 
 describe('Utilities', function() {
   describe('#extend_()', function() {
