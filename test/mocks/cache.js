@@ -1,5 +1,5 @@
-var MockCache = function() {
-  this.store = {};
+var MockCache = function(optCache) {
+  this.store = optCache || {};
   this.counter = 0;
 };
 

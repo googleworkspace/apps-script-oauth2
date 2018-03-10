@@ -3,8 +3,6 @@ const concat = require('gulp-concat');
 const expose = require('gulp-expose');
 const del = require('del');
 const rename = require("gulp-rename");
-const jshint = require('gulp-jshint');
-const stylish = require('jshint-stylish');
 const eslint = require('gulp-eslint');
 
 gulp.task('dist', ['clean'], function() {

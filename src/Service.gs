@@ -46,6 +46,13 @@ var Service_ = function(serviceName) {
 Service_.EXPIRATION_BUFFER_SECONDS_ = 60;
 
 /**
+ * The number of milliseconds that a token should remain in the cache.
+ * @type {number}
+ * @private
+ */
+Service_.LOCK_EXPIRATION_MILLISECONDS_ = 30 * 1000;
+
+/**
  * Sets the service's authorization base URL (required). For Google services
  * this URL should be
  * https://accounts.google.com/o/oauth2/auth.
@@ -174,6 +181,7 @@ Service_.prototype.setClientSecret = function(clientSecret) {
  * @param {PropertiesService.Properties} propertyStore The property store to use
  *     when persisting credentials.
  * @return {Service_} This service, for chaining.
+ * @see https://developers.google.com/apps-script/reference/properties/
  */
 Service_.prototype.setPropertyStore = function(propertyStore) {
   this.propertyStore_ = propertyStore;
@@ -188,9 +196,24 @@ Service_.prototype.setPropertyStore = function(propertyStore) {
  * @param {CacheService.Cache} cache The cache to use when persisting
  *     credentials.
  * @return {Service_} This service, for chaining.
+ * @see https://developers.google.com/apps-script/reference/cache/
  */
 Service_.prototype.setCache = function(cache) {
   this.cache_ = cache;
+  return this;
+};
+
+/**
+ * Sets the lock to use when checking and refreshing credentials (optional).
+ * Using a lock will ensure that only one execution will be able to access the
+ * stored credentials at a time. This can prevent race conditions that arise
+ * when two executions attempt to refresh an expired token.
+ * @param {LockService.Lock} lock The lock to use when accessing credentials.
+ * @return {Service_} This service, for chaining.
+ * @see https://developers.google.com/apps-script/reference/lock/
+ */
+Service_.prototype.setLock = function(lock) {
+  this.lock_ = lock;
   return this;
 };
 
@@ -354,27 +377,29 @@ Service_.prototype.handleCallback = function(callbackRequest) {
  *     otherwise.
  */
 Service_.prototype.hasAccess = function() {
-  var token = this.getToken();
-  if (!token || this.isExpired_(token)) {
-    if (token && token.refresh_token) {
-      try {
-        this.refresh();
-      } catch (e) {
-        this.lastError_ = e;
+  return this.lockable_(function() {
+    var token = this.getToken();
+    if (!token || this.isExpired_(token)) {
+      if (token && token.refresh_token) {
+        try {
+          this.refresh();
+        } catch (e) {
+          this.lastError_ = e;
+          return false;
+        }
+      } else if (this.privateKey_) {
+        try {
+          this.exchangeJwt_();
+        } catch (e) {
+          this.lastError_ = e;
+          return false;
+        }
+      } else {
         return false;
       }
-    } else if (this.privateKey_) {
-      try {
-        this.exchangeJwt_();
-      } catch (e) {
-        this.lastError_ = e;
-        return false;
-      }
-    } else {
-      return false;
     }
-  }
-  return true;
+    return true;
+  });
 };
 
 /**
@@ -481,38 +506,41 @@ Service_.prototype.refresh = function() {
     'Client Secret': this.clientSecret_,
     'Token URL': this.tokenUrl_
   });
-  var token = this.getToken();
-  if (!token.refresh_token) {
-    throw new Error('Offline access is required.');
-  }
-  var headers = {
-    'Accept': this.tokenFormat_
-  };
-  if (this.tokenHeaders_) {
-    headers = extend_(headers, this.tokenHeaders_);
-  }
-  var tokenPayload = {
-      refresh_token: token.refresh_token,
-      client_id: this.clientId_,
-      client_secret: this.clientSecret_,
-      grant_type: 'refresh_token'
-  };
-  if (this.tokenPayloadHandler_) {
-    tokenPayload = this.tokenPayloadHandler_(tokenPayload);
-  }
-  // Use the refresh URL if specified, otherwise fallback to the token URL.
-  var url = this.refreshUrl_ || this.tokenUrl_;
-  var response = UrlFetchApp.fetch(url, {
-    method: 'post',
-    headers: headers,
-    payload: tokenPayload,
-    muteHttpExceptions: true
+
+  this.lockable_(function() {
+    var token = this.getToken();
+    if (!token.refresh_token) {
+      throw new Error('Offline access is required.');
+    }
+    var headers = {
+      Accept: this.tokenFormat_
+    };
+    if (this.tokenHeaders_) {
+      headers = extend_(headers, this.tokenHeaders_);
+    }
+    var tokenPayload = {
+        refresh_token: token.refresh_token,
+        client_id: this.clientId_,
+        client_secret: this.clientSecret_,
+        grant_type: 'refresh_token'
+    };
+    if (this.tokenPayloadHandler_) {
+      tokenPayload = this.tokenPayloadHandler_(tokenPayload);
+    }
+    // Use the refresh URL if specified, otherwise fallback to the token URL.
+    var url = this.refreshUrl_ || this.tokenUrl_;
+    var response = UrlFetchApp.fetch(url, {
+      method: 'post',
+      headers: headers,
+      payload: tokenPayload,
+      muteHttpExceptions: true
+    });
+    var newToken = this.getTokenFromResponse_(response);
+    if (!newToken.refresh_token) {
+      newToken.refresh_token = token.refresh_token;
+    }
+    this.saveToken_(newToken);
   });
-  var newToken = this.getTokenFromResponse_(response);
-  if (!newToken.refresh_token) {
-    newToken.refresh_token = token.refresh_token;
-  }
-  this.saveToken_(newToken);
 };
 
 /**
@@ -633,4 +661,23 @@ Service_.prototype.createJwt_ = function() {
       Utilities.computeRsaSha256Signature(toSign, this.privateKey_);
   var signature = Utilities.base64EncodeWebSafe(signatureBytes);
   return toSign + '.' + signature;
+};
+
+/**
+ * Locks access to a block of code if a lock has been set on this service.
+ * @param {function} func The code to execute.
+ * @return {*} The result of the code block.
+ * @private
+ */
+Service_.prototype.lockable_ = function(func) {
+  var releaseLock = false;
+  if (this.lock_ && !this.lock_.hasLock()) {
+    this.lock_.waitLock(Service_.LOCK_EXPIRATION_MILLISECONDS_);
+    releaseLock = true;
+  }
+  var result = func.apply(this);
+  if (this.lock_ && releaseLock) {
+    this.lock_.releaseLock();
+  }
+  return result;
 };

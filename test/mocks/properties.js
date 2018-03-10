@@ -1,5 +1,5 @@
-var MockProperties = function() {
-  this.store = {};
+var MockProperties = function(optStore) {
+  this.store = optStore || {};
   this.counter = 0;
 };
 
