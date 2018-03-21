@@ -6,7 +6,7 @@ const rename = require("gulp-rename");
 const eslint = require('gulp-eslint');
 
 gulp.task('dist', ['clean'], function() {
-  gulp.src('src/*.gs')
+  gulp.src('src/*.js')
       .pipe(concat('OAuth2.gs'))
       .pipe(expose('this', 'OAuth2'))
       .pipe(gulp.dest('dist'));
@@ -19,7 +19,7 @@ gulp.task('clean', function() {
 });
 
 gulp.task('lint', () => {
-  return gulp.src(['src/*.gs', 'samples/*.gs', 'test/**/*.js', '!node_modules/**'])
+  return gulp.src(['src/*.js', 'samples/*.gs', 'test/**/*.js', '!node_modules/**'])
       .pipe(eslint())
       .pipe(eslint.format())
       .pipe(eslint.failAfterError());

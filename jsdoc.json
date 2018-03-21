@@ -1,7 +1,4 @@
 {
-  "source": {
-    "includePattern": ".*\\.gs$"
-  },
   "opts": {
     "destination": "./docs/",
     "verbose": true
