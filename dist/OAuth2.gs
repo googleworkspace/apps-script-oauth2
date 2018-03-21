@@ -129,6 +129,13 @@ var Service_ = function(serviceName) {
 Service_.EXPIRATION_BUFFER_SECONDS_ = 60;
 
 /**
+ * The number of milliseconds that a token should remain in the cache.
+ * @type {number}
+ * @private
+ */
+Service_.LOCK_EXPIRATION_MILLISECONDS_ = 30 * 1000;
+
+/**
  * Sets the service's authorization base URL (required). For Google services
  * this URL should be
  * https://accounts.google.com/o/oauth2/auth.
@@ -257,6 +264,7 @@ Service_.prototype.setClientSecret = function(clientSecret) {
  * @param {PropertiesService.Properties} propertyStore The property store to use
  *     when persisting credentials.
  * @return {Service_} This service, for chaining.
+ * @see https://developers.google.com/apps-script/reference/properties/
  */
 Service_.prototype.setPropertyStore = function(propertyStore) {
   this.propertyStore_ = propertyStore;
@@ -271,9 +279,24 @@ Service_.prototype.setPropertyStore = function(propertyStore) {
  * @param {CacheService.Cache} cache The cache to use when persisting
  *     credentials.
  * @return {Service_} This service, for chaining.
+ * @see https://developers.google.com/apps-script/reference/cache/
  */
 Service_.prototype.setCache = function(cache) {
   this.cache_ = cache;
+  return this;
+};
+
+/**
+ * Sets the lock to use when checking and refreshing credentials (optional).
+ * Using a lock will ensure that only one execution will be able to access the
+ * stored credentials at a time. This can prevent race conditions that arise
+ * when two executions attempt to refresh an expired token.
+ * @param {LockService.Lock} lock The lock to use when accessing credentials.
+ * @return {Service_} This service, for chaining.
+ * @see https://developers.google.com/apps-script/reference/lock/
+ */
+Service_.prototype.setLock = function(lock) {
+  this.lock_ = lock;
   return this;
 };
 
@@ -437,27 +460,29 @@ Service_.prototype.handleCallback = function(callbackRequest) {
  *     otherwise.
  */
 Service_.prototype.hasAccess = function() {
-  var token = this.getToken();
-  if (!token || this.isExpired_(token)) {
-    if (token && token.refresh_token) {
-      try {
-        this.refresh();
-      } catch (e) {
-        this.lastError_ = e;
+  return this.lockable_(function() {
+    var token = this.getToken();
+    if (!token || this.isExpired_(token)) {
+      if (token && token.refresh_token) {
+        try {
+          this.refresh();
+        } catch (e) {
+          this.lastError_ = e;
+          return false;
+        }
+      } else if (this.privateKey_) {
+        try {
+          this.exchangeJwt_();
+        } catch (e) {
+          this.lastError_ = e;
+          return false;
+        }
+      } else {
         return false;
       }
-    } else if (this.privateKey_) {
-      try {
-        this.exchangeJwt_();
-      } catch (e) {
-        this.lastError_ = e;
-        return false;
-      }
-    } else {
-      return false;
     }
-  }
-  return true;
+    return true;
+  });
 };
 
 /**
@@ -479,8 +504,7 @@ Service_.prototype.getAccessToken = function() {
  * re-authorized.
  */
 Service_.prototype.reset = function() {
-  var storage = this.getStorage();
-  storage.removeValue(null);
+  this.getStorage().removeValue(null);
 };
 
 /**
@@ -565,38 +589,41 @@ Service_.prototype.refresh = function() {
     'Client Secret': this.clientSecret_,
     'Token URL': this.tokenUrl_
   });
-  var token = this.getToken();
-  if (!token.refresh_token) {
-    throw new Error('Offline access is required.');
-  }
-  var headers = {
-    'Accept': this.tokenFormat_
-  };
-  if (this.tokenHeaders_) {
-    headers = extend_(headers, this.tokenHeaders_);
-  }
-  var tokenPayload = {
-      refresh_token: token.refresh_token,
-      client_id: this.clientId_,
-      client_secret: this.clientSecret_,
-      grant_type: 'refresh_token'
-  };
-  if (this.tokenPayloadHandler_) {
-    tokenPayload = this.tokenPayloadHandler_(tokenPayload);
-  }
-  // Use the refresh URL if specified, otherwise fallback to the token URL.
-  var url = this.refreshUrl_ || this.tokenUrl_;
-  var response = UrlFetchApp.fetch(url, {
-    method: 'post',
-    headers: headers,
-    payload: tokenPayload,
-    muteHttpExceptions: true
+
+  this.lockable_(function() {
+    var token = this.getToken();
+    if (!token.refresh_token) {
+      throw new Error('Offline access is required.');
+    }
+    var headers = {
+      Accept: this.tokenFormat_
+    };
+    if (this.tokenHeaders_) {
+      headers = extend_(headers, this.tokenHeaders_);
+    }
+    var tokenPayload = {
+        refresh_token: token.refresh_token,
+        client_id: this.clientId_,
+        client_secret: this.clientSecret_,
+        grant_type: 'refresh_token'
+    };
+    if (this.tokenPayloadHandler_) {
+      tokenPayload = this.tokenPayloadHandler_(tokenPayload);
+    }
+    // Use the refresh URL if specified, otherwise fallback to the token URL.
+    var url = this.refreshUrl_ || this.tokenUrl_;
+    var response = UrlFetchApp.fetch(url, {
+      method: 'post',
+      headers: headers,
+      payload: tokenPayload,
+      muteHttpExceptions: true
+    });
+    var newToken = this.getTokenFromResponse_(response);
+    if (!newToken.refresh_token) {
+      newToken.refresh_token = token.refresh_token;
+    }
+    this.saveToken_(newToken);
   });
-  var newToken = this.getTokenFromResponse_(response);
-  if (!newToken.refresh_token) {
-    newToken.refresh_token = token.refresh_token;
-  }
-  this.saveToken_(newToken);
 };
 
 /**
@@ -612,7 +639,7 @@ Service_.prototype.getStorage = function() {
   });
   if (!this.storage_) {
     var prefix = 'oauth2.' + this.serviceName_;
-    this.storage_ = new Storage(prefix, this.propertyStore_, this.cache_);
+    this.storage_ = new Storage_(prefix, this.propertyStore_, this.cache_);
   }
   return this.storage_;
 };
@@ -623,8 +650,7 @@ Service_.prototype.getStorage = function() {
  * @private
  */
 Service_.prototype.saveToken_ = function(token) {
-  var storage = this.getStorage();
-  storage.setValue(null, token);
+  this.getStorage().setValue(null, token);
 };
 
 /**
@@ -632,8 +658,7 @@ Service_.prototype.saveToken_ = function(token) {
  * @return {Object} The token, or null if no token was found.
  */
 Service_.prototype.getToken = function() {
-  var storage = this.getStorage();
-  return storage.getValue(null);
+  return this.getStorage().getValue(null);
 };
 
 /**
@@ -721,6 +746,25 @@ Service_.prototype.createJwt_ = function() {
   return toSign + '.' + signature;
 };
 
+/**
+ * Locks access to a block of code if a lock has been set on this service.
+ * @param {function} func The code to execute.
+ * @return {*} The result of the code block.
+ * @private
+ */
+Service_.prototype.lockable_ = function(func) {
+  var releaseLock = false;
+  if (this.lock_ && !this.lock_.hasLock()) {
+    this.lock_.waitLock(Service_.LOCK_EXPIRATION_MILLISECONDS_);
+    releaseLock = true;
+  }
+  var result = func.apply(this);
+  if (this.lock_ && releaseLock) {
+    this.lock_.releaseLock();
+  }
+  return result;
+};
+
 // Copyright 2017 Google Inc. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -740,15 +784,16 @@ Service_.prototype.createJwt_ = function() {
  */
 
 /**
- * Creates a new storage instance.
+ * Creates a new Storage_ instance, which is used to persist OAuth tokens and
+ * related information.
  * @param {string} prefix The prefix to use for keys in the properties and
  *     cache.
  * @param {PropertiesService.Properties} properties The properties instance to
  *     use.
- * @param {CacheService.Cache} optCache The optional cache instance to use.
+ * @param {CacheService.Cache} [optCache] The optional cache instance to use.
  * @constructor
  */
-function Storage(prefix, properties, optCache) {
+function Storage_(prefix, properties, optCache) {
   this.prefix_ = prefix;
   this.properties_ = properties;
   this.cache_ = optCache;
@@ -760,14 +805,14 @@ function Storage(prefix, properties, optCache) {
  * @type {number}
  * @private
  */
-Storage.CACHE_EXPIRATION_TIME_SECONDS = 21600;
+Storage_.CACHE_EXPIRATION_TIME_SECONDS = 21600; // 6 hours.
 
 /**
  * Gets a stored value.
  * @param {string} key The key.
  * @return {*} The stored value.
  */
-Storage.prototype.getValue = function(key) {
+Storage_.prototype.getValue = function(key) {
   // Check memory.
   if (this.memory_[key]) {
     return this.memory_[key];
@@ -785,10 +830,10 @@ Storage.prototype.getValue = function(key) {
   }
 
   // Check properties.
-  if ((jsonValue = this.properties_.getProperty(prefixedKey))) {
+  if (jsonValue = this.properties_.getProperty(prefixedKey)) {
     if (this.cache_) {
       this.cache_.put(prefixedKey,
-          jsonValue, Storage.CACHE_EXPIRATION_TIME_SECONDS);
+          jsonValue, Storage_.CACHE_EXPIRATION_TIME_SECONDS);
     }
     value = JSON.parse(jsonValue);
     this.memory_[key] = value;
@@ -804,13 +849,13 @@ Storage.prototype.getValue = function(key) {
  * @param {string} key The key.
  * @param {*} value The value.
  */
-Storage.prototype.setValue = function(key, value) {
+Storage_.prototype.setValue = function(key, value) {
   var prefixedKey = this.getPrefixedKey_(key);
   var jsonValue = JSON.stringify(value);
   this.properties_.setProperty(prefixedKey, jsonValue);
   if (this.cache_) {
     this.cache_.put(prefixedKey, jsonValue,
-        Storage.CACHE_EXPIRATION_TIME_SECONDS);
+        Storage_.CACHE_EXPIRATION_TIME_SECONDS);
   }
   this.memory_[key] = value;
 };
@@ -819,7 +864,7 @@ Storage.prototype.setValue = function(key, value) {
  * Removes a stored value.
  * @param {string} key The key.
  */
-Storage.prototype.removeValue = function(key) {
+Storage_.prototype.removeValue = function(key) {
   var prefixedKey = this.getPrefixedKey_(key);
   this.properties_.deleteProperty(prefixedKey);
   if (this.cache_) {
@@ -834,11 +879,11 @@ Storage.prototype.removeValue = function(key) {
  * @return {string} The key with the prefix applied.
  * @private
  */
-Storage.prototype.getPrefixedKey_ = function(key) {
-  if (!key) {
-    return this.prefix_;
-  } else {
+Storage_.prototype.getPrefixedKey_ = function(key) {
+  if (key) {
     return this.prefix_ + '.' + key;
+  } else {
+    return this.prefix_;
   }
 };
 
