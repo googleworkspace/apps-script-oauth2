@@ -15,12 +15,7 @@ var mocks = {
   UrlFetchApp: new MockUrlFetchApp(),
   __proto__: gas.globalMockDefault
 };
-var options = {
-  filter: function(f) {
-    return true;
-  }
-};
-var OAuth2 = gas.require('./src', mocks, options);
+var OAuth2 = gas.require('./src', mocks);
 
 describe('Service', function() {
   describe('#getToken()', function() {
