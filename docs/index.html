@@ -79,7 +79,7 @@ the menu item &quot;File &gt; Project properties&quot;.</p>
 <p>Alternatively you can call the service's <code>getRedirectUri()</code> method to view the
 exact URL that the service will use when performing the OAuth flow:</p>
 <pre class="prettyprint source lang-js"><code>/**
- * Logs the redict URI to register.
+ * Logs the redirect URI to register.
  */
 function logRedirectUri() {
   var service = getService();
@@ -154,12 +154,12 @@ to the user.</p>
   } else {
     return HtmlService.createHtmlOutput('Denied. You can close this tab');
   }
-}</code></pre><p>If the authorization URL was opened by the Apps Script UI (via a link, button, 
-etc) it's  possible to automatically close the window/tab using 
-<code>window.top.close()</code>. You can see an example of this in the sample add-on's 
+}</code></pre><p>If the authorization URL was opened by the Apps Script UI (via a link, button,
+etc) it's  possible to automatically close the window/tab using
+<code>window.top.close()</code>. You can see an example of this in the sample add-on's
 <a href="samples/Add-on/Callback.html#L47">Callback.html</a>.</p>
 <h3>4. Get the access token</h3><p>Now that the service is authorized you can use its access token to make
-reqests to the API. The access token can be passed along with a <code>UrlFetchApp</code>
+requests to the API. The access token can be passed along with a <code>UrlFetchApp</code>
 request in the &quot;Authorization&quot; header.</p>
 <pre class="prettyprint source lang-js"><code>function makeRequest() {
   var driveService = getDriveService();
@@ -169,22 +169,37 @@ request in the &quot;Authorization&quot; header.</p>
     }
   });
   // ...
-}</code></pre><h2>Compatibility</h2><p>This library was designed to work with any OAuth2 provider, but because of small
-differences in how they implement the standard it may be that some APIs
-aren't compatible. If you find an API that it doesn't work with, open an issue or
-fix the problem yourself and make a pull request against the source code.</p>
-<h2>Other features</h2><p>See below for some features of the library you may need to utilize depending on
+}</code></pre><h3>Logout</h3><p>To logout the user or disconnect the service, perhaps so the user can select a
+different account, use the <code>reset()</code> method:</p>
+<pre class="prettyprint source lang-js"><code>function logout() {
+  var service = getDriveService()
+  service.reset();
+}</code></pre><h2>Best practices</h2><h3>Caching</h3><p>Scripts that use the library heavily should enable caching on the service, so as
+to not exhaust their <code>PropertiesService</code> quotas. To enable caching, simply add
+a <code>CacheService</code> cache when configuring the service:</p>
+<pre class="prettyprint source lang-js"><code>return OAuth2.createService('Foo')
+    .setPropertyStore(PropertiesService.getUserProperties())
+    .setCache(CacheService.getUserCache())
+    // ...</code></pre><p>Make sure to select a cache with the same scope (user, script, or document) as
+the property store you configured.</p>
+<h3>Locking</h3><p>A race condition can occur when two or more script executions are both trying to
+refresh an expired token at the same time. This is sometimes observed in
+<a href="https://developers.google.com/gmail/add-ons/">Gmail Add-ons</a>, where a user
+quickly paging through their email can trigger the same add-on multiple times.</p>
+<p>To prevent this, use locking to ensure that only one execution is refreshing
+the token at a time. To enable locking, simply add a <code>LockService</code> lock when
+configuring the service:</p>
+<pre class="prettyprint source lang-js"><code>return OAuth2.createService('Foo')
+    .setPropertyStore(PropertiesService.getUserProperties())
+    .setCache(CacheService.getUserCache())
+    .setLock(LockService.getUserLock())
+    // ...</code></pre><p>Make sure to select a lock with the same scope (user, script, or document) as
+the property store and cache you configured.</p>
+<h2>Advanced configuration</h2><p>See below for some features of the library you may need to utilize depending on
 the specifics of the OAuth provider you are connecting to. See the <a href="http://googlesamples.github.io/apps-script-oauth2/Service_.html">generated
 reference documentation</a>
 for a complete list of methods available.</p>
-<h4>Resetting the access token</h4><p>If you have an access token set and need to remove it from the property store
-you can remove it with the <code>reset()</code> function. Before you can call reset you
-need to set the property store.</p>
-<pre class="prettyprint source lang-js"><code>function clearService(){
-  OAuth2.createService('drive')
-      .setPropertyStore(PropertiesService.getUserProperties())
-      .reset();
-}</code></pre><h4>Setting the token format</h4><p>OAuth services can return a token in two ways: as JSON or an URL encoded
+<h4>Setting the token format</h4><p>OAuth services can return a token in two ways: as JSON or an URL encoded
 string. You can set which format the token is in with
 <code>setTokenFormat(tokenFormat)</code>. There are two ENUMS to set the mode:
 <code>TOKEN_FORMAT.FORM_URL_ENCODED</code> and <code>TOKEN_FORMAT.JSON</code>. JSON is set as default
@@ -196,15 +211,52 @@ in these requests.</p>
 <pre class="prettyprint source lang-js"><code>.setTokenHeaders({
   'Authorization': 'Basic ' + Utilities.base64Encode(CLIENT_ID + ':' + CLIENT_SECRET)
 });</code></pre><p>See the <a href="samples/FitBit.gs">FitBit sample</a> for the complete code.</p>
-<h4>Modifying the access token payload</h4><p>Similar to Setting additional token headers, some services, such as the 
-Smartsheet API, require you to 
-<a href="http://smartsheet-platform.github.io/api-docs/?javascript#oauth-flow">add a hash to the access token request payloads</a>.
-The <code>setTokenPayloadHandler</code> method allows you to pass in a function to modify 
-the payload of an access token request before the request is sent to the token 
+<h4>Modifying the access token payload</h4><p>Some OAuth providers, such as the Smartsheet API, require you to
+<a href="">add a hash to the access token request payloads</a>.
+The <code>setTokenPayloadHandler</code> method allows you to pass in a function to modify
+the payload of an access token request before the request is sent to the token
 endpoint:</p>
 <pre class="prettyprint source lang-js"><code>// Set the handler for modifying the access token request payload:
 .setTokenPayloadHandler(myTokenHandler)</code></pre><p>See the <a href="samples/Smartsheet.gs">Smartsheet sample</a> for the complete code.</p>
-<h4>Service Accounts</h4><p>This library supports the service account authorization flow, also known as the
+<h4>Storing token-related data</h4><p>Some OAuth providers return IDs and other critical information in the callback
+URL along with the authorization code. While it's possible to capture and store
+these separately, they often have a lifecycle closely tied to that of the token
+and it makes sense to store them together. You can use <code>Service.getStorage()</code> to
+retrieve the token storage system for the service and set custom key-value
+pairs.</p>
+<p>For example, the Harvest API returns the account ID of the authorized account
+in the callback URL. In the following code the account ID is extracted from the
+request parameters and saved saved into storage.</p>
+<pre class="prettyprint source lang-js"><code>function authCallback(request) {
+  var service = getService();
+  var authorized = service.handleCallback(request);
+  if (authorized) {
+    // Gets the authorized account ID from the scope string. Assumes the
+    // application is configured to work with single accounts. Has the format
+    // &quot;harvest:{ACCOUNT_ID}&quot;.
+    var scope = request.parameter['scope'];
+    var accountId = scope.split(':')[1];
+    // Save the account ID in the service's storage.
+    service.getStorage().setValue('Harvest-Account-Id', accountId);
+    return HtmlService.createHtmlOutput('Success!');
+  } else {
+    return HtmlService.createHtmlOutput('Denied.');
+  }
+}</code></pre><p>When making an authorized request the account ID is retrieved from storage and
+passed via a header.</p>
+<pre class="prettyprint source lang-js"><code>if (service.hasAccess()) {
+  // Retrieve the account ID from storage.
+  var accountId = service.getStorage().getValue('Harvest-Account-Id');
+  var url = 'https://api.harvestapp.com/v2/users/me';
+  var response = UrlFetchApp.fetch(url, {
+    headers: {
+      'Authorization': 'Bearer ' + service.getAccessToken(),
+      'User-Agent': 'Apps Script Sample',
+      'Harvest-Account-Id': accountId
+    }
+  });</code></pre><p>Note that calling <code>Service.reset()</code> will remove all custom values from storage,
+in addition to the token.</p>
+<h4>Using service accounts</h4><p>This library supports the service account authorization flow, also known as the
 <a href="https://tools.ietf.org/html/draft-ietf-oauth-jwt-bearer-12">JSON Web Token (JWT) Profile</a>.
 This is a two-legged OAuth flow that doesn't require a user to visit a URL and
 authorize access.</p>
@@ -216,16 +268,20 @@ wishes to access the resources of a particular user, it uses the service account
 authorization flow to obtain an access token. See the sample
 <a href="samples/GoogleServiceAccount.gs"><code>GoogleServiceAccount.gs</code></a> for more
 information.</p>
+<h2>Compatibility</h2><p>This library was designed to work with any OAuth2 provider, but because of small
+differences in how they implement the standard it may be that some APIs
+aren't compatible. If you find an API that it doesn't work with, open an issue
+or fix the problem yourself and make a pull request against the source code.</p>
 <h2>Breaking changes</h2><ul>
-<li>Version 20 - Switched from using project keys to script IDs throughout the 
-library. When upgrading from an older version, ensure the callback URL 
-registered with the OAuth provider is updated to use the format 
+<li>Version 20 - Switched from using project keys to script IDs throughout the
+library. When upgrading from an older version, ensure the callback URL
+registered with the OAuth provider is updated to use the format
 <code>https://script.google.com/macros/d/{SCRIPT ID}/usercallback</code>.</li>
 <li>Version 22 - Renamed <code>Service.getToken_()</code> to <code>Service.getToken()</code>, since
 there OAuth providers that return important information in the token response.</li>
 </ul>
 <h2>Troubleshooting</h2><h3>You do not have permission to call fetch</h3><p>You are <a href="https://developers.google.com/apps-script/concepts/scopes#setting_explicit_scopes">setting explicit scopes</a>
-in your manifest file but have forgotten to add the 
+in your manifest file but have forgotten to add the
 <code>https://www.googleapis.com/auth/script.external_request</code> scope used by this library
 (and eventually the <code>UrlFetchApp</code> request you are making to an API).</p></article>
     </section>
@@ -597,7 +653,7 @@ any required setup.</div>
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sat Feb 17 2018 16:28:49 GMT-0500 (STD)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Mar 21 2018 10:13:02 GMT-0400 (DST)
 </footer>
 
 <script> prettyPrint(); </script>
