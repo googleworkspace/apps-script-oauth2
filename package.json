@@ -29,7 +29,8 @@
     "mocha": "^4.1.0"
   },
   "scripts": {
-    "postversion": "gulp dist",
+    "preversion": "npm test",
+    "version": "npm run dist && git add -A dist",
     "dist": "gulp dist",
     "lint": "gulp lint",
     "doc": "jsdoc -c jsdoc.json src/*.gs README.md",
