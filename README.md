@@ -332,7 +332,7 @@ authorize access.
 
 One common use for service accounts with Google APIs is
 [domain-wide delegation](https://developers.google.com/identity/protocols/OAuth2ServiceAccount#delegatingauthority).
-This process allows a Google Apps for Work/EDU domain administrator to grant an
+This process allows a G Suite domain administrator to grant an
 application access to all the users within the domain. When the application
 wishes to access the resources of a particular user, it uses the service account
 authorization flow to obtain an access token. See the sample
