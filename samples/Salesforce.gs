@@ -41,9 +41,10 @@ function run() {
  * @return {UrlFetchApp.HTTPResponse} The HTTP response.
  */
 function withRetry(service, func) {
-  var response, content;
+  var response;
+  var content;
   try {
-    var response = func();
+    response = func();
     content = response.getContentText();
   } catch (e) {
     content = e.toString();
