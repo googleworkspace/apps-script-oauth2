@@ -12,21 +12,48 @@ var CLIENT_SECRET = '...';
 function run() {
   var service = getService();
   if (service.hasAccess()) {
-    // GET requests require access_token parameter
     var url = service.getToken().instance_url +
         '/services/data/v24.0/chatter/users/me';
-    var response = UrlFetchApp.fetch(url, {
-      headers: {
-        Authorization: 'Bearer ' + service.getAccessToken()
-      }
+    // Make the HTTP request using a wrapper function that handles expired
+    // sessions.
+    var response = withRetry(service, function() {
+      return UrlFetchApp.fetch(url, {
+        headers: {
+          Authorization: 'Bearer ' + service.getAccessToken(),
+        }
+      });
     });
     var result = JSON.parse(response.getContentText());
-    Logger.log(JSON.stringify(result, null, '  '));
+    Logger.log(JSON.stringify(result, null, 2));
   } else {
     var authorizationUrl = service.getAuthorizationUrl();
     Logger.log('Open the following URL and re-run the script: %s',
         authorizationUrl);
   }
+}
+
+/**
+ * Wrapper function that detects an expired session, refreshes the access token,
+ * and retries the request again.
+ * @param {OAuth2.Service_} service The service to refresh.
+ * @param {Function} func The function that makes the UrlFetchApp request
+                          and returns the response.
+ * @return {UrlFetchApp.HTTPResponse} The HTTP response.
+ */
+function withRetry(service, func) {
+  var response;
+  var content;
+  try {
+    response = func();
+    content = response.getContentText();
+  } catch (e) {
+    content = e.toString();
+  }
+  if (content.indexOf('INVALID_SESSION_ID') !== -1) {
+    service.refresh();
+    return func();
+  }
+  return response;
 }
 
 /**
@@ -55,7 +82,10 @@ function getService() {
       .setCallbackFunction('authCallback')
 
       // Set the property store where authorized tokens should be persisted.
-      .setPropertyStore(PropertiesService.getUserProperties());
+      .setPropertyStore(PropertiesService.getUserProperties())
+
+      // Set the scopes to be requested.
+      .setScope('chatter_api refresh_token');
 }
 
 /**
