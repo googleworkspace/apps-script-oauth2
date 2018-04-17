@@ -49,7 +49,7 @@ function withRetry(service, func) {
   } catch (e) {
     content = e.toString();
   }
-  if (content.indexOf('INVALID_SESSION_ID') >= 0) {
+  if (content.indexOf('INVALID_SESSION_ID') !== -1) {
     service.refresh();
     return func();
   }
