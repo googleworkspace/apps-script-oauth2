@@ -230,7 +230,7 @@ the property store and cache you configured.
 
 See below for some features of the library you may need to utilize depending on
 the specifics of the OAuth provider you are connecting to. See the [generated
-reference documentation](http://googlesamples.github.io/apps-script-oauth2/Service_.html)
+reference documentation](http://gsuitedevs.github.io/apps-script-oauth2/Service_.html)
 for a complete list of methods available.
 
 #### Setting the token format
