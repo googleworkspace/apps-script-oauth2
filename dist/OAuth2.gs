@@ -463,7 +463,7 @@ Service_.prototype.hasAccess = function() {
   return this.lockable_(function() {
     var token = this.getToken();
     if (!token || this.isExpired_(token)) {
-      if (token && token.refresh_token) {
+      if (token && this.canRefresh_(token)) {
         try {
           this.refresh();
         } catch (e) {
@@ -675,6 +675,24 @@ Service_.prototype.isExpired_ = function(token) {
     var expiresTime = token.granted_time + Number(expiresIn);
     var now = getTimeInSeconds_(new Date());
     return expiresTime - now < Service_.EXPIRATION_BUFFER_SECONDS_;
+  }
+};
+
+/**
+ * Determines if a retrieved token can be refreshed.
+ * @param {Object} token The token to inspect.
+ * @return {boolean} True if it can be refreshed, false otherwise.
+ * @private
+ */
+Service_.prototype.canRefresh_ = function(token) {
+  if (!token.refresh_token) return false;
+  var expiresIn = token.refresh_token_expires_in;
+  if (!expiresIn) {
+    return true;
+  } else {
+    var expiresTime = token.granted_time + Number(expiresIn);
+    var now = getTimeInSeconds_(new Date());
+    return expiresTime - now > Service_.EXPIRATION_BUFFER_SECONDS_;
   }
 };
 
