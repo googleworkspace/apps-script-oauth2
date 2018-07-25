@@ -288,6 +288,20 @@ Service_.prototype.setExpirationMinutes = function(expirationMinutes) {
 };
 
 /**
+ * Sets the OAuth2 grant_type to use when obtaining an access token. This does
+ * not need to be set when using either the authorization code flow (AKA
+ * 3-legged OAuth) or the service account flow. The most common usage is to set
+ * it to "client_credentials" and then also set the token headers to include
+ * the Authorization header required by the OAuth2 provider.
+ * @param {string} grantType The OAuth2 grant_type value.
+ * @return {Service_} This service, for chaining.
+ */
+Service_.prototype.setGrantType = function(grantType) {
+  this.grantType_ = grantType;
+  return this;
+};
+
+/**
  * Gets the authorization URL. The first step in getting an OAuth2 token is to
  * have the user visit this URL and approve the authorization request. The
  * user will then be redirected back to your application using callback function
@@ -342,29 +356,14 @@ Service_.prototype.handleCallback = function(callbackRequest) {
     'Token URL': this.tokenUrl_
   });
   var redirectUri = getRedirectUri(this.scriptId_);
-  var headers = {
-    'Accept': this.tokenFormat_
-  };
-  if (this.tokenHeaders_) {
-    headers = extend_(headers, this.tokenHeaders_);
-  }
-  var tokenPayload = {
+  var payload = {
     code: code,
     client_id: this.clientId_,
     client_secret: this.clientSecret_,
     redirect_uri: redirectUri,
     grant_type: 'authorization_code'
   };
-  if (this.tokenPayloadHandler_) {
-    tokenPayload = this.tokenPayloadHandler_(tokenPayload);
-  }
-  var response = UrlFetchApp.fetch(this.tokenUrl_, {
-    method: 'post',
-    headers: headers,
-    payload: tokenPayload,
-    muteHttpExceptions: true
-  });
-  var token = this.getTokenFromResponse_(response);
+  var token = this.fetchToken_(payload);
   this.saveToken_(token);
   return true;
 };
@@ -380,21 +379,18 @@ Service_.prototype.hasAccess = function() {
   return this.lockable_(function() {
     var token = this.getToken();
     if (!token || this.isExpired_(token)) {
-      if (token && this.canRefresh_(token)) {
-        try {
+      try {
+        if (token && this.canRefresh_(token)) {
           this.refresh();
-        } catch (e) {
-          this.lastError_ = e;
-          return false;
-        }
-      } else if (this.privateKey_) {
-        try {
+        } else if (this.privateKey_) {
           this.exchangeJwt_();
-        } catch (e) {
-          this.lastError_ = e;
+        } else if (this.grantType_) {
+          this.exchangeGrant_();
+        } else {
           return false;
         }
-      } else {
+      } catch (e) {
+        this.lastError_ = e;
         return false;
       }
     }
@@ -440,6 +436,34 @@ Service_.prototype.getLastError = function() {
  */
 Service_.prototype.getRedirectUri = function() {
   return getRedirectUri(this.scriptId_);
+};
+
+
+/**
+ * Fetches a new token from the OAuth server.
+ * @param {Object} payload The token request payload.
+ * @param {string} [optUrl] The URL of the token endpoint.
+ * @return {Object} The parsed token.
+ */
+Service_.prototype.fetchToken_ = function(payload, optUrl) {
+  // Use the configured token URL unless one is specified.
+  var url = optUrl || this.tokenUrl_;
+  var headers = {
+    'Accept': this.tokenFormat_
+  };
+  if (this.tokenHeaders_) {
+    headers = extend_(headers, this.tokenHeaders_);
+  }
+  if (this.tokenPayloadHandler_) {
+    tokenPayload = this.tokenPayloadHandler_(payload);
+  }
+  var response = UrlFetchApp.fetch(url, {
+    method: 'post',
+    headers: headers,
+    payload: payload,
+    muteHttpExceptions: true
+  });
+  return this.getTokenFromResponse_(response);
 };
 
 /**
@@ -512,30 +536,13 @@ Service_.prototype.refresh = function() {
     if (!token.refresh_token) {
       throw new Error('Offline access is required.');
     }
-    var headers = {
-      Accept: this.tokenFormat_
-    };
-    if (this.tokenHeaders_) {
-      headers = extend_(headers, this.tokenHeaders_);
-    }
-    var tokenPayload = {
+    var payload = {
         refresh_token: token.refresh_token,
         client_id: this.clientId_,
         client_secret: this.clientSecret_,
         grant_type: 'refresh_token'
     };
-    if (this.tokenPayloadHandler_) {
-      tokenPayload = this.tokenPayloadHandler_(tokenPayload);
-    }
-    // Use the refresh URL if specified, otherwise fallback to the token URL.
-    var url = this.refreshUrl_ || this.tokenUrl_;
-    var response = UrlFetchApp.fetch(url, {
-      method: 'post',
-      headers: headers,
-      payload: tokenPayload,
-      muteHttpExceptions: true
-    });
-    var newToken = this.getTokenFromResponse_(response);
+    var newToken = this.fetchToken_(payload, this.refreshUrl_);
     if (!newToken.refresh_token) {
       newToken.refresh_token = token.refresh_token;
     }
@@ -623,22 +630,11 @@ Service_.prototype.exchangeJwt_ = function() {
     'Token URL': this.tokenUrl_
   });
   var jwt = this.createJwt_();
-  var headers = {
-    'Accept': this.tokenFormat_
+  var payload = {
+    assertion: jwt,
+    grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer'
   };
-  if (this.tokenHeaders_) {
-    headers = extend_(headers, this.tokenHeaders_);
-  }
-  var response = UrlFetchApp.fetch(this.tokenUrl_, {
-    method: 'post',
-    headers: headers,
-    payload: {
-      assertion: jwt,
-      grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer'
-    },
-    muteHttpExceptions: true
-  });
-  var token = this.getTokenFromResponse_(response);
+  var token = this.fetchToken_(payload);
   this.saveToken_(token);
 };
 
@@ -698,4 +694,22 @@ Service_.prototype.lockable_ = function(func) {
     this.lock_.releaseLock();
   }
   return result;
+};
+
+/**
+ * Obtain an access token using the custom grant type specified. Most often
+ * this will be "client_credentials", in which case make sure to also specify an
+ * Authorization header if required by your OAuth provider.
+ */
+Service_.prototype.exchangeGrant_ = function() {
+  validate_({
+    'Grant Type': this.grantType_,
+    'Token URL': this.tokenUrl_
+  });
+  var payload = {
+    grant_type: this.grantType_
+  };
+  payload = extend_(payload, this.params_);
+  var token = this.fetchToken_(payload);
+  this.saveToken_(token);
 };
