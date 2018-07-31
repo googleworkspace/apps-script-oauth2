@@ -1,2 +1,4 @@
 node_modules/
 *.log
+samples/**/Secrets.gs
+samples/**/.clasp.json

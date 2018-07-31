@@ -1,0 +1,109 @@
+<!--
+ * Copyright 2016 Google Inc. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ -->
+<script>
+  /**
+   * Create a wrapped version of google.script.run that
+   * is adapted for Angular promises.
+   */
+  var ScriptService = function($q) {
+    var self = this;
+    var promisify = function(key) {
+      return function() {
+        var args = arguments;
+        return $q(function(resolve, reject) {
+          google.script.run
+            .withSuccessHandler(resolve)
+            .withFailureHandler(reject)
+            [key].apply(google.script.run, args);
+        });
+      };
+    };
+    angular.forEach(google.script.run, function(_, key) {
+      self[key] = promisify(key)
+    });
+  };
+
+  /**
+   * The controller for the sample.
+   */
+  var SampleController = function($scope, $window, script, intercom) {
+    var self = this;
+
+    // Hold onto some dependencies.
+    self.$window = $window;
+    self.script = script;
+
+    // Initialize state.
+    self.email = $window.email;
+    self.isSignedIn = $window.isSignedIn;
+    self.user = null;
+    self.repos = null;
+
+    // Watch for changes to isSignedIn.
+    $scope.$watch('sample.isSignedIn', function(isSignedIn) {
+      if (isSignedIn) {
+        script.getGitHubProfile().then(function(user) {
+          self.user = user;
+        }, self.handleError);
+        script.getGitHubRepos().then(function(repos) {
+          self.repos = repos;
+        }, self.handleError);
+      } else {
+        self.user = null;
+        self.repos = null;
+      }
+    });
+
+    // Listen for the event that indicates that the OAuth flow has completed.
+    intercom.on('oauthComplete', function(data) {
+      // Make sure the event is for the same Google account.
+      if (data.email === self.email) {
+        $scope.$apply(function() {
+          self.isSignedIn = data.isSignedIn;
+        });
+      }
+    });
+  };
+
+  // Handler for the sign in button.
+  SampleController.prototype.signIn = function() {
+    var self = this;
+    self.script.getAuthorizationUrl().then(function(authorizationUrl) {
+      self.$window.open(authorizationUrl);
+    }, self.handleError);
+  };
+
+  // Handler for the sign out button.
+  SampleController.prototype.signOut = function() {
+    var self = this;
+    self.script.signOut().then(function() {
+      self.isSignedIn = false;
+    }, self.handleError);
+  };
+
+  // A generic handler for script errors.
+  SampleController.prototype.handleError = function(error) {
+    var self = this;
+    self.$window.alert(error);
+  };
+
+  var module = angular.module('sampleApp', [])
+    .service('script', ScriptService)
+    .service('intercom', function() {
+      return Intercom.getInstance();
+    })
+    .controller('SampleController', SampleController);
+</script>
