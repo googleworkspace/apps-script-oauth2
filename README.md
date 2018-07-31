@@ -31,10 +31,11 @@ in your manifest file, ensure that the following scope is included:
 ## Redirect URI
 
 Before you can start authenticating against an OAuth2 provider, you usually need
-to register your application and retrieve the client ID and secret. Often
-these registration screens require you to enter a "Redirect URI", which is the
-URL that users will be redirected to after they've authorized the token. For
-this library (and the Apps Script functionality in general) the URL will always
+to register your application with that OAuth2 provider and obtain a client ID and secret. Often
+a provider's registration screen requires you to enter a "Redirect URI", which is the
+URL that the user's browser will be redirected to after they've authorized access to their account at that provider. 
+
+For this library (and the Apps Script functionality in general) the URL will always
 be in the following format:
 
     https://script.google.com/macros/d/{SCRIPT ID}/usercallback
