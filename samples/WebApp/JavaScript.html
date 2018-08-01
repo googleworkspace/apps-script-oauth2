@@ -1,11 +1,11 @@
 <!--
- * Copyright 2016 Google Inc. All Rights Reserved.
+ * Copyright 2018 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,7 @@
   /**
    * Create a wrapped version of google.script.run that
    * is adapted for Angular promises.
+   * @see https://docs.angularjs.org/api/ng/service/$q
    */
   var ScriptService = function($q) {
     var self = this;
@@ -24,13 +25,16 @@
       return function() {
         var args = arguments;
         return $q(function(resolve, reject) {
+          // Call google.script.run with the specified method.
           google.script.run
             .withSuccessHandler(resolve)
             .withFailureHandler(reject)
+            // Retrieve the method to run and then apply it to the arguments.
             [key].apply(google.script.run, args);
         });
       };
     };
+    // For each method exposed in google.script.run, wrap it up in a promise.
     angular.forEach(google.script.run, function(_, key) {
       self[key] = promisify(key)
     });
@@ -52,7 +56,8 @@
     self.user = null;
     self.repos = null;
 
-    // Watch for changes to isSignedIn.
+    // Watch for changes to the user's sign in status, and fetch their GitHub
+    // data when they become signed in.
     $scope.$watch('sample.isSignedIn', function(isSignedIn) {
       if (isSignedIn) {
         script.getGitHubProfile().then(function(user) {

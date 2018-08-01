@@ -4,6 +4,8 @@ This sample web application connects to your GitHub account using the Apps
 Script OAuth2 library and displays some information about the repositories you
 own. It demonstrates some best practices for using this library in a web app.
 
+![Sample web app screenshot](screenshot.png)
+
 ## Setup
 
 You can easily setup your own copy of this sample using the
@@ -26,8 +28,7 @@ run `clasp login` before executing the commands below.
     GitHub developer console into those variables.
 1.  Run the following commands:
     ```sh
-    clasp version "Initial version"
-    clasp deploy 1 "Web App"
+    clasp deploy
     ```
 1.  Copy the deployment ID from the command line and insert it into the
     following URL: `https://script.google.com/macros/s/<DEPLOYMENT_ID>/exec`.
@@ -40,8 +41,8 @@ to communicate between tabs / windows. Specifically, the callback page sends a
 message to the web app letting it know when the authorization flow has
 completed, so it can start updating its contents.
 
-## AngularJS
+## Angular
 
-This web app uses the [AngularJS 1 framework](https://angularjs.org/) to make it
+This web app uses the [Angular 1 framework](https://angularjs.org/) to make it
 easier to update the page dynamically. It's use is not required, and many
 other JavaScript frameworks would work just as well.

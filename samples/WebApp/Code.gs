@@ -1,11 +1,11 @@
 /**
- * Copyright 2016 Google Inc. All Rights Reserved.
+ * Copyright 2018 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -55,28 +55,25 @@ function signOut() {
  * Gets the user's GitHub profile.
  */
 function getGitHubProfile() {
-  var service = getGitHubService();
-  if (!service.hasAccess()) {
-    throw new Error('Error: Missing GitHub authorization.');
-  }
-  var url = 'https://api.github.com/user';
-  var response = UrlFetchApp.fetch(url, {
-    headers: {
-      Authorization: 'Bearer ' + service.getAccessToken()
-    }
-  });
-  return JSON.parse(response.getContentText());
+  return getGitHubResource('user');
 }
 
 /**
  * Gets the user's GitHub repos.
  */
 function getGitHubRepos() {
+  return getGitHubResource('user/repos');
+}
+
+/**
+ * Fetches the specified resource from the GitHub API.
+ */
+function getGitHubResource(resource) {
   var service = getGitHubService();
   if (!service.hasAccess()) {
     throw new Error('Error: Missing GitHub authorization.');
   }
-  var url = 'https://api.github.com/user/repos';
+  var url = 'https://api.github.com/' + resource;
   var response = UrlFetchApp.fetch(url, {
     headers: {
       Authorization: 'Bearer ' + service.getAccessToken()
