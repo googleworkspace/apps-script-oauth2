@@ -13,7 +13,7 @@
   },
   "homepage": "https://github.com/googlesamples/apps-script-oauth2",
   "devDependencies": {
-    "@google/clasp": "^1.1.5",
+    "@google/clasp": "^1.5.0",
     "chai": "^4.1.2",
     "del": "^1.2.1",
     "eslint": "^4.17.0",
@@ -36,7 +36,7 @@
     "dist": "gulp dist",
     "lint": "gulp lint",
     "doc": "jsdoc -c jsdoc.json src/*.js README.md",
-    "push": "clasp push",
+    "push": "cd src; clasp push",
     "test": "mocha"
   }
 }
