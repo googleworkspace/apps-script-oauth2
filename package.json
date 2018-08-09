@@ -30,9 +30,9 @@
     "mocha": "^4.1.0"
   },
   "scripts": {
-    "preversion": "npm test && clasp push",
+    "preversion": "npm test && cd src/ && clasp push",
     "version": "npm run dist && git add -A dist",
-    "postversion": "MESSAGE=$(git log -1 --pretty=%B) && clasp version $MESSAGE",
+    "postversion": "MESSAGE=$(git log -1 --pretty=%B) && cd src/ && clasp version $MESSAGE",
     "dist": "gulp dist",
     "lint": "gulp lint",
     "doc": "jsdoc -c jsdoc.json src/*.js README.md",
