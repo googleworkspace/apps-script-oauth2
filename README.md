@@ -340,6 +340,20 @@ authorization flow to obtain an access token. See the sample
 [`GoogleServiceAccount.gs`](samples/GoogleServiceAccount.gs) for more
 information.
 
+#### Using alternative grant types
+
+Although optimized for the authorization code (3-legged) and service account
+(JWT bearer) flows, this library supports arbitrary flows using the
+`setGrantType()` method. Use `setParam()` or `setTokenPayloadHandler()` to add
+fields to the token request payload, and `setTokenHeaders()` to add any required
+headers.
+
+The most common of these is the `client_credentials` grant type, which often
+requires that the client ID and secret are passed in the Authorization header.
+See the sample [`TwitterAppOnly.gs`](samples/TwitterAppOnly.gs) for more
+information.
+
+
 ## Compatibility
 
 This library was designed to work with any OAuth2 provider, but because of small
