@@ -10,8 +10,8 @@ var CLIENT_SECRET = '...';
 /**
  * Authorizes and makes a request to the RitKit API.
  */
-function runK() {
-  var service = getServiceK();
+function run() {
+  var service = getService();
   if (service.hasAccess()) {
     console.log(service.getAccessToken());
     var url = 'https://api.ritekit.com/v1/stats/multiple-hashtags?tags=php&access_token=' + service.getAccessToken();
@@ -26,14 +26,14 @@ function runK() {
 /**
  * Reset the authorization state, so that it can be re-tested.
  */
-function resetK() {
-  getServiceK().reset();
+function reset() {
+  getService().reset();
 }
 
 /**
  * Configures the service.
  */
-function getServiceK() {
+function getService() {
   return OAuth2.createService('RiteKit')
       // Set the endpoint URLs.
       .setTokenUrl('https://ritekit.com/oauth/token')
