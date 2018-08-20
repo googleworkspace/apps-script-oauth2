@@ -40,14 +40,14 @@ function getServiceK() {
 
       // Sets the custom grant type to use.
       .setGrantType('client_credentials')
-      
+
       // Set the client ID and secret as params.
       .setParam('client_id', CLIENT_ID)
       .setParam('client_secret', CLIENT_SECRET)
 
       // Set the property store where authorized tokens should be persisted.
       .setPropertyStore(PropertiesService.getUserProperties())
-      
+
       // [required] scope (always use scope=data)
       .setScope('data');
 }
