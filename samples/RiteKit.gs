@@ -13,7 +13,6 @@ var CLIENT_SECRET = '...';
 function run() {
   var service = getService();
   if (service.hasAccess()) {
-    console.log(service.getAccessToken());
     var url = 'https://api.ritekit.com/v1/stats/multiple-hashtags?tags=php&access_token=' + service.getAccessToken();
     var response = UrlFetchApp.fetch(url);
     var result = JSON.parse(response.getContentText());
