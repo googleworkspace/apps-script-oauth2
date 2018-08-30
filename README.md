@@ -31,12 +31,13 @@ in your manifest file, ensure that the following scope is included:
 ## Redirect URI
 
 Before you can start authenticating against an OAuth2 provider, you usually need
-to register your application with that OAuth2 provider and obtain a client ID and secret. Often
-a provider's registration screen requires you to enter a "Redirect URI", which is the
-URL that the user's browser will be redirected to after they've authorized access to their account at that provider. 
+to register your application with that OAuth2 provider and obtain a client ID
+and secret. Often a provider's registration screen requires you to enter a
+"Redirect URI", which is the URL that the user's browser will be redirected to
+after they've authorized access to their account at that provider.
 
-For this library (and the Apps Script functionality in general) the URL will always
-be in the following format:
+For this library (and the Apps Script functionality in general) the URL will
+always be in the following format:
 
     https://script.google.com/macros/d/{SCRIPT ID}/usercallback
 
@@ -350,8 +351,15 @@ headers.
 
 The most common of these is the `client_credentials` grant type, which often
 requires that the client ID and secret are passed in the Authorization header.
-See the sample [`TwitterAppOnly.gs`](samples/TwitterAppOnly.gs) for more
-information.
+When using this grant type, if you set a client ID and secret using
+`setClientId()` and `setClientSecret()` respectively then an
+`Authorization: Basic ...` header will be added to the token request
+automatically, since this is what most OAuth2 providers require. If your
+provider uses a different method of authorization then don't set the client ID
+and secret and add an authorization header manually.
+
+See the sample [`TwitterAppOnly.gs`](samples/TwitterAppOnly.gs) for a working
+example.
 
 
 ## Compatibility

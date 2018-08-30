@@ -12,7 +12,7 @@ var MockUrlFetchApp = function() {
 
 MockUrlFetchApp.prototype.fetch = function(url, optOptions) {
   var delay = this.delayFunction();
-  var result = this.resultFunction();
+  var result = this.resultFunction(url, optOptions);
   if (delay) {
     sleep(delay).wait();
   }

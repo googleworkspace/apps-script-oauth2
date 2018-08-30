@@ -76,3 +76,27 @@ function extend_(destination, source) {
   }
   return destination;
 }
+
+/* exported getValueCaseInsensitive_ */
+/**
+ * Gets the value stored in the object under the given key, in a
+ * case-insensitive way.
+ * @param {Object} obj The object to search in.
+ * @param {string} key The key to search for.
+ * @return {Object} the value under that key, or undefined otherwise
+ */
+function getValueCaseInsensitive_(obj, key) {
+  if (obj == null || typeof obj !== 'object' ||
+      key == null || !key.toString) {
+    return undefined;
+  }
+  if (key in obj) {
+    return obj[key];
+  }
+  return Object.keys(obj).reduce(function(result, k) {
+    if (result) return result;
+    if (k.toLowerCase() === key.toLowerCase()) {
+      return obj[k];
+    }
+  }, undefined);
+}

@@ -13,6 +13,11 @@ var mocks = {
     }
   },
   UrlFetchApp: new MockUrlFetchApp(),
+  Utilities: {
+    base64Encode: function(data) {
+      return Buffer.from(data).toString('base64');
+    }
+  },
   __proto__: gas.globalMockDefault
 };
 var OAuth2 = gas.require('./src', mocks);
@@ -236,6 +241,82 @@ describe('Service', function() {
       });
     });
   });
+
+  describe('#exchangeGrant_()', function() {
+    var getValueCaseInsensitive_ = OAuth2.getValueCaseInsensitive_;
+
+    it('should not set auth header if the grant type is not client_credentials',
+        function(done) {
+      mocks.UrlFetchApp.resultFunction = function(url, urlOptions) {
+        assert.isUndefined(
+            getValueCaseInsensitive_(urlOptions.headers, 'Authorization'));
+        done();
+      };
+      var service = OAuth2.createService('test')
+          .setGrantType('fake')
+          .setTokenUrl('http://www.example.com');
+      service.exchangeGrant_();
+    });
+
+    it('should not set auth header if the client ID is not set',
+        function(done) {
+      mocks.UrlFetchApp.resultFunction = function(url, urlOptions) {
+        assert.isUndefined(
+            getValueCaseInsensitive_(urlOptions.headers, 'Authorization'));
+        done();
+      };
+      var service = OAuth2.createService('test')
+          .setGrantType('client_credentials')
+          .setTokenUrl('http://www.example.com');
+      service.exchangeGrant_();
+    });
+
+    it('should not set auth header if the client secret is not set',
+        function(done) {
+      mocks.UrlFetchApp.resultFunction = function(url, urlOptions) {
+        assert.isUndefined(
+            getValueCaseInsensitive_(urlOptions.headers, 'Authorization'));
+        done();
+      };
+      var service = OAuth2.createService('test')
+          .setGrantType('client_credentials')
+          .setTokenUrl('http://www.example.com')
+          .setClientId('abc');
+      service.exchangeGrant_();
+    });
+
+    it('should not set auth header if it is already set',
+        function(done) {
+      mocks.UrlFetchApp.resultFunction = function(url, urlOptions) {
+        assert.equal(urlOptions.headers.Authorization, 'something');
+        done();
+      };
+      var service = OAuth2.createService('test')
+          .setGrantType('client_credentials')
+          .setTokenUrl('http://www.example.com')
+          .setClientId('abc')
+          .setClientSecret('def')
+          .setTokenHeaders({
+            Authorization: 'something'
+          });
+      service.exchangeGrant_();
+    });
+
+    it('should set the auth header for the client_credentials grant type, if ' +
+        'the client ID and client secret are set and the authorization header' +
+        'is not already set', function(done) {
+      mocks.UrlFetchApp.resultFunction = function(url, urlOptions) {
+        assert.equal(urlOptions.headers.Authorization, 'Basic YWJjOmRlZg==');
+        done();
+      };
+      var service = OAuth2.createService('test')
+          .setGrantType('client_credentials')
+          .setTokenUrl('http://www.example.com')
+          .setClientId('abc')
+          .setClientSecret('def');
+      service.exchangeGrant_();
+    });
+  });
 });
 
 describe('Utilities', function() {
@@ -253,6 +334,37 @@ describe('Utilities', function() {
     it('should extend (merge) an object', function() {
       var o = extend_(baseObj, {foo: [100], bar: 2, baz: {}});
       assert.deepEqual(o, {foo: [100], bar: 2, baz: {}});
+    });
+  });
+
+  describe('#getValueCaseInsensitive_()', function() {
+    var getValueCaseInsensitive_ = OAuth2.getValueCaseInsensitive_;
+
+    it('should find identical keys', function() {
+      assert.isTrue(getValueCaseInsensitive_({'a': true}, 'a'));
+      assert.isTrue(getValueCaseInsensitive_({'A': true}, 'A'));
+      assert.isTrue(getValueCaseInsensitive_({'Ab': true}, 'Ab'));
+    });
+
+    it('should find matching keys of different cases', function() {
+      assert.isTrue(getValueCaseInsensitive_({'a': true}, 'A'));
+      assert.isTrue(getValueCaseInsensitive_({'A': true}, 'a'));
+      assert.isTrue(getValueCaseInsensitive_({'Ab': true}, 'aB'));
+      assert.isTrue(getValueCaseInsensitive_({'a2': true}, 'A2'));
+    });
+
+    it('should work with non-alphabetic keys', function() {
+      assert.isTrue(getValueCaseInsensitive_({'A2': true}, 'a2'));
+      assert.isTrue(getValueCaseInsensitive_({'2': true}, '2'));
+      assert.isTrue(getValueCaseInsensitive_({2: true}, 2));
+      assert.isTrue(getValueCaseInsensitive_({'!@#': true}, '!@#'));
+    });
+
+    it('should work null and undefined', function() {
+      assert.isUndefined(getValueCaseInsensitive_(null, 'key'));
+      assert.isUndefined(getValueCaseInsensitive_(undefined, 'key'));
+      assert.isUndefined(getValueCaseInsensitive_({'a': true}, null));
+      assert.isUndefined(getValueCaseInsensitive_({'a': true}, undefined));
     });
   });
 });
