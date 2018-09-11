@@ -243,13 +243,12 @@ describe('Service', function() {
   });
 
   describe('#exchangeGrant_()', function() {
-    var getValueCaseInsensitive_ = OAuth2.getValueCaseInsensitive_;
+    var witLowerCaseKeys_ = OAuth2.witLowerCaseKeys_;
 
     it('should not set auth header if the grant type is not client_credentials',
         function(done) {
       mocks.UrlFetchApp.resultFunction = function(url, urlOptions) {
-        assert.isUndefined(
-            getValueCaseInsensitive_(urlOptions.headers, 'Authorization'));
+        assert.isUndefined(witLowerCaseKeys_(urlOptions.headers).authorization);
         done();
       };
       var service = OAuth2.createService('test')
@@ -261,8 +260,7 @@ describe('Service', function() {
     it('should not set auth header if the client ID is not set',
         function(done) {
       mocks.UrlFetchApp.resultFunction = function(url, urlOptions) {
-        assert.isUndefined(
-            getValueCaseInsensitive_(urlOptions.headers, 'Authorization'));
+        assert.isUndefined(witLowerCaseKeys_(urlOptions.headers).authorization);
         done();
       };
       var service = OAuth2.createService('test')
@@ -274,8 +272,7 @@ describe('Service', function() {
     it('should not set auth header if the client secret is not set',
         function(done) {
       mocks.UrlFetchApp.resultFunction = function(url, urlOptions) {
-        assert.isUndefined(
-            getValueCaseInsensitive_(urlOptions.headers, 'Authorization'));
+        assert.isUndefined(witLowerCaseKeys_(urlOptions.headers).authorization);
         done();
       };
       var service = OAuth2.createService('test')
@@ -288,7 +285,8 @@ describe('Service', function() {
     it('should not set auth header if it is already set',
         function(done) {
       mocks.UrlFetchApp.resultFunction = function(url, urlOptions) {
-        assert.equal(urlOptions.headers.Authorization, 'something');
+        assert.equal(witLowerCaseKeys_(urlOptions.headers).authorization,
+            'something');
         done();
       };
       var service = OAuth2.createService('test')
@@ -297,7 +295,7 @@ describe('Service', function() {
           .setClientId('abc')
           .setClientSecret('def')
           .setTokenHeaders({
-            Authorization: 'something'
+            authorization: 'something'
           });
       service.exchangeGrant_();
     });
@@ -306,7 +304,8 @@ describe('Service', function() {
         'the client ID and client secret are set and the authorization header' +
         'is not already set', function(done) {
       mocks.UrlFetchApp.resultFunction = function(url, urlOptions) {
-        assert.equal(urlOptions.headers.Authorization, 'Basic YWJjOmRlZg==');
+        assert.equal(witLowerCaseKeys_(urlOptions.headers).authorization,
+            'Basic YWJjOmRlZg==');
         done();
       };
       var service = OAuth2.createService('test')
@@ -337,34 +336,38 @@ describe('Utilities', function() {
     });
   });
 
-  describe('#getValueCaseInsensitive_()', function() {
-    var getValueCaseInsensitive_ = OAuth2.getValueCaseInsensitive_;
+  describe('#witLowerCaseKeys_()', function() {
+    var witLowerCaseKeys_ = OAuth2.witLowerCaseKeys_;
+    var data = {
+      'a': true,
+      'A': true,
+      'B': true,
+      'Cc': true,
+      'D2': true,
+      'E!@#': true
+    };
+    var lowerCaseData = witLowerCaseKeys_(data);
 
-    it('should find identical keys', function() {
-      assert.isTrue(getValueCaseInsensitive_({'a': true}, 'a'));
-      assert.isTrue(getValueCaseInsensitive_({'A': true}, 'A'));
-      assert.isTrue(getValueCaseInsensitive_({'Ab': true}, 'Ab'));
+    it('should contain lower-case keys', function() {
+      assert.isTrue(lowerCaseData['a']);
+      assert.isTrue(lowerCaseData['b']);
+      assert.isTrue(lowerCaseData['cc']);
+      assert.isTrue(lowerCaseData['d2']);
+      assert.isTrue(lowerCaseData['e!@#']);
     });
 
-    it('should find matching keys of different cases', function() {
-      assert.isTrue(getValueCaseInsensitive_({'a': true}, 'A'));
-      assert.isTrue(getValueCaseInsensitive_({'A': true}, 'a'));
-      assert.isTrue(getValueCaseInsensitive_({'Ab': true}, 'aB'));
-      assert.isTrue(getValueCaseInsensitive_({'a2': true}, 'A2'));
+    it('should not contain upper-case keys', function() {
+      assert.isUndefined(lowerCaseData['A']);
+      assert.isUndefined(lowerCaseData['B']);
+      assert.isUndefined(lowerCaseData['Cc']);
+      assert.isUndefined(lowerCaseData['D2']);
+      assert.isUndefined(lowerCaseData['E!@#']);
     });
 
-    it('should work with non-alphabetic keys', function() {
-      assert.isTrue(getValueCaseInsensitive_({'A2': true}, 'a2'));
-      assert.isTrue(getValueCaseInsensitive_({'2': true}, '2'));
-      assert.isTrue(getValueCaseInsensitive_({2: true}, 2));
-      assert.isTrue(getValueCaseInsensitive_({'!@#': true}, '!@#'));
-    });
-
-    it('should work null and undefined', function() {
-      assert.isUndefined(getValueCaseInsensitive_(null, 'key'));
-      assert.isUndefined(getValueCaseInsensitive_(undefined, 'key'));
-      assert.isUndefined(getValueCaseInsensitive_({'a': true}, null));
-      assert.isUndefined(getValueCaseInsensitive_({'a': true}, undefined));
+    it('should handle null, undefined, and empty objects', function() {
+      assert.isNull(witLowerCaseKeys_(null));
+      assert.isUndefined(witLowerCaseKeys_(undefined));
+      assert.isEmpty(witLowerCaseKeys_({}));
     });
   });
 });

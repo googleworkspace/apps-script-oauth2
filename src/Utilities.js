@@ -77,26 +77,21 @@ function extend_(destination, source) {
   return destination;
 }
 
-/* exported getValueCaseInsensitive_ */
+/* exported witLowerCaseKeys_ */
 /**
- * Gets the value stored in the object under the given key, in a
- * case-insensitive way.
- * @param {Object} obj The object to search in.
- * @param {string} key The key to search for.
- * @return {Object} the value under that key, or undefined otherwise
+ * Gets a copy of an object with all the keys converted to lower-case strings.
+ *
+ * @param {Object} obj The object to copy.
+ * @return {Object} a shallow copy of the object with all lower-case keys.
  */
-function getValueCaseInsensitive_(obj, key) {
-  if (obj == null || typeof obj !== 'object' ||
-      key == null || !key.toString) {
-    return undefined;
+function witLowerCaseKeys_(obj) {
+  if (obj === null || typeof obj !== 'object') {
+    return obj;
   }
-  if (key in obj) {
-    return obj[key];
-  }
+  // For each key in the source object, add a lower-case version to a new
+  // object, and return it.
   return Object.keys(obj).reduce(function(result, k) {
-    if (result) return result;
-    if (k.toLowerCase() === key.toLowerCase()) {
-      return obj[k];
-    }
-  }, undefined);
+    result[k.toLowerCase()] = obj[k];
+    return result;
+  }, {});
 }
