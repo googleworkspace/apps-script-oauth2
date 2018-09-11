@@ -91,6 +91,23 @@ describe('Service', function() {
       assert.equal(cache.counter, cacheStart);
       assert.equal(properties.counter, propertiesStart);
     });
+
+    it('should skip the local memory cache when desired', function() {
+      var properties = new MockProperties();
+      var service = OAuth2.createService('test')
+          .setPropertyStore(properties);
+      var token = {
+        access_token: 'foo'
+      };
+      service.saveToken_(token);
+
+      var newToken = {
+        access_token: 'bar'
+      };
+      properties.setProperty('oauth2.test', JSON.stringify(newToken));
+
+      assert.deepEqual(service.getToken(true), newToken);
+    });
   });
 
   describe('#saveToken_()', function() {
