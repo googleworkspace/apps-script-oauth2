@@ -13,6 +13,11 @@ var mocks = {
     }
   },
   UrlFetchApp: new MockUrlFetchApp(),
+  Utilities: {
+    base64Encode: function(data) {
+      return Buffer.from(data).toString('base64');
+    }
+  },
   __proto__: gas.globalMockDefault
 };
 var OAuth2 = gas.require('./src', mocks);
@@ -236,6 +241,81 @@ describe('Service', function() {
       });
     });
   });
+
+  describe('#exchangeGrant_()', function() {
+    var toLowerCaseKeys_ = OAuth2.toLowerCaseKeys_;
+
+    it('should not set auth header if the grant type is not client_credentials',
+        function(done) {
+      mocks.UrlFetchApp.resultFunction = function(url, urlOptions) {
+        assert.isUndefined(toLowerCaseKeys_(urlOptions.headers).authorization);
+        done();
+      };
+      var service = OAuth2.createService('test')
+          .setGrantType('fake')
+          .setTokenUrl('http://www.example.com');
+      service.exchangeGrant_();
+    });
+
+    it('should not set auth header if the client ID is not set',
+        function(done) {
+      mocks.UrlFetchApp.resultFunction = function(url, urlOptions) {
+        assert.isUndefined(toLowerCaseKeys_(urlOptions.headers).authorization);
+        done();
+      };
+      var service = OAuth2.createService('test')
+          .setGrantType('client_credentials')
+          .setTokenUrl('http://www.example.com');
+      service.exchangeGrant_();
+    });
+
+    it('should not set auth header if the client secret is not set',
+        function(done) {
+      mocks.UrlFetchApp.resultFunction = function(url, urlOptions) {
+        assert.isUndefined(toLowerCaseKeys_(urlOptions.headers).authorization);
+        done();
+      };
+      var service = OAuth2.createService('test')
+          .setGrantType('client_credentials')
+          .setTokenUrl('http://www.example.com')
+          .setClientId('abc');
+      service.exchangeGrant_();
+    });
+
+    it('should not set auth header if it is already set',
+        function(done) {
+      mocks.UrlFetchApp.resultFunction = function(url, urlOptions) {
+        assert.equal(toLowerCaseKeys_(urlOptions.headers).authorization,
+            'something');
+        done();
+      };
+      var service = OAuth2.createService('test')
+          .setGrantType('client_credentials')
+          .setTokenUrl('http://www.example.com')
+          .setClientId('abc')
+          .setClientSecret('def')
+          .setTokenHeaders({
+            authorization: 'something'
+          });
+      service.exchangeGrant_();
+    });
+
+    it('should set the auth header for the client_credentials grant type, if ' +
+        'the client ID and client secret are set and the authorization header' +
+        'is not already set', function(done) {
+      mocks.UrlFetchApp.resultFunction = function(url, urlOptions) {
+        assert.equal(toLowerCaseKeys_(urlOptions.headers).authorization,
+            'Basic YWJjOmRlZg==');
+        done();
+      };
+      var service = OAuth2.createService('test')
+          .setGrantType('client_credentials')
+          .setTokenUrl('http://www.example.com')
+          .setClientId('abc')
+          .setClientSecret('def');
+      service.exchangeGrant_();
+    });
+  });
 });
 
 describe('Utilities', function() {
@@ -253,6 +333,35 @@ describe('Utilities', function() {
     it('should extend (merge) an object', function() {
       var o = extend_(baseObj, {foo: [100], bar: 2, baz: {}});
       assert.deepEqual(o, {foo: [100], bar: 2, baz: {}});
+    });
+  });
+
+  describe('#toLowerCaseKeys_()', function() {
+    var toLowerCaseKeys_ = OAuth2.toLowerCaseKeys_;
+
+    it('should contain only lower-case keys', function() {
+      var data = {
+        'a': true,
+        'A': true,
+        'B': true,
+        'Cc': true,
+        'D2': true,
+        'E!@#': true
+      };
+      var lowerCaseData = toLowerCaseKeys_(data);
+      assert.deepEqual(lowerCaseData, {
+        'a': true,
+        'b': true,
+        'cc': true,
+        'd2': true,
+        'e!@#': true
+      });
+    });
+
+    it('should handle null, undefined, and empty objects', function() {
+      assert.isNull(toLowerCaseKeys_(null));
+      assert.isUndefined(toLowerCaseKeys_(undefined));
+      assert.isEmpty(toLowerCaseKeys_({}));
     });
   });
 });

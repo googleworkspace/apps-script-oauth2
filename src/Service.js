@@ -698,8 +698,8 @@ Service_.prototype.lockable_ = function(func) {
 
 /**
  * Obtain an access token using the custom grant type specified. Most often
- * this will be "client_credentials", in which case make sure to also specify an
- * Authorization header if required by your OAuth provider.
+ * this will be "client_credentials", and a client ID and secret are set an
+ * "Authorization: Basic ..." header will be added using those values.
  */
 Service_.prototype.exchangeGrant_ = function() {
   validate_({
@@ -710,6 +710,20 @@ Service_.prototype.exchangeGrant_ = function() {
     grant_type: this.grantType_
   };
   payload = extend_(payload, this.params_);
+
+  // For the client_credentials grant type, add a basic authorization header:
+  // - If the client ID and client secret are set.
+  // - No authorization header has been set yet.
+  var lowerCaseHeaders = toLowerCaseKeys_(this.tokenHeaders_);
+  if (this.grantType_ === 'client_credentials' &&
+      this.clientId_ &&
+      this.clientSecret_ &&
+      (!lowerCaseHeaders || !lowerCaseHeaders.authorization)) {
+    this.tokenHeaders_ = this.tokenHeaders_ || {};
+    this.tokenHeaders_.authorization = 'Basic ' +
+        Utilities.base64Encode(this.clientId_ + ':' + this.clientSecret_);
+  }
+
   var token = this.fetchToken_(payload);
   this.saveToken_(token);
 };

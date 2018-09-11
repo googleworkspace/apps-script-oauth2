@@ -76,3 +76,22 @@ function extend_(destination, source) {
   }
   return destination;
 }
+
+/* exported toLowerCaseKeys_ */
+/**
+ * Gets a copy of an object with all the keys converted to lower-case strings.
+ *
+ * @param {Object} obj The object to copy.
+ * @return {Object} a shallow copy of the object with all lower-case keys.
+ */
+function toLowerCaseKeys_(obj) {
+  if (obj === null || typeof obj !== 'object') {
+    return obj;
+  }
+  // For each key in the source object, add a lower-case version to a new
+  // object, and return it.
+  return Object.keys(obj).reduce(function(result, k) {
+    result[k.toLowerCase()] = obj[k];
+    return result;
+  }, {});
+}
