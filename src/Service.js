@@ -376,26 +376,33 @@ Service_.prototype.handleCallback = function(callbackRequest) {
  *     otherwise.
  */
 Service_.prototype.hasAccess = function() {
-  return this.lockable_(function() {
-    var token = this.getToken();
-    if (!token || this.isExpired_(token)) {
-      try {
-        if (token && this.canRefresh_(token)) {
-          this.refresh();
-        } else if (this.privateKey_) {
-          this.exchangeJwt_();
-        } else if (this.grantType_) {
-          this.exchangeGrant_();
-        } else {
+  var token = this.getToken();
+  if (!token || this.isExpired_(token)) {
+    return this.lockable_(function() {
+      // Get the token again, bypassing the local memory cache.
+      token = this.getToken(true);
+      // Check to see if the token is still missing or expired, as another
+      // execution may have refreshed it while we were waiting for the lock.
+      if (!token || this.isExpired_(token)) {
+        try {
+          if (token && this.canRefresh_(token)) {
+            this.refresh();
+          } else if (this.privateKey_) {
+            this.exchangeJwt_();
+          } else if (this.grantType_) {
+            this.exchangeGrant_();
+          } else {
+            return false;
+          }
+        } catch (e) {
+          this.lastError_ = e;
           return false;
         }
-      } catch (e) {
-        this.lastError_ = e;
-        return false;
       }
-    }
-    return true;
-  });
+      return true;
+    });
+  }
+  return true;
 };
 
 /**
@@ -579,10 +586,12 @@ Service_.prototype.saveToken_ = function(token) {
 
 /**
  * Gets the token from the service's property store or cache.
+ * @param {boolean} optSkipMemory Whether to bypass the local memory cache when
+ *     fetching the token (the default is false).
  * @return {Object} The token, or null if no token was found.
  */
-Service_.prototype.getToken = function() {
-  return this.getStorage().getValue(null);
+Service_.prototype.getToken = function(optSkipMemory) {
+  return this.getStorage().getValue(null, optSkipMemory);
 };
 
 /**

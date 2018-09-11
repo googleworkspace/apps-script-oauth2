@@ -176,6 +176,27 @@ describe('Service', function() {
         done();
       });
     });
+
+    it('should not acquire a lock when the token is not expired', function() {
+      var token = {
+        granted_time: (new Date()).getTime(),
+        expires_in: 1000,
+        access_token: 'foo',
+        refresh_token: 'bar'
+      };
+      var lock = new MockLock();
+      var properties = new MockProperties({
+        'oauth2.test': JSON.stringify(token)
+      });
+      var service = OAuth2.createService('test')
+          .setClientId('abc')
+          .setClientSecret('def')
+          .setTokenUrl('http://www.example.com')
+          .setPropertyStore(properties)
+          .setLock(lock);
+      service.hasAccess();
+      assert.equal(lock.counter, 0);
+    });
   });
 
   describe('#refresh()', function() {

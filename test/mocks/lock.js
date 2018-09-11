@@ -12,6 +12,7 @@ var waitingFibers = [];
 var MockLock = function() {
   this.hasLock_ = false;
   this.id = Math.random();
+  this.counter = 0;
 };
 
 MockLock.prototype.waitLock = function(timeoutInMillis) {
@@ -20,6 +21,7 @@ MockLock.prototype.waitLock = function(timeoutInMillis) {
     if (!locked || this.hasLock_) {
       locked = true;
       this.hasLock_ = true;
+      this.counter++;
       return;
     } else {
       waitingFibers.push(Fiber.current);
