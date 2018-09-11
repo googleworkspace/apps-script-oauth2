@@ -41,24 +41,37 @@ function Storage_(prefix, properties, optCache) {
 Storage_.CACHE_EXPIRATION_TIME_SECONDS = 21600; // 6 hours.
 
 /**
+ * The special value to use in the cache to indicate that there is no value.
+ * @type {string}
+ * @private
+ */
+Storage_.CACHE_NULL_VALUE = '__NULL__';
+
+/**
  * Gets a stored value.
  * @param {string} key The key.
  * @return {*} The stored value.
  */
 Storage_.prototype.getValue = function(key) {
-  // Check memory.
-  if (this.memory_[key]) {
-    return this.memory_[key];
-  }
-
   var prefixedKey = this.getPrefixedKey_(key);
   var jsonValue;
   var value;
+
+  // Check memory.
+  if (value = this.memory_[key]) {
+    if (value === Storage_.CACHE_NULL_VALUE) {
+      return null;
+    }
+    return value;
+  }
 
   // Check cache.
   if (this.cache_ && (jsonValue = this.cache_.get(prefixedKey))) {
     value = JSON.parse(jsonValue);
     this.memory_[key] = value;
+    if (value === Storage_.CACHE_NULL_VALUE) {
+      return null;
+    }
     return value;
   }
 
@@ -73,7 +86,13 @@ Storage_.prototype.getValue = function(key) {
     return value;
   }
 
-  // Not found.
+  // Not found. Store a special null value in the memory and cache to reduce
+  // hits on the PropertiesService.
+  this.memory_[key] = Storage_.CACHE_NULL_VALUE;
+  if (this.cache_) {
+    this.cache_.put(prefixedKey, JSON.stringify(Storage_.CACHE_NULL_VALUE),
+        Storage_.CACHE_EXPIRATION_TIME_SECONDS);
+  }
   return null;
 };
 

@@ -91,6 +91,37 @@ describe('Service', function() {
       assert.equal(cache.counter, cacheStart);
       assert.equal(properties.counter, propertiesStart);
     });
+
+    it('should load null tokens from the cache',
+        function() {
+      var cache = new MockCache();
+      var properties = new MockProperties();
+      for (var i = 0; i < 10; ++i) {
+        var service = OAuth2.createService('test')
+            .setPropertyStore(properties)
+            .setCache(cache);
+        service.getToken();
+      }
+      assert.equal(properties.counter, 1);
+    });
+
+    it('should load null tokens from memory',
+        function() {
+      var cache = new MockCache();
+      var properties = new MockProperties();
+      var service = OAuth2.createService('test')
+          .setPropertyStore(properties)
+          .setCache(cache);
+
+      service.getToken();
+      var cacheStart = cache.counter;
+      var propertiesStart = properties.counter;
+      for (var i = 0; i < 10; ++i) {
+        service.getToken();
+      }
+      assert.equal(cache.counter, cacheStart);
+      assert.equal(properties.counter, propertiesStart);
+    });
   });
 
   describe('#saveToken_()', function() {
