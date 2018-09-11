@@ -77,14 +77,14 @@ function extend_(destination, source) {
   return destination;
 }
 
-/* exported witLowerCaseKeys_ */
+/* exported toLowerCaseKeys_ */
 /**
  * Gets a copy of an object with all the keys converted to lower-case strings.
  *
  * @param {Object} obj The object to copy.
  * @return {Object} a shallow copy of the object with all lower-case keys.
  */
-function witLowerCaseKeys_(obj) {
+function toLowerCaseKeys_(obj) {
   if (obj === null || typeof obj !== 'object') {
     return obj;
   }

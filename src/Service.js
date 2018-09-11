@@ -714,7 +714,7 @@ Service_.prototype.exchangeGrant_ = function() {
   // For the client_credentials grant type, add a basic authorization header:
   // - If the client ID and client secret are set.
   // - No authorization header has been set yet.
-  var lowerCaseHeaders = witLowerCaseKeys_(this.tokenHeaders_);
+  var lowerCaseHeaders = toLowerCaseKeys_(this.tokenHeaders_);
   if (this.grantType_ === 'client_credentials' &&
       this.clientId_ &&
       this.clientSecret_ &&
