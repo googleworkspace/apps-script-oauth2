@@ -214,6 +214,26 @@ describe('Service', function() {
       service.hasAccess();
       assert.equal(lock.counter, 0);
     });
+
+    it('should not acquire a lock when there is no refresh token', function() {
+      var token = {
+        granted_time: 100,
+        expires_in: 100,
+        access_token: 'foo',
+      };
+      var lock = new MockLock();
+      var properties = new MockProperties({
+        'oauth2.test': JSON.stringify(token)
+      });
+      var service = OAuth2.createService('test')
+          .setClientId('abc')
+          .setClientSecret('def')
+          .setTokenUrl('http://www.example.com')
+          .setPropertyStore(properties)
+          .setLock(lock);
+      service.hasAccess();
+      assert.equal(lock.counter, 0);
+    });
   });
 
   describe('#refresh()', function() {

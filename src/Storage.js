@@ -43,13 +43,13 @@ Storage_.CACHE_EXPIRATION_TIME_SECONDS = 21600; // 6 hours.
 /**
  * Gets a stored value.
  * @param {string} key The key.
- * @param {boolean} optSkipMemory Whether to bypass the local memory cache when
- *     fetching the value (the default is false).
+ * @param {boolean?} optSkipMemoryCheck Whether to bypass the local memory cache
+ *     when fetching the value (the default is false).
  * @return {*} The stored value.
  */
-Storage_.prototype.getValue = function(key, optSkipMemory) {
-  if (!optSkipMemory) {
-    // Check memory.
+Storage_.prototype.getValue = function(key, optSkipMemoryCheck) {
+  if (!optSkipMemoryCheck) {
+    // Check in-memory cache.
     if (this.memory_[key]) {
       return this.memory_[key];
     }
