@@ -68,8 +68,8 @@ function createService(serviceName) {
  * @return {string} The redirect URI.
  */
 function getRedirectUri(scriptId) {
-  return Utilities.formatString(
-    'https://script.google.com/macros/d/%s/usercallback', scriptId);
+  return 'https://script.google.com/macros/d/' + encodeURIComponent(scriptId) +
+      '/usercallback';
 }
 
 if (typeof module === 'object') {
@@ -459,25 +459,37 @@ Service_.prototype.handleCallback = function(callbackRequest) {
  *     otherwise.
  */
 Service_.prototype.hasAccess = function() {
+  var token = this.getToken();
+  if (token && !this.isExpired_(token)) return true; // Token still has access.
+  var canGetToken = (token && this.canRefresh_(token)) ||
+      this.privateKey_ || this.grantType_;
+  if (!canGetToken) return false;
+
   return this.lockable_(function() {
-    var token = this.getToken();
-    if (!token || this.isExpired_(token)) {
-      try {
-        if (token && this.canRefresh_(token)) {
-          this.refresh();
-        } else if (this.privateKey_) {
-          this.exchangeJwt_();
-        } else if (this.grantType_) {
-          this.exchangeGrant_();
-        } else {
-          return false;
-        }
-      } catch (e) {
-        this.lastError_ = e;
+    // Get the token again, bypassing the local memory cache.
+    token = this.getToken(true);
+    // Check to see if the token is no longer missing or expired, as another
+    // execution may have refreshed it while we were waiting for the lock.
+    if (token && !this.isExpired_(token)) return true; // Token now has access.
+    try {
+      if (token && this.canRefresh_(token)) {
+        this.refresh();
+        return true;
+      } else if (this.privateKey_) {
+        this.exchangeJwt_();
+        return true;
+      } else if (this.grantType_) {
+        this.exchangeGrant_();
+        return true;
+      } else {
+        // This should never happen, since canGetToken should have been false
+        // earlier.
         return false;
       }
+    } catch (e) {
+      this.lastError_ = e;
+      return false;
     }
-    return true;
   });
 };
 
@@ -662,10 +674,13 @@ Service_.prototype.saveToken_ = function(token) {
 
 /**
  * Gets the token from the service's property store or cache.
+ * @param {boolean?} optSkipMemoryCheck If true, bypass the local memory cache
+ *     when fetching the token.
  * @return {Object} The token, or null if no token was found.
  */
-Service_.prototype.getToken = function() {
-  return this.getStorage().getValue(null);
+Service_.prototype.getToken = function(optSkipMemoryCheck) {
+  // Gets the stored value under the null key, which is reserved for the token.
+  return this.getStorage().getValue(null, optSkipMemoryCheck);
 };
 
 /**
@@ -781,8 +796,8 @@ Service_.prototype.lockable_ = function(func) {
 
 /**
  * Obtain an access token using the custom grant type specified. Most often
- * this will be "client_credentials", in which case make sure to also specify an
- * Authorization header if required by your OAuth provider.
+ * this will be "client_credentials", and a client ID and secret are set an
+ * "Authorization: Basic ..." header will be added using those values.
  */
 Service_.prototype.exchangeGrant_ = function() {
   validate_({
@@ -793,6 +808,20 @@ Service_.prototype.exchangeGrant_ = function() {
     grant_type: this.grantType_
   };
   payload = extend_(payload, this.params_);
+
+  // For the client_credentials grant type, add a basic authorization header:
+  // - If the client ID and client secret are set.
+  // - No authorization header has been set yet.
+  var lowerCaseHeaders = toLowerCaseKeys_(this.tokenHeaders_);
+  if (this.grantType_ === 'client_credentials' &&
+      this.clientId_ &&
+      this.clientSecret_ &&
+      (!lowerCaseHeaders || !lowerCaseHeaders.authorization)) {
+    this.tokenHeaders_ = this.tokenHeaders_ || {};
+    this.tokenHeaders_.authorization = 'Basic ' +
+        Utilities.base64Encode(this.clientId_ + ':' + this.clientSecret_);
+  }
+
   var token = this.fetchToken_(payload);
   this.saveToken_(token);
 };
@@ -840,24 +869,41 @@ function Storage_(prefix, properties, optCache) {
 Storage_.CACHE_EXPIRATION_TIME_SECONDS = 21600; // 6 hours.
 
 /**
+ * The special value to use in the cache to indicate that there is no value.
+ * @type {string}
+ * @private
+ */
+Storage_.CACHE_NULL_VALUE = '__NULL__';
+
+/**
  * Gets a stored value.
  * @param {string} key The key.
+ * @param {boolean?} optSkipMemoryCheck Whether to bypass the local memory cache
+ *     when fetching the value (the default is false).
  * @return {*} The stored value.
  */
-Storage_.prototype.getValue = function(key) {
-  // Check memory.
-  if (this.memory_[key]) {
-    return this.memory_[key];
-  }
-
+Storage_.prototype.getValue = function(key, optSkipMemoryCheck) {
   var prefixedKey = this.getPrefixedKey_(key);
   var jsonValue;
   var value;
+
+  if (!optSkipMemoryCheck) {
+    // Check in-memory cache.
+    if (value = this.memory_[key]) {
+      if (value === Storage_.CACHE_NULL_VALUE) {
+        return null;
+      }
+      return value;
+    }
+  }
 
   // Check cache.
   if (this.cache_ && (jsonValue = this.cache_.get(prefixedKey))) {
     value = JSON.parse(jsonValue);
     this.memory_[key] = value;
+    if (value === Storage_.CACHE_NULL_VALUE) {
+      return null;
+    }
     return value;
   }
 
@@ -872,7 +918,13 @@ Storage_.prototype.getValue = function(key) {
     return value;
   }
 
-  // Not found.
+  // Not found. Store a special null value in the memory and cache to reduce
+  // hits on the PropertiesService.
+  this.memory_[key] = Storage_.CACHE_NULL_VALUE;
+  if (this.cache_) {
+    this.cache_.put(prefixedKey, JSON.stringify(Storage_.CACHE_NULL_VALUE),
+        Storage_.CACHE_EXPIRATION_TIME_SECONDS);
+  }
   return null;
 };
 
@@ -996,6 +1048,25 @@ function extend_(destination, source) {
     destination[keys[i]] = source[keys[i]];
   }
   return destination;
+}
+
+/* exported toLowerCaseKeys_ */
+/**
+ * Gets a copy of an object with all the keys converted to lower-case strings.
+ *
+ * @param {Object} obj The object to copy.
+ * @return {Object} a shallow copy of the object with all lower-case keys.
+ */
+function toLowerCaseKeys_(obj) {
+  if (obj === null || typeof obj !== 'object') {
+    return obj;
+  }
+  // For each key in the source object, add a lower-case version to a new
+  // object, and return it.
+  return Object.keys(obj).reduce(function(result, k) {
+    result[k.toLowerCase()] = obj[k];
+    return result;
+  }, {});
 }
 
    /****** code end *********/
