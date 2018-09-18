@@ -64,8 +64,8 @@ function createService(serviceName) {
  * @return {string} The redirect URI.
  */
 function getRedirectUri(scriptId) {
-  return Utilities.formatString(
-    'https://script.google.com/macros/d/%s/usercallback', scriptId);
+  return 'https://script.google.com/macros/d/' + encodeURIComponent(scriptId) +
+      '/usercallback';
 }
 
 if (typeof module === 'object') {

@@ -43,14 +43,12 @@ function getService() {
       // Set the endpoint URLs.
       .setTokenUrl('https://api.twitter.com/oauth2/token')
 
+      // Set the client ID and secret.
+      .setClientId(CLIENT_ID)
+      .setClientSecret(CLIENT_SECRET)
+
       // Sets the custom grant type to use.
       .setGrantType('client_credentials')
-
-      // Sets the required Authorization header.
-      .setTokenHeaders({
-        Authorization: 'Basic ' +
-            Utilities.base64Encode(CLIENT_ID + ':' + CLIENT_SECRET)
-      })
 
       // Set the property store where authorized tokens should be persisted.
       .setPropertyStore(PropertiesService.getUserProperties());
