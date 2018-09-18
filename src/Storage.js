@@ -50,19 +50,23 @@ Storage_.CACHE_NULL_VALUE = '__NULL__';
 /**
  * Gets a stored value.
  * @param {string} key The key.
+ * @param {boolean?} optSkipMemoryCheck Whether to bypass the local memory cache
+ *     when fetching the value (the default is false).
  * @return {*} The stored value.
  */
-Storage_.prototype.getValue = function(key) {
+Storage_.prototype.getValue = function(key, optSkipMemoryCheck) {
   var prefixedKey = this.getPrefixedKey_(key);
   var jsonValue;
   var value;
 
-  // Check memory.
-  if (value = this.memory_[key]) {
-    if (value === Storage_.CACHE_NULL_VALUE) {
-      return null;
+  if (!optSkipMemoryCheck) {
+    // Check in-memory cache.
+    if (value = this.memory_[key]) {
+      if (value === Storage_.CACHE_NULL_VALUE) {
+        return null;
+      }
+      return value;
     }
-    return value;
   }
 
   // Check cache.

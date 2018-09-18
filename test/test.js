@@ -97,6 +97,23 @@ describe('Service', function() {
       assert.equal(properties.counter, propertiesStart);
     });
 
+    it('should skip the local memory cache when desired', function() {
+      var properties = new MockProperties();
+      var service = OAuth2.createService('test')
+          .setPropertyStore(properties);
+      var token = {
+        access_token: 'foo'
+      };
+      service.saveToken_(token);
+
+      var newToken = {
+        access_token: 'bar'
+      };
+      properties.setProperty('oauth2.test', JSON.stringify(newToken));
+
+      assert.deepEqual(service.getToken(true), newToken);
+    });
+
     it('should load null tokens from the cache',
         function() {
       var cache = new MockCache();
@@ -211,6 +228,47 @@ describe('Service', function() {
         assert.equal(accessTokens[0], accessTokens[1]);
         done();
       });
+    });
+
+    it('should not acquire a lock when the token is not expired', function() {
+      var token = {
+        granted_time: (new Date()).getTime(),
+        expires_in: 1000,
+        access_token: 'foo',
+        refresh_token: 'bar'
+      };
+      var lock = new MockLock();
+      var properties = new MockProperties({
+        'oauth2.test': JSON.stringify(token)
+      });
+      var service = OAuth2.createService('test')
+          .setClientId('abc')
+          .setClientSecret('def')
+          .setTokenUrl('http://www.example.com')
+          .setPropertyStore(properties)
+          .setLock(lock);
+      service.hasAccess();
+      assert.equal(lock.counter, 0);
+    });
+
+    it('should not acquire a lock when there is no refresh token', function() {
+      var token = {
+        granted_time: 100,
+        expires_in: 100,
+        access_token: 'foo',
+      };
+      var lock = new MockLock();
+      var properties = new MockProperties({
+        'oauth2.test': JSON.stringify(token)
+      });
+      var service = OAuth2.createService('test')
+          .setClientId('abc')
+          .setClientSecret('def')
+          .setTokenUrl('http://www.example.com')
+          .setPropertyStore(properties)
+          .setLock(lock);
+      service.hasAccess();
+      assert.equal(lock.counter, 0);
     });
   });
 
