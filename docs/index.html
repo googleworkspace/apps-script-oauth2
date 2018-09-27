@@ -43,7 +43,7 @@
 
 
     <section>
-        <article><h1>OAuth2 for Apps Script</h1><p>OAuth2 for Apps Script is a library for Google Apps Script that provides the
+        <article><h1>OAuth2 for Apps Script <a href="https://travis-ci.org/gsuitedevs/apps-script-oauth2"><img src="https://travis-ci.org/gsuitedevs/apps-script-oauth2.svg?branch=master" alt="Build Status"></a></h1><p>OAuth2 for Apps Script is a library for Google Apps Script that provides the
 ability to create and authorize OAuth2 tokens as well as refresh them when they
 expire. This library uses Apps Script's new
 <a href="https://developers.google.com/apps-script/reference/script/state-token-builder">StateTokenBuilder</a>
@@ -68,11 +68,12 @@ in your manifest file, ensure that the following scope is included:</p>
 <li><code>https://www.googleapis.com/auth/script.external_request</code></li>
 </ul>
 <h2>Redirect URI</h2><p>Before you can start authenticating against an OAuth2 provider, you usually need
-to register your application and retrieve the client ID and secret. Often
-these registration screens require you to enter a &quot;Redirect URI&quot;, which is the
-URL that users will be redirected to after they've authorized the token. For
-this library (and the Apps Script functionality in general) the URL will always
-be in the following format:</p>
+to register your application with that OAuth2 provider and obtain a client ID
+and secret. Often a provider's registration screen requires you to enter a
+&quot;Redirect URI&quot;, which is the URL that the user's browser will be redirected to
+after they've authorized access to their account at that provider.</p>
+<p>For this library (and the Apps Script functionality in general) the URL will
+always be in the following format:</p>
 <pre class="prettyprint source"><code>https://script.google.com/macros/d/{SCRIPT ID}/usercallback</code></pre><p>Where <code>{SCRIPT ID}</code> is the ID of the script that is using this library. You
 can find your script's ID in the Apps Script code editor by clicking on
 the menu item &quot;File &gt; Project properties&quot;.</p>
@@ -196,7 +197,7 @@ configuring the service:</p>
     // ...</code></pre><p>Make sure to select a lock with the same scope (user, script, or document) as
 the property store and cache you configured.</p>
 <h2>Advanced configuration</h2><p>See below for some features of the library you may need to utilize depending on
-the specifics of the OAuth provider you are connecting to. See the <a href="http://googlesamples.github.io/apps-script-oauth2/Service_.html">generated
+the specifics of the OAuth provider you are connecting to. See the <a href="http://gsuitedevs.github.io/apps-script-oauth2/Service_.html">generated
 reference documentation</a>
 for a complete list of methods available.</p>
 <h4>Setting the token format</h4><p>OAuth services can return a token in two ways: as JSON or an URL encoded
@@ -262,12 +263,27 @@ This is a two-legged OAuth flow that doesn't require a user to visit a URL and
 authorize access.</p>
 <p>One common use for service accounts with Google APIs is
 <a href="https://developers.google.com/identity/protocols/OAuth2ServiceAccount#delegatingauthority">domain-wide delegation</a>.
-This process allows a Google Apps for Work/EDU domain administrator to grant an
+This process allows a G Suite domain administrator to grant an
 application access to all the users within the domain. When the application
 wishes to access the resources of a particular user, it uses the service account
 authorization flow to obtain an access token. See the sample
 <a href="samples/GoogleServiceAccount.gs"><code>GoogleServiceAccount.gs</code></a> for more
 information.</p>
+<h4>Using alternative grant types</h4><p>Although optimized for the authorization code (3-legged) and service account
+(JWT bearer) flows, this library supports arbitrary flows using the
+<code>setGrantType()</code> method. Use <code>setParam()</code> or <code>setTokenPayloadHandler()</code> to add
+fields to the token request payload, and <code>setTokenHeaders()</code> to add any required
+headers.</p>
+<p>The most common of these is the <code>client_credentials</code> grant type, which often
+requires that the client ID and secret are passed in the Authorization header.
+When using this grant type, if you set a client ID and secret using
+<code>setClientId()</code> and <code>setClientSecret()</code> respectively then an
+<code>Authorization: Basic ...</code> header will be added to the token request
+automatically, since this is what most OAuth2 providers require. If your
+provider uses a different method of authorization then don't set the client ID
+and secret and add an authorization header manually.</p>
+<p>See the sample <a href="samples/TwitterAppOnly.gs"><code>TwitterAppOnly.gs</code></a> for a working
+example.</p>
 <h2>Compatibility</h2><p>This library was designed to work with any OAuth2 provider, but because of small
 differences in how they implement the standard it may be that some APIs
 aren't compatible. If you find an API that it doesn't work with, open an issue
@@ -298,7 +314,7 @@ in your manifest file but have forgotten to add the
 
 <header>
     
-        <h2>OAuth2.gs</h2>
+        <h2>OAuth2.js</h2>
         
     
 </header>
@@ -387,7 +403,7 @@ any required setup.</div>
 
 <header>
     
-        <h2>Service.gs</h2>
+        <h2>Service.js</h2>
         
     
 </header>
@@ -475,7 +491,7 @@ any required setup.</div>
 
 <header>
     
-        <h2>Storage.gs</h2>
+        <h2>Storage.js</h2>
         
     
 </header>
@@ -563,7 +579,7 @@ any required setup.</div>
 
 <header>
     
-        <h2>Utilities.gs</h2>
+        <h2>Utilities.js</h2>
         
     
 </header>
@@ -647,13 +663,13 @@ any required setup.</div>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Service_.html">Service_</a></li><li><a href="Storage_.html">Storage_</a></li></ul><h3>Global</h3><ul><li><a href="global.html#createService">createService</a></li><li><a href="global.html#extend_">extend_</a></li><li><a href="global.html#getRedirectUri">getRedirectUri</a></li><li><a href="global.html#STATE_PARAMETER_LOCATION">STATE_PARAMETER_LOCATION</a></li><li><a href="global.html#TOKEN_FORMAT">TOKEN_FORMAT</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Service_.html">Service_</a></li><li><a href="Storage_.html">Storage_</a></li></ul><h3>Global</h3><ul><li><a href="global.html#createService">createService</a></li><li><a href="global.html#extend_">extend_</a></li><li><a href="global.html#getRedirectUri">getRedirectUri</a></li><li><a href="global.html#STATE_PARAMETER_LOCATION">STATE_PARAMETER_LOCATION</a></li><li><a href="global.html#TOKEN_FORMAT">TOKEN_FORMAT</a></li><li><a href="global.html#toLowerCaseKeys_">toLowerCaseKeys_</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Mar 21 2018 10:13:02 GMT-0400 (DST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Sep 27 2018 14:12:43 GMT-0700 (PDT)
 </footer>
 
 <script> prettyPrint(); </script>
