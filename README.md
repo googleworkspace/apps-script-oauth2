@@ -2,7 +2,7 @@
 
 OAuth2 for Apps Script is a library for Google Apps Script that provides the
 ability to create and authorize OAuth2 tokens as well as refresh them when they
-expire. This library uses Apps Script's new
+expire. This library uses Apps Script's
 [StateTokenBuilder](https://developers.google.com/apps-script/reference/script/state-token-builder)
 and `/usercallback` endpoint to handle the redirects.
 
