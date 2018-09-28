@@ -32,7 +32,7 @@
   },
   "scripts": {
     "preversion": "npm test && cd src/ && clasp push",
-    "version": "npm run dist && git add -A dist",
+    "version": "npm run dist && npm run doc && git add -A dist docs",
     "postversion": "MESSAGE=$(git log -1 --pretty=%B) && cd src/ && clasp version $MESSAGE",
     "dist": "gulp dist",
     "lint": "gulp lint",
