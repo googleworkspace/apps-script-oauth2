@@ -1,11 +1,4 @@
 {
   "timeZone": "America/New_York",
-  "dependencies": {
-    "libraries": [{
-      "userSymbol": "Underscore",
-      "libraryId": "1I21uLOwDKdyF3_W_hvh6WXiIKWJWno8yG9lB8lf1VBnZFQ6jAAhyNTRG",
-      "version": "23"
-    }]
-  },
   "exceptionLogging": "STACKDRIVER"
 }
