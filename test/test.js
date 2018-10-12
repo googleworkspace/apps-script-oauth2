@@ -4,14 +4,11 @@ var MockUrlFetchApp = require('./mocks/urlfetchapp');
 var MockProperties = require('./mocks/properties');
 var MockCache = require('./mocks/cache');
 var MockLock = require('./mocks/lock');
+var MockScriptApp = require('./mocks/script');
 var Future = require('fibers/future');
 
 var mocks = {
-  ScriptApp: {
-    getScriptId: function() {
-      return '12345';
-    }
-  },
+  ScriptApp: new MockScriptApp(),
   UrlFetchApp: new MockUrlFetchApp(),
   Utilities: {
     base64Encode: function(data) {
@@ -403,6 +400,32 @@ describe('Service', function() {
           .setClientId('abc')
           .setClientSecret('def');
       service.exchangeGrant_();
+    });
+  });
+
+  describe('#getAuthorizationUrl()', function() {
+    it('should add additional parameters to the state token', function() {
+      var service = OAuth2.createService('test')
+          .setAuthorizationBaseUrl('http://www.example.com')
+          .setClientId('abc')
+          .setClientSecret('def')
+          .setCallbackFunction('authCallback');
+      var authorizationUrl = service.getAuthorizationUrl({
+        foo: 'bar'
+      });
+
+      // Extract the state token from the URL and parse it. For example, the
+      // URL http://www.example.com?state=%7B%22a%22%3A1%7D would produce
+      // {a: 1}.
+      var querystring = authorizationUrl.split('?')[1];
+      var params = querystring.split('&').reduce(function(result, pair) {
+        var parts = pair.split('=').map(decodeURIComponent);
+        result[parts[0]] = parts[1];
+        return result;
+      }, {});
+      var state = JSON.parse(params.state);
+
+      assert.equal(state.arguments.foo, 'bar');
     });
   });
 });

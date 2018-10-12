@@ -340,15 +340,16 @@ method:
 
 ```js
 var authorizationUrl = getService().getAuthorizationUrl({
+  // Pass the additional parameter "lang" with the value "fr".
   lang: 'fr'
 });
 ```
 
 These values will be stored along-side Apps Script's internal information in the
-cryptographically secure `state` token, which is passed in the authorization URL
-and passed back to the redirect URI. The `state` token is automatically
-decrypted in the callback function, and you can access your parameters using the
-same `request.parameter` field used in web apps:
+encypted `state` token, which is passed in the authorization URL and passed back
+to the redirect URI. The `state` token is automatically decrypted in the
+callback function and you can access your parameters using the same
+`request.parameter` field used in web apps:
 
 ```js
 function authCallback(request) {
