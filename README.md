@@ -325,6 +325,39 @@ if (service.hasAccess()) {
 Note that calling `Service.reset()` will remove all custom values from storage,
 in addition to the token.
 
+#### Passing additional parameters to the callback function
+
+There are occasionally cases where you need to preserve some data through the
+OAuth flow, so that it is available in your callback function. Although you
+could use the token storage mechanism discussed above for that purpose, writing
+to the PropertiesService is expensive and not neccessary in the case where the
+user doesn't start or fails to complete the OAuth flow.
+
+As an alternative you can store small amounts of data in the OAuth2 `state`
+token, which is a standard mechanism for this purpose. To do so, pass an
+optional hash of parameter names and values to the `getAuthorizationUrl()`
+method:
+
+```js
+var authorizationUrl = getService().getAuthorizationUrl({
+  // Pass the additional parameter "lang" with the value "fr".
+  lang: 'fr'
+});
+```
+
+These values will be stored along-side Apps Script's internal information in the
+encypted `state` token, which is passed in the authorization URL and passed back
+to the redirect URI. The `state` token is automatically decrypted in the
+callback function and you can access your parameters using the same
+`request.parameter` field used in web apps:
+
+```js
+function authCallback(request) {
+  var lang = request.parameter.lang;
+  // ...
+}
+```
+
 #### Using service accounts
 
 This library supports the service account authorization flow, also known as the
