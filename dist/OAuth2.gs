@@ -389,9 +389,11 @@ Service_.prototype.setGrantType = function(grantType) {
  * have the user visit this URL and approve the authorization request. The
  * user will then be redirected back to your application using callback function
  * name specified, so that the flow may continue.
+ * @param {Object} optAdditionalParameters Additional parameters that should be
+ *     stored in the state token and made available in the callback function.
  * @return {string} The authorization URL.
  */
-Service_.prototype.getAuthorizationUrl = function() {
+Service_.prototype.getAuthorizationUrl = function(optAdditionalParameters) {
   validate_({
     'Client ID': this.clientId_,
     'Script ID': this.scriptId_,
@@ -400,16 +402,20 @@ Service_.prototype.getAuthorizationUrl = function() {
   });
 
   var redirectUri = getRedirectUri(this.scriptId_);
-  var state = eval('Script' + 'App').newStateToken()
+  var stateTokenBuilder = eval('Script' + 'App').newStateToken()
       .withMethod(this.callbackFunctionName_)
       .withArgument('serviceName', this.serviceName_)
-      .withTimeout(3600)
-      .createToken();
+      .withTimeout(3600);
+  if (optAdditionalParameters) {
+    Object.keys(optAdditionalParameters).forEach(function(key) {
+      stateTokenBuilder.withArgument(key, optAdditionalParameters[key]);
+    });
+  }
   var params = {
     client_id: this.clientId_,
     response_type: 'code',
     redirect_uri: redirectUri,
-    state: state
+    state: stateTokenBuilder.createToken()
   };
   params = extend_(params, this.params_);
   return buildUrl_(this.authorizationBaseUrl_, params);
@@ -1015,7 +1021,7 @@ function validate_(params) {
   Object.keys(params).forEach(function(name) {
     var value = params[name];
     if (!value) {
-      throw Utilities.formatString('%s is required.', name);
+      throw new Error(name + ' is required.');
     }
   });
 }
