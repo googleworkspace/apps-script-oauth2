@@ -7,7 +7,7 @@
 
 var CLIENT_ID = '...'; // App ID
 var CLIENT_SECRET = '...'; // Cert ID
-var RU_NAME = '...' // eBay Redirect URL name.
+var RU_NAME = '...'; // eBay Redirect URL name.
 
 /**
  * Authorizes and makes a request to the Ebay API.

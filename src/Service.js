@@ -301,10 +301,10 @@ Service_.prototype.setGrantType = function(grantType) {
 };
 
 /**
- * Sets the URI to redirect to when the OAuth flow has completed. By default the library
- * will provide this value automatically, but in some rare cases you may need to
- * override it.
- * @param {string} redirectURI The redirect URI.
+ * Sets the URI to redirect to when the OAuth flow has completed. By default the
+ * library will provide this value automatically, but in some rare cases you may
+ * need to override it.
+ * @param {string} redirectUri The redirect URI.
  * @return {Service_} This service, for chaining.
  */
 Service_.prototype.setRedirectUri = function(redirectUri) {
