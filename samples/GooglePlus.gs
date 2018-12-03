@@ -73,6 +73,6 @@ function authCallback(request) {
  * Logs the redict URI to register in the Google Developers Console.
  */
 function logRedirectUri() {
-  Logger.log(getService().getRedirectUri());
+  Logger.log(OAuth2.getRedirectUri());
 }
 

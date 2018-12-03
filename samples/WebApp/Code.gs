@@ -133,8 +133,7 @@ function authCallback(request) {
  * Logs the redict URI to register in the Google Developers Console.
  */
 function logRedirectUri() {
-  var service = getGitHubService();
-  Logger.log(service.getRedirectUri());
+  Logger.log(OAuth2.getRedirectUri());
 }
 
 /**
