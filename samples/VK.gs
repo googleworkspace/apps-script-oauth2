@@ -73,5 +73,5 @@ function authCallback(request) {
  * Logs the redict URI to register in the VK Aps Page https://vk.com/apps?act=manage.
  */
 function logRedirectUri() {
-  Logger.log(getService().getRedirectUri());
+  Logger.log(OAuth2.getRedirectUri());
 }

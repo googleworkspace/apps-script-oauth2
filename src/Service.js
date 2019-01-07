@@ -33,7 +33,6 @@ var Service_ = function(serviceName) {
   this.params_ = {};
   this.tokenFormat_ = TOKEN_FORMAT.JSON;
   this.tokenHeaders_ = null;
-  this.scriptId_ = eval('Script' + 'App').getScriptId();
   this.expirationMinutes_ = 60;
 };
 
@@ -302,6 +301,27 @@ Service_.prototype.setGrantType = function(grantType) {
 };
 
 /**
+ * Sets the URI to redirect to when the OAuth flow has completed. By default the
+ * library will provide this value automatically, but in some rare cases you may
+ * need to override it.
+ * @param {string} redirectUri The redirect URI.
+ * @return {Service_} This service, for chaining.
+ */
+Service_.prototype.setRedirectUri = function(redirectUri) {
+  this.redirectUri_ = redirectUri;
+  return this;
+};
+
+/**
+ * Returns the redirect URI that will be used for this service. Often this URI
+ * needs to be entered into a configuration screen of your OAuth provider.
+ * @return {string} The redirect URI.
+ */
+Service_.prototype.getRedirectUri = function() {
+  return this.redirectUri_ || getRedirectUri();
+};
+
+/**
  * Gets the authorization URL. The first step in getting an OAuth2 token is to
  * have the user visit this URL and approve the authorization request. The
  * user will then be redirected back to your application using callback function
@@ -313,12 +333,10 @@ Service_.prototype.setGrantType = function(grantType) {
 Service_.prototype.getAuthorizationUrl = function(optAdditionalParameters) {
   validate_({
     'Client ID': this.clientId_,
-    'Script ID': this.scriptId_,
     'Callback function name': this.callbackFunctionName_,
     'Authorization base URL': this.authorizationBaseUrl_
   });
 
-  var redirectUri = getRedirectUri(this.scriptId_);
   var stateTokenBuilder = eval('Script' + 'App').newStateToken()
       .withMethod(this.callbackFunctionName_)
       .withArgument('serviceName', this.serviceName_)
@@ -331,7 +349,7 @@ Service_.prototype.getAuthorizationUrl = function(optAdditionalParameters) {
   var params = {
     client_id: this.clientId_,
     response_type: 'code',
-    redirect_uri: redirectUri,
+    redirect_uri: this.getRedirectUri(),
     state: stateTokenBuilder.createToken()
   };
   params = extend_(params, this.params_);
@@ -358,15 +376,13 @@ Service_.prototype.handleCallback = function(callbackRequest) {
   validate_({
     'Client ID': this.clientId_,
     'Client Secret': this.clientSecret_,
-    'Script ID': this.scriptId_,
     'Token URL': this.tokenUrl_
   });
-  var redirectUri = getRedirectUri(this.scriptId_);
   var payload = {
     code: code,
     client_id: this.clientId_,
     client_secret: this.clientSecret_,
-    redirect_uri: redirectUri,
+    redirect_uri: this.getRedirectUri(),
     grant_type: 'authorization_code'
   };
   var token = this.fetchToken_(payload);
@@ -446,16 +462,6 @@ Service_.prototype.reset = function() {
 Service_.prototype.getLastError = function() {
   return this.lastError_;
 };
-
-/**
- * Returns the redirect URI that will be used for this service. Often this URI
- * needs to be entered into a configuration screen of your OAuth provider.
- * @return {string} The redirect URI.
- */
-Service_.prototype.getRedirectUri = function() {
-  return getRedirectUri(this.scriptId_);
-};
-
 
 /**
  * Fetches a new token from the OAuth server.

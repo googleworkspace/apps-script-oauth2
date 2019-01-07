@@ -69,5 +69,5 @@ function authCallback(request) {
  * Logs the redict URI to register.
  */
 function logRedirectUri() {
-  Logger.log(getService().getRedirectUri());
+  Logger.log(OAuth2.getRedirectUri());
 }
