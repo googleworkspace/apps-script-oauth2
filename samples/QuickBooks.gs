@@ -1,13 +1,11 @@
-/**
- * Populate constants with data specific to your application,
- * found at https://developer.intuit.com/v2/ui#/app/appdetail/XXXXXXX
+/*
+ * This sample demonstrates how to configure the library for the Intuit Quickbooks API.
+ * Instructions for obtaining your Client ID and Client Secret can be found here:
+ * https://developer.intuit.com/app/developer/qbo/docs/get-started
  */
-var CLIENT_ID = '...';
-var CLIENT_SECRET = '...';
 
-// URLS found at Quickbooks Devloper Portal: https://developer.intuit.com
-var BASE_AUTH_URL = 'https://appcenter.intuit.com/connect/oauth2';
-var TOKEN_URL = 'https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer';
+var CLIENT_ID = '';
+var CLIENT_SECRET = '';
 
 /**
  * Log the redirect URI to be pasted in the Intuit Dev Center:
@@ -61,14 +59,20 @@ function reset() {
 function getService() {
   return OAuth2.createService('Quickbooks')
       // Set the endpoint URLs.
-      .setAuthorizationBaseUrl(BASE_AUTH_URL)
-      .setTokenUrl(TOKEN_URL)
+      .setAuthorizationBaseUrl('https://appcenter.intuit.com/connect/oauth2')
+      .setTokenUrl('https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer')
+      
       // Set the client ID and secret.
       .setClientId(CLIENT_ID)
       .setClientSecret(CLIENT_SECRET)
+      
+      // Required, set to Accounting for this example, see QB developer portal for additional options.
+      .setScope('com.intuit.quickbooks.accounting')
+      
       // Set the name of the callback function in the script referenced
       // above that should be invoked to complete the OAuth flow.
       .setCallbackFunction('authCallback')
+      
       // Set the property store where authorized tokens should be persisted.
       .setPropertyStore(PropertiesService.getUserProperties());
 }
@@ -80,9 +84,8 @@ function authCallback(request) {
   var service = getService();
   var authorized = service.handleCallback(request);
   if (authorized) {
-    PropertiesService.getUserProperties()
-        .setProperty('QuickBooks.companyId', request.parameter.realmId);
-      Logger.log('Success!');
+    // Save the Company ID in the service's storage.
+    service.getStorage().setValue('QuickBooks.companyId', request.parameter.realmId);
     return HtmlService.createHtmlOutput('Success!');
   } else {
     return HtmlService.createHtmlOutput('Denied');
