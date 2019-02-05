@@ -1,4 +1,4 @@
-/** 
+/**
  * Populate constants with data specific to your application,
  * found at https://developer.intuit.com/v2/ui#/app/appdetail/XXXXXXX
  */
@@ -27,24 +27,21 @@ function run() {
     // Get the Company ID to be used in the request.
     var companyId = PropertiesService.getUserProperties()
         .getProperty('QuickBooks.companyId');
-        
-    // Get company information as a test.
-    var url = 'https://sandbox-quickbooks.api.intuit.com/v3/company/'
-    + companyId + '/companyinfo/' + companyId;
-    
+    // Get Quickbooks Company information to test.
+    var url = 'https://sandbox-quickbooks.api.intuit.com/v3/company/' +
+        companyId + '/companyinfo/' + companyId;
     var response = UrlFetchApp.fetch(url, {
       headers: {
         Authorization: 'Bearer ' + service.getAccessToken(),
         Accept: 'application/json'
       }
     });
-    
     var result = JSON.parse(response.getContentText());
     Logger.log(JSON.stringify(result, null, 2));
   } else {
     // If not authorized, get authorization URL.
     var authorizationUrl = service.getAuthorizationUrl();
-    
+    // View the Log to obtain the URL.
     Logger.log('Open the following URL and re-run the script: %s',
         authorizationUrl);
   }
