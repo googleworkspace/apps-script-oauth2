@@ -1,9 +1,4 @@
-/**********************************************
- * Update of /apps-script-oauth1/.../samples/QuickBooks.gs
- * to support OAuth2.
- **********************************************
-
-/**
+/** 
  * Populate constants with data specific to your application,
  * found at https://developer.intuit.com/v2/ui#/app/appdetail/XXXXXXX
  */
@@ -29,8 +24,7 @@ function logRedirectUri() {
 function run() 
 {
   var service = getService();
-  if (service.hasAccess())
-  {
+  if (service.hasAccess()) {
     // Get the Company ID to be used in the request.
     var companyId = PropertiesService.getUserProperties()
         .getProperty('QuickBooks.companyId');
@@ -86,19 +80,16 @@ function getService() {
 /**
  * Handles the OAuth callback.
  */
-function authCallback(request) 
-{
+function authCallback(request) {
   var service = getService();
   var authorized = service.handleCallback(request);
-  if (authorized) 
-  {
+  if (authorized) {
     PropertiesService.getUserProperties()
         .setProperty('QuickBooks.companyId', request.parameter.realmId);
-      Logger.log("Success!");
+      Logger.log('Success!');
     return HtmlService.createHtmlOutput('Success!');
   } 
-  else 
-  {
+  else {
     return HtmlService.createHtmlOutput('Denied');
   }
 }
