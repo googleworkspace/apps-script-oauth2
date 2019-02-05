@@ -21,8 +21,7 @@ function logRedirectUri() {
  * Authorizes and makes a request to the QuickBooks API. Assumes the use of a
  * sandbox company.
  */
-function run() 
-{
+function run() {
   var service = getService();
   if (service.hasAccess()) {
     // Get the Company ID to be used in the request.
@@ -30,19 +29,19 @@ function run()
         .getProperty('QuickBooks.companyId');
         
     // Get company information as a test.
-    var url = 'https://sandbox-quickbooks.api.intuit.com/v3/company/' 
+    var url = 'https://sandbox-quickbooks.api.intuit.com/v3/company/'
     + companyId + '/companyinfo/' + companyId;
     
-    var response = UrlFetchApp.fetch(url, { 
-      headers: {  Authorization: 'Bearer ' + service.getAccessToken(),
-      Accept: 'application/json'}
+    var response = UrlFetchApp.fetch(url, {
+      headers: {
+        Authorization: 'Bearer ' + service.getAccessToken(),
+        Accept: 'application/json'
+      }
     });
     
     var result = JSON.parse(response.getContentText());
     Logger.log(JSON.stringify(result, null, 2));
-
-  } 
-  else { 
+  } else {
     // If not authorized, get authorization URL.
     var authorizationUrl = service.getAuthorizationUrl();
     
@@ -88,8 +87,7 @@ function authCallback(request) {
         .setProperty('QuickBooks.companyId', request.parameter.realmId);
       Logger.log('Success!');
     return HtmlService.createHtmlOutput('Success!');
-  } 
-  else {
+  } else {
     return HtmlService.createHtmlOutput('Denied');
   }
 }
