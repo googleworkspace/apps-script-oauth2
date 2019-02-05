@@ -65,7 +65,8 @@ function getService() {
       // Set the client ID and secret.
       .setClientId(CLIENT_ID)
       .setClientSecret(CLIENT_SECRET)
-      // Required, set to Accounting for this example, see QB developer portal for additional options.
+      // Required, set to Accounting for this example,
+      // see QB developer portal for additional options.
       .setScope('com.intuit.quickbooks.accounting')
       // Set the name of the callback function in the script referenced
       // above that should be invoked to complete the OAuth flow.
@@ -82,7 +83,8 @@ function authCallback(request) {
   var authorized = service.handleCallback(request);
   if (authorized) {
     // Save the Company ID in the service's storage.
-    service.getStorage().setValue('QuickBooks.companyId', request.parameter.realmId);
+    service.getStorage().setValue('QuickBooks.companyId', 
+                                  request.parameter.realmId);
     return HtmlService.createHtmlOutput('Success!');
   } else {
     return HtmlService.createHtmlOutput('Denied');
