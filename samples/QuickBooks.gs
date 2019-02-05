@@ -1,6 +1,7 @@
 /*
- * This sample demonstrates how to configure the library for the Intuit Quickbooks API.
- * Instructions for obtaining your Client ID and Client Secret can be found here:
+ * This sample demonstrates how to configure the library for
+ * the Intuit Quickbooks API. Instructions for obtaining your
+ * Client ID and Client Secret can be found here:
  * https://developer.intuit.com/app/developer/qbo/docs/get-started
  */
 
@@ -61,18 +62,14 @@ function getService() {
       // Set the endpoint URLs.
       .setAuthorizationBaseUrl('https://appcenter.intuit.com/connect/oauth2')
       .setTokenUrl('https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer')
-      
       // Set the client ID and secret.
       .setClientId(CLIENT_ID)
       .setClientSecret(CLIENT_SECRET)
-      
       // Required, set to Accounting for this example, see QB developer portal for additional options.
       .setScope('com.intuit.quickbooks.accounting')
-      
       // Set the name of the callback function in the script referenced
       // above that should be invoked to complete the OAuth flow.
       .setCallbackFunction('authCallback')
-      
       // Set the property store where authorized tokens should be persisted.
       .setPropertyStore(PropertiesService.getUserProperties());
 }
