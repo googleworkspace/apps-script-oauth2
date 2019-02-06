@@ -24,8 +24,7 @@ function run() {
   var service = getService();
   if (service.hasAccess()) {
     // Get the Company ID to be used in the request.
-    var companyId = PropertiesService.getUserProperties()
-        .getProperty('QuickBooks.companyId');
+    var companyId = service.getStorage().getValue('QuickBooks.companyId');
     // Get Quickbooks Company information to test.
     var url = 'https://sandbox-quickbooks.api.intuit.com/v3/company/' +
         companyId + '/companyinfo/' + companyId;
