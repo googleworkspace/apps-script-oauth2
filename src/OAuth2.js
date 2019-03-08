@@ -65,7 +65,7 @@ function createService(serviceName) {
  * @return {string} The redirect URI.
  */
 function getRedirectUri(optScriptId) {
-  var scriptId = optScriptId || eval('Script' + 'App').getScriptId();
+  var scriptId = optScriptId || ScriptApp.getScriptId();
   return 'https://script.google.com/macros/d/' + encodeURIComponent(scriptId) +
       '/usercallback';
 }
