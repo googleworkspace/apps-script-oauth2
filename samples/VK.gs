@@ -13,9 +13,9 @@ function run() {
   var service = getService();
   if (service.hasAccess()) {
     // GET requests require access_token parameter
-    var url = 'https://api.vk.com/method/groups.get?access_token=' +
-        service.getAccessToken();
+    var url = 'https://api.vk.com/method/users.get?version=5.89&fields=first_name,last_name,email&access_token=' + service.getAccessToken()
     var response = UrlFetchApp.fetch(url);
+    var email = service.getToken().email // email only retrievable from token
     var result = JSON.parse(response.getContentText());
     Logger.log(JSON.stringify(result, null, 2));
   } else {
@@ -53,7 +53,7 @@ function getService() {
       .setPropertyStore(PropertiesService.getUserProperties())
 
       // Set the scope and additional specific parameters if its are supported
-      .setScope('groups,offline');
+      .setScope('email,groups,offline');
 }
 
 /**
