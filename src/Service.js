@@ -266,6 +266,17 @@ Service_.prototype.setIssuer = function(issuer) {
 };
 
 /**
+ * Sets additional JWT claims to use for Service Account authorization.
+ * @param {Object.<string,string>} additionalClaims The additional claims, as
+ *     key-value pairs.
+ * @return {Service_} This service, for chaining.
+ */
+Service_.prototype.setAdditionalClaims = function(additionalClaims) {
+  this.additionalClaims_ = additionalClaims;
+  return this;
+};
+
+/**
  * Sets the subject (sub) value to use for Service Account authorization.
  * @param {string} subject This subject value
  * @return {Service_} This service, for chaining.
@@ -695,6 +706,12 @@ Service_.prototype.createJwt_ = function() {
   }
   if (this.params_.scope) {
     claimSet.scope = this.params_.scope;
+  }
+  if (this.additionalClaims_) {
+    var additionalClaims = this.additionalClaims_;
+    Object.keys(additionalClaims).forEach(function(key) {
+      claimSet[key] = additionalClaims[key];
+    });
   }
   var toSign = Utilities.base64EncodeWebSafe(JSON.stringify(header)) + '.' +
       Utilities.base64EncodeWebSafe(JSON.stringify(claimSet));
