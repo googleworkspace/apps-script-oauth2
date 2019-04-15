@@ -1,15 +1,24 @@
+/*
+ * This sample demonstrates how to configure the library for Google APIs, using
+ * domain-wide delegation (Service Account flow).
+ * https://developers.google.com/identity/protocols/OAuth2ServiceAccount#delegatingauthority
+ */
+
+// Private key and client email of the service account.
 var PRIVATE_KEY =
     '-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n';
 var CLIENT_EMAIL = '...';
+
+// Email address of the user to impersonate.
 var USER_EMAIL = '...';
 
 /**
- * Authorizes and makes a request to the Google+ API.
+ * Authorizes and makes a request to the Google Drive API.
  */
 function run() {
   var service = getService();
   if (service.hasAccess()) {
-    var url = 'https://www.googleapis.com/drive/v2/files?pageSize=1';
+    var url = 'https://www.googleapis.com/drive/v3/files?pageSize=1';
     var response = UrlFetchApp.fetch(url, {
       headers: {
         Authorization: 'Bearer ' + service.getAccessToken()
