@@ -1,13 +1,19 @@
+/*
+ * This sample demonstrates how to configure the library for Google APIs, using
+ * end-user authorization (Web Server flow).
+ * https://developers.google.com/identity/protocols/OAuth2WebServer
+ */
+
 var CLIENT_ID = '...';
 var CLIENT_SECRET = '...';
 
 /**
- * Authorizes and makes a request to the Google+ API.
+ * Authorizes and makes a request to the Google Drive API.
  */
 function run() {
   var service = getService();
   if (service.hasAccess()) {
-    var url = 'https://www.googleapis.com/plus/v1/people/me';
+    var url = 'https://www.googleapis.com/drive/v3/files?pageSize=1';
     var response = UrlFetchApp.fetch(url, {
       headers: {
         Authorization: 'Bearer ' + service.getAccessToken()
@@ -33,7 +39,7 @@ function reset() {
  * Configures the service.
  */
 function getService() {
-  return OAuth2.createService('GooglePlus')
+  return OAuth2.createService('Google')
       // Set the endpoint URLs.
       .setAuthorizationBaseUrl('https://accounts.google.com/o/oauth2/auth')
       .setTokenUrl('https://accounts.google.com/o/oauth2/token')
@@ -50,7 +56,7 @@ function getService() {
       .setPropertyStore(PropertiesService.getUserProperties())
 
       // Set the scope and additional Google-specific parameters.
-      .setScope('profile')
+      .setScope('https://www.googleapis.com/auth/drive')
       .setParam('access_type', 'offline')
       .setParam('approval_prompt', 'force')
       .setParam('login_hint', Session.getActiveUser().getEmail());
