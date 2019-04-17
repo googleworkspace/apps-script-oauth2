@@ -4,8 +4,8 @@ var CLIENT_EMAIL = '...';
 
 /**
  * Authorizes and makes a request to the Hangouts Chat API
- * for sending a text message to all DM room bot has been added.
- * Best before to use service account is to do the Google CodeLabs
+ * for sending a text message to all DMs bot has been added.
+ * For a more detailed guide on building bots, follow the codelab:
  * https://codelabs.developers.google.com/codelabs/chat-apps-script/
  */
 function sendPushMessage() {
@@ -23,7 +23,7 @@ function sendPushMessage() {
       for (var i = 0; i < rep.spaces.length; i++) {
         var space = rep.spaces[i];
         if (space.type == 'DM') {
-          // We send message only to Direct Message room.
+          // We send message only to Direct Message (DM)
           var url = 'https://chat.googleapis.com/v1/'+space.name+'/messages';
           var options = {
             method: 'POST',
@@ -33,7 +33,7 @@ function sendPushMessage() {
             },
             payload: JSON.stringify({text: 'Hello world !'})
           };
-          // We send message to the DM room
+          // We send message to the DM
           UrlFetchApp.fetch(url, options);
         } else {
           // If Type is 'ROOM' or 'TYPE_UNSPECIFIED' we don't send notification.
@@ -51,19 +51,7 @@ function sendPushMessage() {
  * Reset the authorization state, so that it can be re-tested.
  */
 function reset() {
-  getService().reset();
-}
-
-/**
- * Test access token is well returned
- */
-function getAccessTokenTest() {
-  var service = getChatbotService();
-  if (service.hasAccess()) {
-    Logger.log(service.getAccessToken());
-  } else {
-    Logger.log(service.getLastError());
-  }
+  getChatbotService().reset();
 }
 
 
@@ -85,6 +73,5 @@ function getChatbotService() {
       .setPropertyStore(PropertiesService.getScriptProperties())
 
       // Set the scope. This must match one of the scopes configured during the
-      // setup of domain-wide delegation.
       .setScope('https://www.googleapis.com/auth/chat.bot');
 }
