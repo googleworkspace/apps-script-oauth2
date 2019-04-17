@@ -72,6 +72,6 @@ function getChatbotService() {
       // Set the property store where authorized tokens should be persisted.
       .setPropertyStore(PropertiesService.getScriptProperties())
 
-      // Set the scope. This must match one of the scopes configured during the
+      // Set the scope.
       .setScope('https://www.googleapis.com/auth/chat.bot');
 }
