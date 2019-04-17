@@ -1,13 +1,15 @@
-var PRIVATE_KEY = '-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n';
+var PRIVATE_KEY = 
+    '-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n';
 var CLIENT_EMAIL = '...';
 
 /**
- * Authorizes and makes a request to the Hangouts Chat API for sending a text message to all DM room bot has been added.
+ * Authorizes and makes a request to the Hangouts Chat API 
+ * for sending a text message to all DM room bot has been added.
  */
 function sendPushMessage() {
   var service = getChatbotService();
   if (service.hasAccess()) {
-    //We retrieve all the spaces bot has been added
+    // We retrieve all the spaces bot has been added
     var url = 'https://chat.googleapis.com/v1/spaces';
     var response = UrlFetchApp.fetch(url, {
       headers: {
@@ -15,11 +17,11 @@ function sendPushMessage() {
       }
     });
     var rep = JSON.parse(response.getContentText());
-    if(rep.spaces && rep.spaces.length > 0){
-      for(var i = 0; i < rep.spaces.length; i++) {
+    if (rep.spaces && rep.spaces.length > 0){
+      for (var i = 0; i < rep.spaces.length; i++) {
         var space = rep.spaces[i];
-        if(space.type == "DM"){
-          //We send message only to Direct Message room.
+        if (space.type == 'DM') {
+          // We send message only to Direct Message room.
           var url = 'https://chat.googleapis.com/v1/'+space.name+'/messages';
           var options = {
             method : 'POST',
@@ -27,16 +29,15 @@ function sendPushMessage() {
             headers: {
               Authorization: 'Bearer ' + service.getAccessToken()
             },
-            payload : JSON.stringify({ text: "Hello world !" })
+            payload : JSON.stringify({text: 'Hello world !'})
           }
-          
-          //We send message to the DM room
+          // We send message to the DM room
           UrlFetchApp.fetch(url, options);
-        }else{
-          //If Type is 'ROOM' or 'TYPE_UNSPECIFIED' we don't send notification.
+        } else {
+          // If Type is 'ROOM' or 'TYPE_UNSPECIFIED' we don't send notification.
         }
       }
-    }else{
+    } else {
       Logger.log('Bot is not added to any spaces');
     }
   } else {
