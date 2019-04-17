@@ -1,10 +1,12 @@
-var PRIVATE_KEY = 
+var PRIVATE_KEY =
     '-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n';
 var CLIENT_EMAIL = '...';
 
 /**
- * Authorizes and makes a request to the Hangouts Chat API 
+ * Authorizes and makes a request to the Hangouts Chat API
  * for sending a text message to all DM room bot has been added.
+ * Best before to use service account is to do the Google CodeLabs
+ * https://codelabs.developers.google.com/codelabs/chat-apps-script/
  */
 function sendPushMessage() {
   var service = getChatbotService();
@@ -17,20 +19,20 @@ function sendPushMessage() {
       }
     });
     var rep = JSON.parse(response.getContentText());
-    if (rep.spaces && rep.spaces.length > 0){
+    if (rep.spaces && rep.spaces.length > 0) {
       for (var i = 0; i < rep.spaces.length; i++) {
         var space = rep.spaces[i];
         if (space.type == 'DM') {
           // We send message only to Direct Message room.
           var url = 'https://chat.googleapis.com/v1/'+space.name+'/messages';
           var options = {
-            method : 'POST',
+            method: 'POST',
             contentType: 'application/json',
             headers: {
               Authorization: 'Bearer ' + service.getAccessToken()
             },
-            payload : JSON.stringify({text: 'Hello world !'})
-          }
+            payload: JSON.stringify({text: 'Hello world !'})
+          };
           // We send message to the DM room
           UrlFetchApp.fetch(url, options);
         } else {
@@ -67,6 +69,8 @@ function getAccessTokenTest() {
 
 /**
  * Configures the Chatbot service.
+ * For service account setup follow Step 1 on this page
+ * https://developers.google.com/hangouts/chat/how-tos/service-accounts
  */
 function getChatbotService() {
   return OAuth2.createService('MyChatBot')
