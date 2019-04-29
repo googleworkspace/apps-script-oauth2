@@ -495,7 +495,7 @@ Service_.prototype.fetchToken_ = function(payload, optUrl) {
   var response = UrlFetchApp.fetch(url, {
     method: 'post',
     headers: headers,
-    payload: payload,
+    payload: tokenPayload,
     muteHttpExceptions: true
   });
   return this.getTokenFromResponse_(response);
