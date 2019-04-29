@@ -16,7 +16,7 @@ function run() {
     var url = 'https://api.vk.com/method/users.get?fields=first_name,last_name&access_token=' + service.getAccessToken();
     var response = UrlFetchApp.fetch(url);
 
-    // note: add 'email' to the fields= list above in order to 
+    // note: add 'email' to the fields= list above in order to
     //       fetch email from token (+uncomment 2 lines below)
     // var email = service.getToken().email;
     // Logger.log('email: '+email);
