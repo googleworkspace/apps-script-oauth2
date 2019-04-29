@@ -490,7 +490,7 @@ Service_.prototype.fetchToken_ = function(payload, optUrl) {
     headers = extend_(headers, this.tokenHeaders_);
   }
   if (this.tokenPayloadHandler_) {
-    tokenPayload = this.tokenPayloadHandler_(payload);
+    payload = this.tokenPayloadHandler_(payload);
   }
   var response = UrlFetchApp.fetch(url, {
     method: 'post',
