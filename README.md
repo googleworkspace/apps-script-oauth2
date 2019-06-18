@@ -394,13 +394,15 @@ and secret and add an authorization header manually.
 See the sample [`TwitterAppOnly.gs`](samples/TwitterAppOnly.gs) for a working
 example.
 
-
 ## Compatibility
 
 This library was designed to work with any OAuth2 provider, but because of small
 differences in how they implement the standard it may be that some APIs
 aren't compatible. If you find an API that it doesn't work with, open an issue
 or fix the problem yourself and make a pull request against the source code.
+
+This library is designed for server-side OAuth flows, and client-side flows with
+implicit grants (`response_type=token`) are not supported.
 
 ## Breaking changes
 
