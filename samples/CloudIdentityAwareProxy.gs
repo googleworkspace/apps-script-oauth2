@@ -54,7 +54,7 @@ function getService() {
   return OAuth2.createService('CloudIAP')
       // Set the endpoint URLs.
       .setAuthorizationBaseUrl('https://accounts.google.com/o/oauth2/auth')
-      .setTokenUrl('https://www.googleapis.com/oauth2/v4/token')
+      .setTokenUrl('https://oauth2.googleapis.com/token')
 
       // Set the client ID and secret.
       .setClientId(CLIENT_ID)

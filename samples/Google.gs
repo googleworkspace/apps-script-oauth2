@@ -41,8 +41,8 @@ function reset() {
 function getService() {
   return OAuth2.createService('Google')
       // Set the endpoint URLs.
-      .setAuthorizationBaseUrl('https://accounts.google.com/o/oauth2/auth')
-      .setTokenUrl('https://accounts.google.com/o/oauth2/token')
+      .setAuthorizationBaseUrl('https://accounts.google.com/o/oauth2/v2/auth')
+      .setTokenUrl('https://oauth2.googleapis.com/token')
 
       // Set the client ID and secret.
       .setClientId(CLIENT_ID)
