@@ -63,7 +63,7 @@ function reset() {
 function getChatbotService() {
   return OAuth2.createService('MyChatBot')
       // Set the endpoint URL.
-      .setTokenUrl('https://accounts.google.com/o/oauth2/token')
+      .setTokenUrl('https://oauth2.googleapis.com/token')
 
       // Set the private key and issuer.
       .setPrivateKey(PRIVATE_KEY)
