@@ -6,6 +6,9 @@
 var CLIENT_ID = '...';
 var CLIENT_SECRET = '...';
 
+var CLIENT_ID = '1000.7ETQMTBW3CZ8904161FVI075OUAH9H';
+var CLIENT_SECRET = 'ff6ccb4c2e10105c1ba90ae92729570a7a783d918c';
+
 /**
  * Authorizes and makes a request to the Zoho CRM API.
  */
@@ -38,35 +41,35 @@ function reset() {
 
 /**
  * Configures the service.
- * @param {string} optAccountServer The account server to use when requesting 
+ * @param {string} optAccountServer The account server to use when requesting
  *     tokens.
  */
 function getService(optAccountServer) {
   var service = OAuth2.createService('Zoho')
-      // Set the authorization base URL. 
+      // Set the authorization base URL.
       .setAuthorizationBaseUrl('https://accounts.zoho.com/oauth/v2/auth')
 
       // Set the client ID and secret.
       .setClientId(CLIENT_ID)
       .setClientSecret(CLIENT_SECRET)
-  
-      // Set scopes. See 
+
+      // Set scopes. See
       // https://www.zoho.com/crm/developer/docs/api/oauth-overview.html#scopes.
       .setScope('ZohoCRM.org.all')
 
       // Set the name of the callback function that should be invoked to
       // complete the OAuth flow.
       .setCallbackFunction('authCallback')
-  
+
       // Set the access type to "offline" to get a refresh token.
       .setParam('access_type', 'offline')
 
       // Set the property store where authorized tokens should be persisted.
       .setPropertyStore(PropertiesService.getUserProperties())
       .setCache(CacheService.getUserCache());
-  
+
   // Set the token URL using the account server passed in or previously stored.
-  var accountServer = optAccountServer || 
+  var accountServer = optAccountServer ||
       service.getStorage().getValue('account-server');
   if (accountServer) {
     service.setTokenUrl(accountServer + '/oauth/v2/token');
