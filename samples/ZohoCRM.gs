@@ -63,6 +63,8 @@ function getService(optAccountServer) {
 
       // Set the access type to "offline" to get a refresh token.
       .setParam('access_type', 'offline')
+      // Set prompt to "consent" to ensure a refresh token is retrieved.
+      .setParam('prompt', 'consent')
 
       // Set the property store where authorized tokens should be persisted.
       .setPropertyStore(PropertiesService.getUserProperties())
