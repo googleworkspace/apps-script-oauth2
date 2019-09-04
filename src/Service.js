@@ -630,7 +630,7 @@ Service_.prototype.getToken = function(optSkipMemoryCheck) {
  * @private
  */
 Service_.prototype.isExpired_ = function(token) {
-  var expiresIn = token.expires_in || token.expires;
+  var expiresIn = token.expires_in_sec || token.expires_in || token.expires;
   if (!expiresIn) {
     return false;
   } else {
