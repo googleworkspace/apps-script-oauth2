@@ -29,7 +29,7 @@ function run() {
       headers: {
         // As per the IAP documentation, use the id_token, not the access_token,
         // to authorize the request.
-        Authorization: 'Bearer ' + service.getToken().id_token
+        Authorization: 'Bearer ' + service.getIdToken()
       }
     });
     var result = response.getContentText();
