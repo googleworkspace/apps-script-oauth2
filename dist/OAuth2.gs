@@ -575,7 +575,7 @@ Service_.prototype.fetchToken_ = function(payload, optUrl) {
     headers = extend_(headers, this.tokenHeaders_);
   }
   if (this.tokenPayloadHandler_) {
-    tokenPayload = this.tokenPayloadHandler_(payload);
+    payload = this.tokenPayloadHandler_(payload);
   }
   var response = UrlFetchApp.fetch(url, {
     method: 'post',
@@ -715,7 +715,7 @@ Service_.prototype.getToken = function(optSkipMemoryCheck) {
  * @private
  */
 Service_.prototype.isExpired_ = function(token) {
-  var expiresIn = token.expires_in || token.expires;
+  var expiresIn = token.expires_in_sec || token.expires_in || token.expires;
   if (!expiresIn) {
     return false;
   } else {
