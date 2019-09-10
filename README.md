@@ -6,6 +6,31 @@ expire. This library uses Apps Script's
 [StateTokenBuilder](https://developers.google.com/apps-script/reference/script/state-token-builder)
 and `/usercallback` endpoint to handle the redirects.
 
+## Connecting to a Google API
+
+If you are trying to connect to a Google API from Apps Script you might not need
+to use this library at all. Apps Script has a number of easy-to-use,
+[built-in services][built_in], as well as a variety of
+[advanced services][advanced] that wrap existing Google REST APIs.
+
+Even if your API is not covered by either, you can still use Apps Script to
+obtain the OAuth2 token for you. Simply
+[edit the script's manifest][edit_manifest] to
+[include the additional scopes][additional_scopes] that your API requires.
+When the user authorizes your script they will also be asked to approve those
+additional scopes. Then use the method [`ScriptApp.getOAuthToken()`][scriptapp]
+in your code to access the OAuth2 access token the script has acquired and pass
+it in the `Authorization` header of a `UrlFetchApp.fetch()` call.
+
+Visit the sample [`NoLibrary`](samples/NoLibrary) to see an example of how this
+can be done.
+
+[built_in]: https://developers.google.com/apps-script/reference/calendar/
+[advanced]: https://developers.google.com/apps-script/advanced/admin-sdk-directory
+[edit_manifest]: https://developers.google.com/apps-script/concepts/manifests#editing_a_manifest
+[additional_scopes]: https://developers.google.com/apps-script/concepts/scopes#setting_explicit_scopes
+[scriptapp]: https://developers.google.com/apps-script/reference/script/script-app#getoauthtoken
+
 ## Setup
 
 This library is already published as an Apps Script, making it easy to include
