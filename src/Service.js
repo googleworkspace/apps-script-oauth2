@@ -458,6 +458,20 @@ Service_.prototype.getAccessToken = function() {
 };
 
 /**
+ * Gets an id token for this service. This token can be used in HTTP
+ * requests to the service's endpoint. This method will throw an error if the
+ * user's access was not granted or has expired.
+ * @return {string} An id token.
+ */
+Service_.prototype.getIdToken = function() {
+  if (!this.hasAccess()) {
+    throw new Error('Access not granted or expired.');
+  }
+  var token = this.getToken();
+  return token.id_token;
+};
+
+/**
  * Resets the service, removing access and requiring the service to be
  * re-authorized.
  */
