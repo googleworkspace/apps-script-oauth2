@@ -29,23 +29,6 @@ var TOKEN_FORMAT = {
 };
 
 /**
- * The supported locations for passing the state parameter.
- * @enum {string}
- */
-var STATE_PARAMETER_LOCATION = {
-  /**
-   * Pass the state parameter in the authorization URL.
-   * @default
-   */
-  AUTHORIZATION_URL: 'authorization-url',
-  /**
-   * Pass the state token in the redirect URL, as a workaround for APIs that
-   * don't support the state parameter.
-   */
-  REDIRECT_URL: 'redirect-url'
-};
-
-/**
  * Creates a new OAuth2 service with the name specified. It's usually best to
  * create and configure your service once at the start of your script, and then
  * reference them during the different phases of the authorization flow.
