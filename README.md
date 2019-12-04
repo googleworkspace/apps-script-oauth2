@@ -124,14 +124,14 @@ function getDriveService() {
 
       // Sets the login hint, which will prevent the account chooser screen
       // from being shown to users logged in with multiple accounts.
-      .setParam('login_hint', Session.getActiveUser().getEmail())
+      .setParam('login_hint', Session.getEffectiveUser().getEmail())
 
       // Requests offline access.
       .setParam('access_type', 'offline')
-
-      // Forces the approval prompt every time. This is useful for testing,
-      // but not desirable in a production application.
-      .setParam('approval_prompt', 'force');
+      
+      // Consent prompt is required to ensure a refresh token is always
+      // returned when requesting offline access.
+      .setParam('prompt', 'consent');
 }
 ```
 
