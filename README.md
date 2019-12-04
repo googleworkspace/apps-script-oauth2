@@ -124,12 +124,13 @@ function getDriveService() {
 
       // Sets the login hint, which will prevent the account chooser screen
       // from being shown to users logged in with multiple accounts.
-      // Prefer Session.getEffectiveUser().getEmail() if used in add-ons.
-      .setParam('login_hint', Session.getActiveUser().getEmail())
+      .setParam('login_hint', Session.getEffectiveUser().getEmail())
 
       // Requests offline access.
       .setParam('access_type', 'offline')
-      // This param is required to ensure a refresh token is always returned.
+      
+      // Consent prompt is required to ensure a refresh token is always
+      // returned when requesting offline access.
       .setParam('prompt', 'consent');
 }
 ```
