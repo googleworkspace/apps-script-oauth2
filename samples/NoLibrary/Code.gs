@@ -3,7 +3,7 @@
  * @see {@link https://developers.google.com/webmaster-tools/}
  */
 function listSearchConsoleSites() {
-  var url = 'https://www.googleapis.com/webmasters/v3/sites';
+  var url = 'https://www.googleapis.com/webmasters/v3/sites/{siteUrl}';
   var token = ScriptApp.getOAuthToken();
   var response = UrlFetchApp.fetch(url, {
     headers: {
