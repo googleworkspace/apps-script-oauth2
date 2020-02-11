@@ -2,17 +2,17 @@
  * Authorizes and makes a request to the Docusign API.
  */
 function rundocusign() {
-     var payload =
+     var payload=
  {
-  "emailSubject": "EMAIL-SUBJECT",
-  "status": "sent",
-    "emailBlurb": "EMAIL-CONTENT",
-  "templateId": "TEMPLATE-ID-TO-BE-USED",
-  "templateRoles": [
+  'emailSubject': 'EMAIL-SUBJECT',
+  'status': 'sent',
+    'emailBlurb': 'EMAIL-CONTENT',
+  'templateId': 'TEMPLATE-ID-TO-BE-USED',
+  'templateRoles': [
     {
-      "email": "joebloggs@sample.com",
-      "name": "Joe Blogger",
-      "roleName": "role1"
+      'email': 'joebloggs@sample.com',
+      'name': 'Joe Blogger',
+      'roleName': 'role1'
     }
   ]
 };
@@ -27,14 +27,11 @@ function rundocusign() {
       method: 'post',
     contentType: 'application/json',
     grant_type: 'authorization_code',
-    payload : JSON.stringify(payload)
-
+    payload: JSON.stringify(payload)
     });
     var result = response.getContentText();
     Logger.log(result, null, 1);
-  } else {
-
-
+} else {
     var authorizationUrl = service.getAuthorizationUrl();
     Logger.log('Open the following URL and re-run the script: %s',
         authorizationUrl);
@@ -52,7 +49,7 @@ function reset() {
  * Configures the service.
  */
 function getService() {
-  return OAuth2.createService("Docusign")
+  return OAuth2.createService('Docusign')
       // Set the endpoint URLs.
       .setAuthorizationBaseUrl('https://account-d.docusign.com/oauth/auth')
       .setTokenUrl('https://account-d.docusign.com/oauth/token')
@@ -67,10 +64,8 @@ function getService() {
 
       // Set the property store where authorized tokens should be persisted.
       .setPropertyStore(PropertiesService.getUserProperties())
-      .setScope('openid')
-
+      .setScope('openid');
 };
-
 /**
  * Handles the OAuth callback.
  */
