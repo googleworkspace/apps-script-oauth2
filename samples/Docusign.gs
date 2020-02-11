@@ -1,5 +1,3 @@
-
-
   /**
  * Authorizes and makes a request to the Docusign API.
  */
@@ -17,25 +15,25 @@ function rundocusign() {
       "roleName": "role1"
     }
   ]
-}
+};
   var service = getService();
   if (service.hasAccess()) {
-    var url = 'https://demo.docusign.net/restapi/v2/accounts/[INSERT-ACCOUNT-ID-HERE]/envelopes';
+    var url = 'https://demo.docusign.net/restapi/v2/accounts/[ACCOUNT-ID]/envelopes';
     var response = UrlFetchApp.fetch(url, {
       headers: {
         Authorization: 'Bearer ' + service.getAccessToken()
-     
+
       },
       method: 'post',
-    contentType: 'application/json',     
+    contentType: 'application/json',
     grant_type: 'authorization_code',
     payload : JSON.stringify(payload)
-    
+
     });
     var result = response.getContentText();
     Logger.log(result, null, 1);
   } else {
-   
+
 
     var authorizationUrl = service.getAuthorizationUrl();
     Logger.log('Open the following URL and re-run the script: %s',
@@ -60,8 +58,8 @@ function getService() {
       .setTokenUrl('https://account-d.docusign.com/oauth/token')
 
       // Set the client ID and secret.
-      .setClientId("...")
-      .setClientSecret("...")
+      .setClientId('...')
+      .setClientSecret('..')
 
       // Set the name of the callback function that should be invoked to
       // complete the OAuth flow.
@@ -71,10 +69,7 @@ function getService() {
       .setPropertyStore(PropertiesService.getUserProperties())
       .setScope('openid')
 
-      // Set the response type to code (required).
-    
-
-}
+};
 
 /**
  * Handles the OAuth callback.
