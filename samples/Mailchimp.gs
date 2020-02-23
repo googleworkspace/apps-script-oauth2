@@ -17,7 +17,7 @@ function run() {
     // Retrieve the account ID and base URI from storage.
     var storage = service.getStorage();
     var dc = storage.getValue('dc');
-    
+
     // Make a request to retrieve the account information.
     var url = 'https://' + dc + '.api.mailchimp.com/3.0/campaigns/';
     var response = UrlFetchApp.fetch(url, {
@@ -62,7 +62,7 @@ function getService() {
     .setPropertyStore(PropertiesService.getUserProperties())
 
     // Set the cache store where authorized tokens should be persisted.
-    .setCache(CacheService.getUserCache())
+    .setCache(CacheService.getUserCache());
 };
 
 /**
@@ -85,7 +85,7 @@ function authCallback(request) {
     // Store the Mailchimp datacenter for future API calls.
     var storage = service.getStorage();
     storage.setValue('dc', result.dc);
-    
+
     return HtmlService.createHtmlOutput('Success!');
   } else {
     return HtmlService.createHtmlOutput('Denied.');
