@@ -18,7 +18,7 @@ function run() {
     var storage = service.getStorage();
     var dc = storage.getValue('dc');
 
-    // Make a request to retrieve the account information.
+    // Make a request to retrieve the Mailchimp campaigns.
     var url = 'https://' + dc + '.api.mailchimp.com/3.0/campaigns/';
     var response = UrlFetchApp.fetch(url, {
       headers: {
