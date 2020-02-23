@@ -6,7 +6,6 @@
 
 var CLIENT_ID = '...';
 var CLIENT_SECRET = '...';
-var OAUTH_HOST = 'login.mailchimp.com';
 
 /**
  * Authorizes and makes a request to the Docusign API.
@@ -47,8 +46,8 @@ function reset() {
 function getService() {
   return OAuth2.createService('Mailchimp')
     // Set the endpoint URLs.
-    .setAuthorizationBaseUrl('https://' + OAUTH_HOST + '/oauth2/authorize')
-    .setTokenUrl('https://' + OAUTH_HOST + '/oauth2/token')
+    .setAuthorizationBaseUrl('https://login.mailchimp.com/oauth2/authorize')
+    .setTokenUrl('https://login.mailchimp.com/oauth2/token')
 
     // Set the client ID and secret.
     .setClientId(CLIENT_ID)
@@ -74,7 +73,7 @@ function authCallback(request) {
   if (authorized) {
     // Get the user info to determine the data center needed for
     // future requests.
-    var url = 'https://' + OAUTH_HOST + '/oauth2/metadata';
+    var url = 'https://login.mailchimp.com/oauth2/metadata';
     var response = UrlFetchApp.fetch(url, {
       headers: {
         Authorization: 'Bearer ' + service.getAccessToken()
