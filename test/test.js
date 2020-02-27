@@ -146,7 +146,7 @@ describe('Service', function() {
         function() {
       var service = OAuth2.createService('test');
       service.getToken();
-    })
+    });
   });
 
   describe('#saveToken_()', function() {
@@ -173,7 +173,7 @@ describe('Service', function() {
         access_token: 'foo'
       };
       service.saveToken_(token);
-    })
+    });
   });
 
   describe('#reset()', function() {
