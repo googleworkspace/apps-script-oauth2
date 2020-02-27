@@ -607,9 +607,6 @@ Service_.prototype.refresh = function() {
  * @return {Storage} The service's storage.
  */
 Service_.prototype.getStorage = function() {
-  validate_({
-    'Property store': this.propertyStore_
-  });
   if (!this.storage_) {
     var prefix = 'oauth2.' + this.serviceName_;
     this.storage_ = new Storage_(prefix, this.propertyStore_, this.cache_);

@@ -128,7 +128,7 @@ function getDriveService() {
 
       // Requests offline access.
       .setParam('access_type', 'offline')
-      
+
       // Consent prompt is required to ensure a refresh token is always
       // returned when requesting offline access.
       .setParam('prompt', 'consent');
@@ -214,6 +214,36 @@ function logout() {
 ```
 
 ## Best practices
+
+### Token storage
+
+In almost all cases you'll want to persist the OAuth tokens after you retrieve
+them. This prevents having to request access from the user every time you want
+to call the API. To do so, make sure you set a properties store when you define
+your service:
+
+```js
+return OAuth2.createService('Foo')
+    .setPropertyStore(PropertiesService.getUserProperties())
+    // ...
+```
+
+Apps Script has [property stores][property_stores] scoped to the user, script,
+or document. In most cases you'll want to choose user-scoped properties, as it
+is most common to have each user of your script authorize access to their own
+account. However there are uses cases where you'd want to authorize access to
+a shared resource and then have all users of the script (or on the same
+document) share that access.
+
+When using a service account or 2-legged OAuth flow, where users aren't prompted
+for authorization, storing tokens is still beneficial as there can be rate
+limits on generating new tokens. However there are edge cases where you need to
+generate lots of different tokens in a short amount of time, and persisting
+those tokens to properties can exceed your `PropertiesService` quota. In those
+cases you can omit any form of token storage and just retrieve new ones as
+needed.
+
+[property_stores]: https://developers.google.com/apps-script/reference/properties/properties-service
 
 ### Caching
 

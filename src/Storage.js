@@ -21,14 +21,14 @@
  * related information.
  * @param {string} prefix The prefix to use for keys in the properties and
  *     cache.
- * @param {PropertiesService.Properties} properties The properties instance to
- *     use.
+ * @param {PropertiesService.Properties} optProperties The optional properties
+ *     instance to use.
  * @param {CacheService.Cache} [optCache] The optional cache instance to use.
  * @constructor
  */
-function Storage_(prefix, properties, optCache) {
+function Storage_(prefix, optProperties, optCache) {
   this.prefix_ = prefix;
-  this.properties_ = properties;
+  this.properties_ = optProperties;
   this.cache_ = optCache;
   this.memory_ = {};
 }
@@ -80,7 +80,8 @@ Storage_.prototype.getValue = function(key, optSkipMemoryCheck) {
   }
 
   // Check properties.
-  if (jsonValue = this.properties_.getProperty(prefixedKey)) {
+  if (this.properties_ &&
+      (jsonValue = this.properties_.getProperty(prefixedKey))) {
     if (this.cache_) {
       this.cache_.put(prefixedKey,
           jsonValue, Storage_.CACHE_EXPIRATION_TIME_SECONDS);
@@ -108,7 +109,9 @@ Storage_.prototype.getValue = function(key, optSkipMemoryCheck) {
 Storage_.prototype.setValue = function(key, value) {
   var prefixedKey = this.getPrefixedKey_(key);
   var jsonValue = JSON.stringify(value);
-  this.properties_.setProperty(prefixedKey, jsonValue);
+  if (this.properties_) {
+    this.properties_.setProperty(prefixedKey, jsonValue);
+  }
   if (this.cache_) {
     this.cache_.put(prefixedKey, jsonValue,
         Storage_.CACHE_EXPIRATION_TIME_SECONDS);
@@ -122,7 +125,9 @@ Storage_.prototype.setValue = function(key, value) {
  */
 Storage_.prototype.removeValue = function(key) {
   var prefixedKey = this.getPrefixedKey_(key);
-  this.properties_.deleteProperty(prefixedKey);
+  if (this.properties_) {
+    this.properties_.deleteProperty(prefixedKey);
+  }
   if (this.cache_) {
     this.cache_.remove(prefixedKey);
   }
