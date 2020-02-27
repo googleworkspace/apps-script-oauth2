@@ -141,6 +141,12 @@ describe('Service', function() {
       assert.equal(cache.counter, cacheStart);
       assert.equal(properties.counter, propertiesStart);
     });
+
+    it('should not fail if no properties are set',
+        function() {
+      var service = OAuth2.createService('test');
+      service.getToken();
+    })
   });
 
   describe('#saveToken_()', function() {
@@ -159,6 +165,15 @@ describe('Service', function() {
       assert.deepEqual(JSON.parse(cache.get(key)), token);
       assert.deepEqual(JSON.parse(properties.getProperty(key)), token);
     });
+
+    it('should not fail if no properties are set',
+        function() {
+      var service = OAuth2.createService('test');
+      var token = {
+        access_token: 'foo'
+      };
+      service.saveToken_(token);
+    })
   });
 
   describe('#reset()', function() {
