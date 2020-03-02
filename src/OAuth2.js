@@ -57,7 +57,6 @@ if (typeof module === 'object') {
   module.exports = {
     createService: createService,
     getRedirectUri: getRedirectUri,
-    TOKEN_FORMAT: TOKEN_FORMAT,
-    STATE_PARAMETER_LOCATION: STATE_PARAMETER_LOCATION
+    TOKEN_FORMAT: TOKEN_FORMAT
   };
 }
