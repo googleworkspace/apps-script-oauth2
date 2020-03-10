@@ -51,7 +51,7 @@ function validate_(params) {
 /**
  * Gets the time in seconds, rounded down to the nearest second.
  * @param {Date} date The Date object to convert.
- * @return {Number} The number of seconds since the epoch.
+ * @return {number} The number of seconds since the epoch.
  * @private
  */
 function getTimeInSeconds_(date) {
