@@ -56,7 +56,7 @@ Service_.LOCK_EXPIRATION_MILLISECONDS_ = 30 * 1000;
  * this URL should be
  * https://accounts.google.com/o/oauth2/auth.
  * @param {string} authorizationBaseUrl The authorization endpoint base URL.
- * @return {Service_} This service, for chaining.
+ * @return {!Service_} This service, for chaining.
  */
 Service_.prototype.setAuthorizationBaseUrl = function(authorizationBaseUrl) {
   this.authorizationBaseUrl_ = authorizationBaseUrl;
@@ -67,7 +67,7 @@ Service_.prototype.setAuthorizationBaseUrl = function(authorizationBaseUrl) {
  * Sets the service's token URL (required). For Google services this URL should
  * be https://accounts.google.com/o/oauth2/token.
  * @param {string} tokenUrl The token endpoint URL.
- * @return {Service_} This service, for chaining.
+ * @return {!Service_} This service, for chaining.
  */
 Service_.prototype.setTokenUrl = function(tokenUrl) {
   this.tokenUrl_ = tokenUrl;
@@ -78,7 +78,7 @@ Service_.prototype.setTokenUrl = function(tokenUrl) {
  * Sets the service's refresh URL. Some OAuth providers require a different URL
  * to be used when generating access tokens from a refresh token.
  * @param {string} refreshUrl The refresh endpoint URL.
- * @return {Service_} This service, for chaining.
+ * @return {!Service_} This service, for chaining.
  */
 Service_.prototype.setRefreshUrl = function(refreshUrl) {
   this.refreshUrl_ = refreshUrl;
@@ -88,7 +88,7 @@ Service_.prototype.setRefreshUrl = function(refreshUrl) {
 /**
  * Sets the format of the returned token. Default: OAuth2.TOKEN_FORMAT.JSON.
  * @param {OAuth2.TOKEN_FORMAT} tokenFormat The format of the returned token.
- * @return {Service_} This service, for chaining.
+ * @return {!Service_} This service, for chaining.
  */
 Service_.prototype.setTokenFormat = function(tokenFormat) {
   this.tokenFormat_ = tokenFormat;
@@ -99,7 +99,7 @@ Service_.prototype.setTokenFormat = function(tokenFormat) {
  * Sets the additional HTTP headers that should be sent when retrieving or
  * refreshing the access token.
  * @param {Object.<string,string>} tokenHeaders A map of header names to values.
- * @return {Service_} This service, for chaining.
+ * @return {!Service_} This service, for chaining.
  */
 Service_.prototype.setTokenHeaders = function(tokenHeaders) {
   this.tokenHeaders_ = tokenHeaders;
@@ -123,7 +123,7 @@ Service_.prototype.setTokenHeaders = function(tokenHeaders) {
  * request.
  * @param {tokenHandler} tokenHandler tokenHandler A function to invoke on the
  *     payload of the request for an access token.
- * @return {Service_} This service, for chaining.
+ * @return {!Service_} This service, for chaining.
  */
 Service_.prototype.setTokenPayloadHandler = function(tokenHandler) {
   this.tokenPayloadHandler_ = tokenHandler;
@@ -137,7 +137,7 @@ Service_.prototype.setTokenPayloadHandler = function(tokenHandler) {
  * which should be passed to this service's <code>handleCallback()</code> method
  * to complete the process.
  * @param {string} callbackFunctionName The name of the callback function.
- * @return {Service_} This service, for chaining.
+ * @return {!Service_} This service, for chaining.
  */
 Service_.prototype.setCallbackFunction = function(callbackFunctionName) {
   this.callbackFunctionName_ = callbackFunctionName;
@@ -154,7 +154,7 @@ Service_.prototype.setCallbackFunction = function(callbackFunctionName) {
  * the Script Editor, and then click on the link "Google Developers Console" in
  * the resulting dialog.
  * @param {string} clientId The client ID to use for the OAuth flow.
- * @return {Service_} This service, for chaining.
+ * @return {!Service_} This service, for chaining.
  */
 Service_.prototype.setClientId = function(clientId) {
   this.clientId_ = clientId;
@@ -166,7 +166,7 @@ Service_.prototype.setClientId = function(clientId) {
  * documentation for <code>setClientId()</code> for more information on how to
  * create client IDs and secrets.
  * @param {string} clientSecret The client secret to use for the OAuth flow.
- * @return {Service_} This service, for chaining.
+ * @return {!Service_} This service, for chaining.
  */
 Service_.prototype.setClientSecret = function(clientSecret) {
   this.clientSecret_ = clientSecret;
@@ -179,7 +179,7 @@ Service_.prototype.setClientSecret = function(clientSecret) {
  * may be appropriate if you want to share access across users.
  * @param {PropertiesService.Properties} propertyStore The property store to use
  *     when persisting credentials.
- * @return {Service_} This service, for chaining.
+ * @return {!Service_} This service, for chaining.
  * @see https://developers.google.com/apps-script/reference/properties/
  */
 Service_.prototype.setPropertyStore = function(propertyStore) {
@@ -194,7 +194,7 @@ Service_.prototype.setPropertyStore = function(propertyStore) {
  * may be appropriate if you want to share access across users.
  * @param {CacheService.Cache} cache The cache to use when persisting
  *     credentials.
- * @return {Service_} This service, for chaining.
+ * @return {!Service_} This service, for chaining.
  * @see https://developers.google.com/apps-script/reference/cache/
  */
 Service_.prototype.setCache = function(cache) {
@@ -208,7 +208,7 @@ Service_.prototype.setCache = function(cache) {
  * stored credentials at a time. This can prevent race conditions that arise
  * when two executions attempt to refresh an expired token.
  * @param {LockService.Lock} lock The lock to use when accessing credentials.
- * @return {Service_} This service, for chaining.
+ * @return {!Service_} This service, for chaining.
  * @see https://developers.google.com/apps-script/reference/lock/
  */
 Service_.prototype.setLock = function(lock) {
@@ -223,7 +223,7 @@ Service_.prototype.setLock = function(lock) {
  * @param {string|Array.<string>} scope The scope or scopes to request.
  * @param {string} [optSeparator] The optional separator to use when joining
  *     multiple scopes. Default: space.
- * @return {Service_} This service, for chaining.
+ * @return {!Service_} This service, for chaining.
  */
 Service_.prototype.setScope = function(scope, optSeparator) {
   var separator = optSeparator || ' ';
@@ -237,7 +237,7 @@ Service_.prototype.setScope = function(scope, optSeparator) {
  * on what parameter values they support.
  * @param {string} name The parameter name.
  * @param {string} value The parameter value.
- * @return {Service_} This service, for chaining.
+ * @return {!Service_} This service, for chaining.
  */
 Service_.prototype.setParam = function(name, value) {
   this.params_[name] = value;
@@ -247,7 +247,7 @@ Service_.prototype.setParam = function(name, value) {
 /**
  * Sets the private key to use for Service Account authorization.
  * @param {string} privateKey The private key.
- * @return {Service_} This service, for chaining.
+ * @return {!Service_} This service, for chaining.
  */
 Service_.prototype.setPrivateKey = function(privateKey) {
   this.privateKey_ = privateKey;
@@ -258,7 +258,7 @@ Service_.prototype.setPrivateKey = function(privateKey) {
  * Sets the issuer (iss) value to use for Service Account authorization.
  * If not set the client ID will be used instead.
  * @param {string} issuer This issuer value
- * @return {Service_} This service, for chaining.
+ * @return {!Service_} This service, for chaining.
  */
 Service_.prototype.setIssuer = function(issuer) {
   this.issuer_ = issuer;
@@ -269,7 +269,7 @@ Service_.prototype.setIssuer = function(issuer) {
  * Sets additional JWT claims to use for Service Account authorization.
  * @param {Object.<string,string>} additionalClaims The additional claims, as
  *     key-value pairs.
- * @return {Service_} This service, for chaining.
+ * @return {!Service_} This service, for chaining.
  */
 Service_.prototype.setAdditionalClaims = function(additionalClaims) {
   this.additionalClaims_ = additionalClaims;
@@ -279,7 +279,7 @@ Service_.prototype.setAdditionalClaims = function(additionalClaims) {
 /**
  * Sets the subject (sub) value to use for Service Account authorization.
  * @param {string} subject This subject value
- * @return {Service_} This service, for chaining.
+ * @return {!Service_} This service, for chaining.
  */
 Service_.prototype.setSubject = function(subject) {
   this.subject_ = subject;
@@ -290,7 +290,7 @@ Service_.prototype.setSubject = function(subject) {
  * Sets number of minutes that a token obtained through Service Account
  * authorization should be valid. Default: 60 minutes.
  * @param {string} expirationMinutes The expiration duration in minutes.
- * @return {Service_} This service, for chaining.
+ * @return {!Service_} This service, for chaining.
  */
 Service_.prototype.setExpirationMinutes = function(expirationMinutes) {
   this.expirationMinutes_ = expirationMinutes;
@@ -304,7 +304,7 @@ Service_.prototype.setExpirationMinutes = function(expirationMinutes) {
  * it to "client_credentials" and then also set the token headers to include
  * the Authorization header required by the OAuth2 provider.
  * @param {string} grantType The OAuth2 grant_type value.
- * @return {Service_} This service, for chaining.
+ * @return {!Service_} This service, for chaining.
  */
 Service_.prototype.setGrantType = function(grantType) {
   this.grantType_ = grantType;
@@ -316,7 +316,7 @@ Service_.prototype.setGrantType = function(grantType) {
  * library will provide this value automatically, but in some rare cases you may
  * need to override it.
  * @param {string} redirectUri The redirect URI.
- * @return {Service_} This service, for chaining.
+ * @return {!Service_} This service, for chaining.
  */
 Service_.prototype.setRedirectUri = function(redirectUri) {
   this.redirectUri_ = redirectUri;
@@ -518,7 +518,7 @@ Service_.prototype.fetchToken_ = function(payload, optUrl) {
 /**
  * Gets the token from a UrlFetchApp response.
  * @param {UrlFetchApp.HTTPResponse} response The response object.
- * @return {Object} The parsed token.
+ * @return {!Object} The parsed token.
  * @throws If the token cannot be parsed or the response contained an error.
  * @private
  */
@@ -545,7 +545,7 @@ Service_.prototype.getTokenFromResponse_ = function(response) {
 /**
  * Parses the token using the service's token format.
  * @param {string} content The serialized token content.
- * @return {Object} The parsed token.
+ * @return {!Object} The parsed token.
  * @private
  */
 Service_.prototype.parseToken_ = function(content) {
