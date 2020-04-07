@@ -16,4 +16,8 @@ MockProperties.prototype.deleteProperty = function(key) {
   delete this.store[key];
 };
 
+MockProperties.prototype.getProperties = function() {
+  return Object.assign({}, this.store);
+};
+
 module.exports = MockProperties;

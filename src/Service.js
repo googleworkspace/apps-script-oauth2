@@ -476,7 +476,7 @@ Service_.prototype.getIdToken = function() {
  * re-authorized.
  */
 Service_.prototype.reset = function() {
-  this.getStorage().removeValue(null);
+  this.getStorage().reset();
 };
 
 /**
