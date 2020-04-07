@@ -473,7 +473,8 @@ Service_.prototype.getIdToken = function() {
 
 /**
  * Resets the service, removing access and requiring the service to be
- * re-authorized.
+ * re-authorized. Also removes any additional values stored in the service's
+ * storage.
  */
 Service_.prototype.reset = function() {
   this.getStorage().reset();
