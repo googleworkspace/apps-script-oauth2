@@ -196,6 +196,46 @@ describe('Service', function() {
       assert.notExists(cache.get(key));
       assert.notExists(properties.getProperty(key));
     });
+
+    it('should delete values in storage', function() {
+      var cache = new MockCache();
+      var properties = new MockProperties();
+      var service = OAuth2.createService('test')
+          .setPropertyStore(properties)
+          .setCache(cache);
+      var storage = service.getStorage();
+      storage.setValue('foo', 'bar');
+
+      service.reset();
+
+      assert.notExists(storage.getValue('foo'));
+    });
+
+    it('should not delete values from other services', function() {
+      var cache = new MockCache();
+      var properties = new MockProperties();
+      var service = OAuth2.createService('test')
+          .setPropertyStore(properties)
+          .setCache(cache);
+      var values = {
+        'oauth2.something': 'token',
+        'oauth2.something.foo': 'bar',
+        'oauth2.something.test': 'baz',
+        'oauth2.testing': 'token',
+        'oauth2.testing.foo': 'bar',
+      };
+      for (let [key, value] of Object.entries(values)) {
+        properties.setProperty(key, value);
+        cache.put(key, value);
+      }
+
+      service.reset();
+
+      for (let [key, value] of Object.entries(values)) {
+        assert.equal(cache.get(key), value);
+        assert.equal(properties.getProperty(key), value);
+      }
+    });
   });
 
   describe('#hasAccess()', function() {
