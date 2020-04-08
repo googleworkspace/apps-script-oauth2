@@ -165,6 +165,8 @@
 
 
 
+
+
     
     </div>
 
@@ -250,6 +252,8 @@ this will be "client_credentials", and a client ID and secret are set an
 
     
 </dl>
+
+
 
 
 
@@ -436,6 +440,8 @@ this will be "client_credentials", and a client ID and secret are set an
 
 
 
+
+
 <h5>Returns:</h5>
 
         
@@ -528,6 +534,8 @@ user's access was not granted or has expired.
 
     
 </dl>
+
+
 
 
 
@@ -697,6 +705,8 @@ name specified, so that the flow may continue.
 
 
 
+
+
 <h5>Returns:</h5>
 
         
@@ -789,6 +799,8 @@ user's access was not granted or has expired.
 
     
 </dl>
+
+
 
 
 
@@ -906,6 +918,8 @@ refresh or generate an access token.
 
 
 
+
+
 <h5>Returns:</h5>
 
         
@@ -997,6 +1011,8 @@ needs to be entered into a configuration screen of your OAuth provider.
 
     
 </dl>
+
+
 
 
 
@@ -1103,6 +1119,8 @@ be used.
 
     
 </dl>
+
+
 
 
 
@@ -1281,6 +1299,8 @@ be used.
 
 
 
+
+
 <h5>Returns:</h5>
 
         
@@ -1435,6 +1455,8 @@ function.
 
 
 
+
+
 <h5>Returns:</h5>
 
         
@@ -1527,6 +1549,8 @@ this method attempts to generate a new token.
 
     
 </dl>
+
+
 
 
 
@@ -1650,6 +1674,8 @@ was requested when the token was authorized.
 
 
 
+
+
         
             
 
@@ -1665,7 +1691,8 @@ was requested when the token was authorized.
 
 <div class="description">
     Resets the service, removing access and requiring the service to be
-re-authorized.
+re-authorized. Also removes any additional values stored in the service's
+storage.
 </div>
 
 
@@ -1732,13 +1759,15 @@ re-authorized.
 
 
 
+
+
         
             
 
     
 
     
-    <h4 class="name" id="setAdditionalClaims"><span class="type-signature"></span>setAdditionalClaims<span class="signature">(additionalClaims)</span><span class="type-signature"> &rarr; {<a href="Service_.html">Service_</a>}</span></h4>
+    <h4 class="name" id="setAdditionalClaims"><span class="type-signature"></span>setAdditionalClaims<span class="signature">(additionalClaims)</span><span class="type-signature"> &rarr; (non-null) {<a href="Service_.html">Service_</a>}</span></h4>
     
 
     
@@ -1858,6 +1887,8 @@ re-authorized.
 
 
 
+
+
 <h5>Returns:</h5>
 
         
@@ -1891,7 +1922,7 @@ re-authorized.
     
 
     
-    <h4 class="name" id="setAuthorizationBaseUrl"><span class="type-signature"></span>setAuthorizationBaseUrl<span class="signature">(authorizationBaseUrl)</span><span class="type-signature"> &rarr; {<a href="Service_.html">Service_</a>}</span></h4>
+    <h4 class="name" id="setAuthorizationBaseUrl"><span class="type-signature"></span>setAuthorizationBaseUrl<span class="signature">(authorizationBaseUrl)</span><span class="type-signature"> &rarr; (non-null) {<a href="Service_.html">Service_</a>}</span></h4>
     
 
     
@@ -2012,6 +2043,8 @@ https://accounts.google.com/o/oauth2/auth.
 
 
 
+
+
 <h5>Returns:</h5>
 
         
@@ -2045,7 +2078,7 @@ https://accounts.google.com/o/oauth2/auth.
     
 
     
-    <h4 class="name" id="setCache"><span class="type-signature"></span>setCache<span class="signature">(cache)</span><span class="type-signature"> &rarr; {<a href="Service_.html">Service_</a>}</span></h4>
+    <h4 class="name" id="setCache"><span class="type-signature"></span>setCache<span class="signature">(cache)</span><span class="type-signature"> &rarr; (non-null) {<a href="Service_.html">Service_</a>}</span></h4>
     
 
     
@@ -2175,6 +2208,8 @@ may be appropriate if you want to share access across users.
 
 
 
+
+
 <h5>Returns:</h5>
 
         
@@ -2208,7 +2243,7 @@ may be appropriate if you want to share access across users.
     
 
     
-    <h4 class="name" id="setCallbackFunction"><span class="type-signature"></span>setCallbackFunction<span class="signature">(callbackFunctionName)</span><span class="type-signature"> &rarr; {<a href="Service_.html">Service_</a>}</span></h4>
+    <h4 class="name" id="setCallbackFunction"><span class="type-signature"></span>setCallbackFunction<span class="signature">(callbackFunctionName)</span><span class="type-signature"> &rarr; (non-null) {<a href="Service_.html">Service_</a>}</span></h4>
     
 
     
@@ -2331,6 +2366,8 @@ to complete the process.
 
 
 
+
+
 <h5>Returns:</h5>
 
         
@@ -2364,7 +2401,7 @@ to complete the process.
     
 
     
-    <h4 class="name" id="setClientId"><span class="type-signature"></span>setClientId<span class="signature">(clientId)</span><span class="type-signature"> &rarr; {<a href="Service_.html">Service_</a>}</span></h4>
+    <h4 class="name" id="setClientId"><span class="type-signature"></span>setClientId<span class="signature">(clientId)</span><span class="type-signature"> &rarr; (non-null) {<a href="Service_.html">Service_</a>}</span></h4>
     
 
     
@@ -2490,6 +2527,8 @@ the resulting dialog.
 
 
 
+
+
 <h5>Returns:</h5>
 
         
@@ -2523,7 +2562,7 @@ the resulting dialog.
     
 
     
-    <h4 class="name" id="setClientSecret"><span class="type-signature"></span>setClientSecret<span class="signature">(clientSecret)</span><span class="type-signature"> &rarr; {<a href="Service_.html">Service_</a>}</span></h4>
+    <h4 class="name" id="setClientSecret"><span class="type-signature"></span>setClientSecret<span class="signature">(clientSecret)</span><span class="type-signature"> &rarr; (non-null) {<a href="Service_.html">Service_</a>}</span></h4>
     
 
     
@@ -2644,6 +2683,8 @@ create client IDs and secrets.
 
 
 
+
+
 <h5>Returns:</h5>
 
         
@@ -2677,7 +2718,7 @@ create client IDs and secrets.
     
 
     
-    <h4 class="name" id="setExpirationMinutes"><span class="type-signature"></span>setExpirationMinutes<span class="signature">(expirationMinutes)</span><span class="type-signature"> &rarr; {<a href="Service_.html">Service_</a>}</span></h4>
+    <h4 class="name" id="setExpirationMinutes"><span class="type-signature"></span>setExpirationMinutes<span class="signature">(expirationMinutes)</span><span class="type-signature"> &rarr; (non-null) {<a href="Service_.html">Service_</a>}</span></h4>
     
 
     
@@ -2797,6 +2838,8 @@ authorization should be valid. Default: 60 minutes.
 
 
 
+
+
 <h5>Returns:</h5>
 
         
@@ -2830,7 +2873,7 @@ authorization should be valid. Default: 60 minutes.
     
 
     
-    <h4 class="name" id="setGrantType"><span class="type-signature"></span>setGrantType<span class="signature">(grantType)</span><span class="type-signature"> &rarr; {<a href="Service_.html">Service_</a>}</span></h4>
+    <h4 class="name" id="setGrantType"><span class="type-signature"></span>setGrantType<span class="signature">(grantType)</span><span class="type-signature"> &rarr; (non-null) {<a href="Service_.html">Service_</a>}</span></h4>
     
 
     
@@ -2953,6 +2996,8 @@ the Authorization header required by the OAuth2 provider.
 
 
 
+
+
 <h5>Returns:</h5>
 
         
@@ -2986,7 +3031,7 @@ the Authorization header required by the OAuth2 provider.
     
 
     
-    <h4 class="name" id="setIssuer"><span class="type-signature"></span>setIssuer<span class="signature">(issuer)</span><span class="type-signature"> &rarr; {<a href="Service_.html">Service_</a>}</span></h4>
+    <h4 class="name" id="setIssuer"><span class="type-signature"></span>setIssuer<span class="signature">(issuer)</span><span class="type-signature"> &rarr; (non-null) {<a href="Service_.html">Service_</a>}</span></h4>
     
 
     
@@ -3106,6 +3151,8 @@ If not set the client ID will be used instead.
 
 
 
+
+
 <h5>Returns:</h5>
 
         
@@ -3139,7 +3186,7 @@ If not set the client ID will be used instead.
     
 
     
-    <h4 class="name" id="setLock"><span class="type-signature"></span>setLock<span class="signature">(lock)</span><span class="type-signature"> &rarr; {<a href="Service_.html">Service_</a>}</span></h4>
+    <h4 class="name" id="setLock"><span class="type-signature"></span>setLock<span class="signature">(lock)</span><span class="type-signature"> &rarr; (non-null) {<a href="Service_.html">Service_</a>}</span></h4>
     
 
     
@@ -3268,6 +3315,8 @@ when two executions attempt to refresh an expired token.
 
 
 
+
+
 <h5>Returns:</h5>
 
         
@@ -3301,7 +3350,7 @@ when two executions attempt to refresh an expired token.
     
 
     
-    <h4 class="name" id="setParam"><span class="type-signature"></span>setParam<span class="signature">(name, value)</span><span class="type-signature"> &rarr; {<a href="Service_.html">Service_</a>}</span></h4>
+    <h4 class="name" id="setParam"><span class="type-signature"></span>setParam<span class="signature">(name, value)</span><span class="type-signature"> &rarr; (non-null) {<a href="Service_.html">Service_</a>}</span></h4>
     
 
     
@@ -3445,6 +3494,8 @@ on what parameter values they support.
 
 
 
+
+
 <h5>Returns:</h5>
 
         
@@ -3478,7 +3529,7 @@ on what parameter values they support.
     
 
     
-    <h4 class="name" id="setPrivateKey"><span class="type-signature"></span>setPrivateKey<span class="signature">(privateKey)</span><span class="type-signature"> &rarr; {<a href="Service_.html">Service_</a>}</span></h4>
+    <h4 class="name" id="setPrivateKey"><span class="type-signature"></span>setPrivateKey<span class="signature">(privateKey)</span><span class="type-signature"> &rarr; (non-null) {<a href="Service_.html">Service_</a>}</span></h4>
     
 
     
@@ -3597,6 +3648,8 @@ on what parameter values they support.
 
 
 
+
+
 <h5>Returns:</h5>
 
         
@@ -3630,7 +3683,7 @@ on what parameter values they support.
     
 
     
-    <h4 class="name" id="setPropertyStore"><span class="type-signature"></span>setPropertyStore<span class="signature">(propertyStore)</span><span class="type-signature"> &rarr; {<a href="Service_.html">Service_</a>}</span></h4>
+    <h4 class="name" id="setPropertyStore"><span class="type-signature"></span>setPropertyStore<span class="signature">(propertyStore)</span><span class="type-signature"> &rarr; (non-null) {<a href="Service_.html">Service_</a>}</span></h4>
     
 
     
@@ -3759,6 +3812,8 @@ may be appropriate if you want to share access across users.
 
 
 
+
+
 <h5>Returns:</h5>
 
         
@@ -3792,7 +3847,7 @@ may be appropriate if you want to share access across users.
     
 
     
-    <h4 class="name" id="setRedirectUri"><span class="type-signature"></span>setRedirectUri<span class="signature">(redirectUri)</span><span class="type-signature"> &rarr; {<a href="Service_.html">Service_</a>}</span></h4>
+    <h4 class="name" id="setRedirectUri"><span class="type-signature"></span>setRedirectUri<span class="signature">(redirectUri)</span><span class="type-signature"> &rarr; (non-null) {<a href="Service_.html">Service_</a>}</span></h4>
     
 
     
@@ -3913,6 +3968,8 @@ need to override it.
 
 
 
+
+
 <h5>Returns:</h5>
 
         
@@ -3946,7 +4003,7 @@ need to override it.
     
 
     
-    <h4 class="name" id="setRefreshUrl"><span class="type-signature"></span>setRefreshUrl<span class="signature">(refreshUrl)</span><span class="type-signature"> &rarr; {<a href="Service_.html">Service_</a>}</span></h4>
+    <h4 class="name" id="setRefreshUrl"><span class="type-signature"></span>setRefreshUrl<span class="signature">(refreshUrl)</span><span class="type-signature"> &rarr; (non-null) {<a href="Service_.html">Service_</a>}</span></h4>
     
 
     
@@ -4066,6 +4123,8 @@ to be used when generating access tokens from a refresh token.
 
 
 
+
+
 <h5>Returns:</h5>
 
         
@@ -4099,7 +4158,7 @@ to be used when generating access tokens from a refresh token.
     
 
     
-    <h4 class="name" id="setScope"><span class="type-signature"></span>setScope<span class="signature">(scope, optSeparator<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Service_.html">Service_</a>}</span></h4>
+    <h4 class="name" id="setScope"><span class="type-signature"></span>setScope<span class="signature">(scope, optSeparator<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; (non-null) {<a href="Service_.html">Service_</a>}</span></h4>
     
 
     
@@ -4267,6 +4326,8 @@ being sent to the server, which is is a space character by default.
 
 
 
+
+
 <h5>Returns:</h5>
 
         
@@ -4300,7 +4361,7 @@ being sent to the server, which is is a space character by default.
     
 
     
-    <h4 class="name" id="setSubject"><span class="type-signature"></span>setSubject<span class="signature">(subject)</span><span class="type-signature"> &rarr; {<a href="Service_.html">Service_</a>}</span></h4>
+    <h4 class="name" id="setSubject"><span class="type-signature"></span>setSubject<span class="signature">(subject)</span><span class="type-signature"> &rarr; (non-null) {<a href="Service_.html">Service_</a>}</span></h4>
     
 
     
@@ -4419,6 +4480,8 @@ being sent to the server, which is is a space character by default.
 
 
 
+
+
 <h5>Returns:</h5>
 
         
@@ -4452,7 +4515,7 @@ being sent to the server, which is is a space character by default.
     
 
     
-    <h4 class="name" id="setTokenFormat"><span class="type-signature"></span>setTokenFormat<span class="signature">(tokenFormat)</span><span class="type-signature"> &rarr; {<a href="Service_.html">Service_</a>}</span></h4>
+    <h4 class="name" id="setTokenFormat"><span class="type-signature"></span>setTokenFormat<span class="signature">(tokenFormat)</span><span class="type-signature"> &rarr; (non-null) {<a href="Service_.html">Service_</a>}</span></h4>
     
 
     
@@ -4571,6 +4634,8 @@ being sent to the server, which is is a space character by default.
 
 
 
+
+
 <h5>Returns:</h5>
 
         
@@ -4604,7 +4669,7 @@ being sent to the server, which is is a space character by default.
     
 
     
-    <h4 class="name" id="setTokenHeaders"><span class="type-signature"></span>setTokenHeaders<span class="signature">(tokenHeaders)</span><span class="type-signature"> &rarr; {<a href="Service_.html">Service_</a>}</span></h4>
+    <h4 class="name" id="setTokenHeaders"><span class="type-signature"></span>setTokenHeaders<span class="signature">(tokenHeaders)</span><span class="type-signature"> &rarr; (non-null) {<a href="Service_.html">Service_</a>}</span></h4>
     
 
     
@@ -4724,6 +4789,8 @@ refreshing the access token.
 
 
 
+
+
 <h5>Returns:</h5>
 
         
@@ -4757,7 +4824,7 @@ refreshing the access token.
     
 
     
-    <h4 class="name" id="setTokenPayloadHandler"><span class="type-signature"></span>setTokenPayloadHandler<span class="signature">(tokenHandler)</span><span class="type-signature"> &rarr; {<a href="Service_.html">Service_</a>}</span></h4>
+    <h4 class="name" id="setTokenPayloadHandler"><span class="type-signature"></span>setTokenPayloadHandler<span class="signature">(tokenHandler)</span><span class="type-signature"> &rarr; (non-null) {<a href="Service_.html">Service_</a>}</span></h4>
     
 
     
@@ -4878,6 +4945,8 @@ request.
 
 
 
+
+
 <h5>Returns:</h5>
 
         
@@ -4911,7 +4980,7 @@ request.
     
 
     
-    <h4 class="name" id="setTokenUrl"><span class="type-signature"></span>setTokenUrl<span class="signature">(tokenUrl)</span><span class="type-signature"> &rarr; {<a href="Service_.html">Service_</a>}</span></h4>
+    <h4 class="name" id="setTokenUrl"><span class="type-signature"></span>setTokenUrl<span class="signature">(tokenUrl)</span><span class="type-signature"> &rarr; (non-null) {<a href="Service_.html">Service_</a>}</span></h4>
     
 
     
@@ -5031,6 +5100,8 @@ be https://accounts.google.com/o/oauth2/token.
 
 
 
+
+
 <h5>Returns:</h5>
 
         
@@ -5080,7 +5151,7 @@ be https://accounts.google.com/o/oauth2/token.
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Mar 02 2020 13:19:43 GMT-0500 (EST)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Tue Apr 07 2020 20:19:13 GMT-0400 (Eastern Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>
