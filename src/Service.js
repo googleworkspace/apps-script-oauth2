@@ -605,7 +605,7 @@ Service_.prototype.refresh = function() {
  * Custom values associated with the service can be stored here as well.
  * The key <code>null</code> is used to to store the token and should not
  * be used.
- * @return {Storage} The service's storage.
+ * @return {Storage_} The service's storage.
  */
 Service_.prototype.getStorage = function() {
   if (!this.storage_) {
