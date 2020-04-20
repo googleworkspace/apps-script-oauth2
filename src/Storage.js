@@ -148,7 +148,7 @@ Storage_.prototype.reset = function() {
 
 /**
  * Removes a stored value.
- * @param {string} key The key.
+ * @param {string} prefixedKey The key.
  */
 Storage_.prototype.removeValueWithPrefixedKey_ = function(prefixedKey) {
   if (this.properties_) {
