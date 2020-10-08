@@ -18,8 +18,7 @@ function run() {
       headers: {'Authorization': 'Bearer ' + service.getAccessToken()}
     });
     var result = JSON.parse(response.getContentText());
-    
-  } 
+  }
   else {
     var authorizationUrl = service.getAuthorizationUrl();
     Logger.log('Open the following URL and re-run the script: %s',
