@@ -1,8 +1,8 @@
 /*
- * This sample demonstrates how to configure the library for the Spotify API.
- * Instructions on how to generate OAuth credentuals is available here:
- * https://developer.spotify.com/documentation/general/guides/authorization-guide/
- */
+* This sample demonstrates how to configure the library for the Spotify API.
+* Instructions on how to generate OAuth credentuals is available here:
+* https://developer.spotify.com/documentation/general/guides/authorization-guide/
+*/
 
 var CLIENT_ID = '...';
 var CLIENT_SECRET = '...';
@@ -17,8 +17,7 @@ function run() {
     var response = UrlFetchApp.fetch(url, {
       headers: {'Authorization': 'Bearer ' + service.getAccessToken()}
     });
-    var result = JSON.parse(response.getContentText());
-    Logger.log("Response ", result);  
+    var result = JSON.parse(response.getContentText());      
     
   } else {
     var authorizationUrl = service.getAuthorizationUrl();
@@ -48,8 +47,8 @@ function getService() {
   .setClientSecret(CLIENT_SECRET)
   
   // Set the scope
-  //.setScope('user-read-private')
-
+  // .setScope('user-read-private')
+  
   // Set the name of the callback function that should be invoked to complete
   // the OAuth flow.
   .setCallbackFunction('authCallback')
