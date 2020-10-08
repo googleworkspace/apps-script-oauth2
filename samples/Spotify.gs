@@ -17,9 +17,10 @@ function run() {
     var response = UrlFetchApp.fetch(url, {
       headers: {'Authorization': 'Bearer ' + service.getAccessToken()}
     });
-    var result = JSON.parse(response.getContentText());      
+    var result = JSON.parse(response.getContentText());
     
-  } else {
+  } 
+  else {
     var authorizationUrl = service.getAuthorizationUrl();
     Logger.log('Open the following URL and re-run the script: %s',
                authorizationUrl);
@@ -74,5 +75,5 @@ function authCallback(request) {
  * Logs the redict URI to register.
  */
 function logRedirectUri() {
-  Logger.log(OAuth2.getRedirectUri());  
+  Logger.log(OAuth2.getRedirectUri());
 }
