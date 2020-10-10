@@ -48,7 +48,7 @@ function getService() {
 
     // Set the name of the callback function that should be invoked to complete
     // the OAuth flow.
-    .setCallbackFunction('authCallback')  
+    .setCallbackFunction('authCallback')
 
     // Set the property store where authorized tokens should be persisted.
     .setPropertyStore(PropertiesService.getUserProperties());
