@@ -38,20 +38,20 @@ function reset() {
 */
 function getService() {
   return OAuth2.createService('Spotify')
-  // Set the endpoint URLs.
-  .setAuthorizationBaseUrl('https://accounts.spotify.com/authorize')
-  .setTokenUrl('https://accounts.spotify.com/api/token')
+    // Set the endpoint URLs.
+    .setAuthorizationBaseUrl('https://accounts.spotify.com/authorize')
+    .setTokenUrl('https://accounts.spotify.com/api/token')
 
-  // Set the client ID and secret.
-  .setClientId(CLIENT_ID)
-  .setClientSecret(CLIENT_SECRET)
+    // Set the client ID and secret.
+    .setClientId(CLIENT_ID)
+    .setClientSecret(CLIENT_SECRET)
 
-  // Set the name of the callback function that should be invoked to complete
-  // the OAuth flow.
-  .setCallbackFunction('authCallback')  
-  
-  // Set the property store where authorized tokens should be persisted.
-  .setPropertyStore(PropertiesService.getUserProperties());
+    // Set the name of the callback function that should be invoked to complete
+    // the OAuth flow.
+    .setCallbackFunction('authCallback')  
+
+    // Set the property store where authorized tokens should be persisted.
+    .setPropertyStore(PropertiesService.getUserProperties());
 }
 
 /**
