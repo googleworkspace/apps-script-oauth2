@@ -46,13 +46,10 @@ function getService() {
   .setClientId(CLIENT_ID)
   .setClientSecret(CLIENT_SECRET)
 
-  // Set the scope
-  // .setScope('user-read-private')
-
   // Set the name of the callback function that should be invoked to complete
   // the OAuth flow.
-  .setCallbackFunction('authCallback')
-
+  .setCallbackFunction('authCallback')  
+  
   // Set the property store where authorized tokens should be persisted.
   .setPropertyStore(PropertiesService.getUserProperties());
 }
