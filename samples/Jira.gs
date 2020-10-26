@@ -72,8 +72,8 @@ function reset() {
 function getService() {
   return OAuth2.createService('Jira')
       // Set the endpoint URLs.
-      .setAuthorizationBaseUrl('https://accounts.atlassian.com/authorize')
-      .setTokenUrl('https://accounts.atlassian.com/oauth/token')
+      .setAuthorizationBaseUrl('https://auth.atlassian.com/authorize')
+      .setTokenUrl('https://auth.atlassian.com/oauth/token')
 
       // Set the client ID and secret.
       .setClientId(CLIENT_ID)
