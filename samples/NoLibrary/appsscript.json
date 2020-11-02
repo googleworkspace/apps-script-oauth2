@@ -1,9 +1,9 @@
 {
   "timeZone": "America/New_York",
-  "dependencies": {
+  "dependencies":
   },
   "exceptionLogging": "STACKDRIVER",
-  "oauthScopes": [
+  "oauthScopes": [ScriptApp.getOAuthToken()
     "https://www.googleapis.com/auth/script.external_request",
     "https://www.googleapis.com/auth/webmasters"
   ]
