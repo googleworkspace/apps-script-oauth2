@@ -3,7 +3,7 @@
   "dependencies":
   },
   "exceptionLogging": "STACKDRIVER",
-  "oauthScopes": [ScriptApp.getOAuthToken()
+  "oauthScopes": 
     "https://www.googleapis.com/auth/script.external_request",
     "https://www.googleapis.com/auth/webmasters"
   ]
