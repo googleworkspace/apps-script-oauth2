@@ -1,0 +1,142 @@
+/*
+ * This sample demonstrates how to configure the library for the WorkFlowMax API.
+ * WorkFlowMax is a Xero product and uses the Xero Authorisation API but has a different response format
+ * Instructions on how to generate OAuth2 credentuals is available here:
+ * https://developer.xero.com/documentation/oauth2/auth-flow
+ * and here: 
+ * https://www.workflowmax.com/api/v3/oauth2.0
+ */
+
+
+var CLIENT_ID = '...';
+var CLIENT_SECRET = '...';
+var tenantIdWFM = '...'; // If connecting to multiple tenants you can declare each tenant variable her
+
+/**
+ * Authorizes and makes a request to the WorkFlowMax API.
+ */
+function runWFM() {
+  var service = getServiceWFM();
+  if (service.hasAccess()) {
+    // Retrieve the tenantId from storage.
+    var tenantId = service.getStorage().getValue('tenantIdWFM');
+    // Or manually assign tenant ID if you have multiple tenants    
+    // var tenantId = <Enter Tenant ID Here>;
+    // Make a request to retrieve exampt information.
+    var url = 'https://api.xero.com/workflowmax/3.0/time.api/list?from=20200801&to=20200901';
+    var response = UrlFetchApp.fetch(url, {
+      headers: {
+        'Authorization': 'Bearer ' + service.getAccessToken(),
+        'Xero-tenant-id': tenantId
+      },
+    });
+    var result = response.getContentText();
+    var document = XmlService.parse(result)
+    var root = document.getRootElement();
+    var atom = XmlService.getNamespace('http://www.w3.org/2005/Atom');
+    Logger.log(JSON.stringify(result, null, 2));
+  } else {
+    var authorizationUrl = service.getAuthorizationUrl();
+    Logger.log('Open the following URL and re-run the script: %s',
+        authorizationUrl);
+  }
+}
+
+/**
+ * If connecting multiple tenants force retrieval of all authorised tenant IDs
+ */
+function retrieveAllTenants() {
+  var service = getServiceWFM();
+  if (service.hasAccess()) {
+    // Retrieve the tenantId from storage.
+     var tenantId = service.getStorage().getValue('tenantIdWFM');
+    // Make a request to retrieve tenant information.
+    var url = 'https://api.xero.com/connections';
+    var response = UrlFetchApp.fetch(url, {
+      headers: {
+        'Authorization': 'Bearer ' + service.getAccessToken(),
+        'Xero-tenant-id': tenantId
+      },
+    });
+    var result = JSON.parse(response.getContentText());
+    Logger.log(JSON.stringify(result, null, 2));
+  } 
+}
+
+/**
+ * Reset the authorization state, so that it can be re-tested.
+ */
+function resetWFM() {
+  getServiceWFM().reset();
+}
+
+/**
+ * If connecting multiple tenants force retrieval of authorisation URL
+ */
+function getAuthURLWFM() {
+  var service = getServiceWFM();
+  if (service.hasAccess()) {
+    var authorizationUrl = service.getAuthorizationUrl();
+    Logger.log('Open the following URL and re-run the script: %s',
+        authorizationUrl);
+  }
+}
+
+/**
+ * Configures the service.
+ */
+function getServiceWFM() {
+  return OAuth2.createService('WFM')
+    // Set the endpoint URLs.
+    .setAuthorizationBaseUrl(
+        'https://login.xero.com/identity/connect/authorize')
+    .setTokenUrl('https://identity.xero.com/connect/token')
+
+    // Set the client ID and secret.
+    .setClientId(CLIENT_ID)
+    .setClientSecret(CLIENT_SECRET)
+
+    // Set the name of the callback function that should be invoked to
+    // complete the OAuth flow.
+    .setCallbackFunction('authCallbackWFM')
+
+    // Set the property store where authorized tokens should be persisted.
+    .setPropertyStore(PropertiesService.getScriptProperties())
+    .setCache(CacheService.getScriptCache())
+
+    // Set the scopes to request from the user. The scope "offline_access" is
+    // required to refresh the token. The full list of scopes is available here:
+    // https://developer.xero.com/documentation/oauth2/scopes
+    .setScope('workflowmax offline_access');
+};
+
+/**
+ * Handles the OAuth callback.
+ */
+function authCallbackWFM(request) {
+  var service = getServiceWFM();
+  var authorized = service.handleCallback(request);
+  if (authorized) {
+    // Retrieve the connected tenants.
+    var response = UrlFetchApp.fetch('https://api.xero.com/connections', {
+      headers: {
+        Authorization: 'Bearer ' + service.getAccessToken()
+      },
+    });
+    var connections = JSON.parse(response.getContentText());
+    // Store the first tenant ID in the service's storage. If you want to
+    // support multiple tenants, store the full list and then let the user
+    // select which one to operate against.
+    service.getStorage().setValue('tenantIdWFM', connections[0].tenantId);
+    return HtmlService.createHtmlOutput('Success for WFM! You can now close this tab :) ');
+  } else {
+    return HtmlService.createHtmlOutput('Denied for WFM. Refer to the manual :( ');
+  }
+}
+
+/**
+ * Logs the redict URI to register in the Xero application settings.
+ */
+function logRedirectUri() {
+  Logger.log(OAuth2.getRedirectUri());
+}
