@@ -449,6 +449,51 @@ and secret and add an authorization header manually.
 See the sample [`TwitterAppOnly.gs`](samples/TwitterAppOnly.gs) for a working
 example.
 
+## Frequently Asked Questions
+
+### How can I connect to multiple OAuth services?
+
+The service name passed in to the `createService` method forms part of the key
+used when storing and retrieving tokens in the property store. To connect to
+multiple services merely ensure they have different service names. Often this
+means selecting a service name that matches the API the user will authorize:
+
+```js
+function run() {
+  var gitHubService = getGitHubService();
+  var mediumService = getMediumService();
+  // ...
+}
+
+function getGitHubService() {
+  return OAuth2.createService('GitHub')
+      // GitHub settings ...
+}
+
+function getMediumService() {
+  return OAuth2.createService('Medium')
+      // Medium settings ...
+}
+```
+
+Occasionally you may need to make multiple connections to the same API, for
+example if your script is trying to copy data from one account to another. In
+those cases you'll need to devise your own method for creating unique service
+names:
+
+```js
+function run() {
+  var copyFromService = getGitHubService('from');
+  var copyToService = getGitHubService('to');
+  // ...
+}
+
+function getGitHubService(label) {
+  return OAuth2.createService('GitHub_' + label)
+      // GitHub settings ...
+}
+```
+
 ## Compatibility
 
 This library was designed to work with any OAuth2 provider, but because of small
