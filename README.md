@@ -494,6 +494,9 @@ function getGitHubService(label) {
 }
 ```
 
+You can list all of the service names you've previously stored tokens for using
+`OAuth2.getServiceNames(propertyStore)`.
+
 ## Compatibility
 
 This library was designed to work with any OAuth2 provider, but because of small
