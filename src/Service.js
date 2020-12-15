@@ -636,20 +636,35 @@ Service_.prototype.getToken = function(optSkipMemoryCheck) {
 };
 
 /**
- * Determines if a retrieved token is still valid.
+ * Determines if a retrieved token is still valid. This will return false if
+ * either the authorization token or the ID token has expired.
  * @param {Object} token The token to validate.
  * @return {boolean} True if it has expired, false otherwise.
  * @private
  */
 Service_.prototype.isExpired_ = function(token) {
+  var expired = false;
+  var now = getTimeInSeconds_(new Date());
+
+  // Check the authorization token's expiration.
   var expiresIn = token.expires_in_sec || token.expires_in || token.expires;
-  if (!expiresIn) {
-    return false;
-  } else {
+  if (expiresIn) {
     var expiresTime = token.granted_time + Number(expiresIn);
-    var now = getTimeInSeconds_(new Date());
-    return expiresTime - now < Service_.EXPIRATION_BUFFER_SECONDS_;
+    if (expiresTime - now < Service_.EXPIRATION_BUFFER_SECONDS_) {
+      expired = true;
+    }
   }
+
+  // Check the ID token's expiration, if it exists.
+  if (token.id_token) {
+    var payload = decodeJwt_(token.id_token);
+    if (payload.exp &&
+        payload.exp - now < Service_.EXPIRATION_BUFFER_SECONDS_) {
+      expired = true;
+    }
+  }
+
+  return expired;
 };
 
 /**
@@ -700,10 +715,6 @@ Service_.prototype.createJwt_ = function() {
     'Token URL': this.tokenUrl_,
     'Issuer or Client ID': this.issuer_ || this.clientId_
   });
-  var header = {
-    alg: 'RS256',
-    typ: 'JWT'
-  };
   var now = new Date();
   var expires = new Date(now.getTime());
   expires.setMinutes(expires.getMinutes() + this.expirationMinutes_);
@@ -725,12 +736,7 @@ Service_.prototype.createJwt_ = function() {
       claimSet[key] = additionalClaims[key];
     });
   }
-  var toSign = Utilities.base64EncodeWebSafe(JSON.stringify(header)) + '.' +
-      Utilities.base64EncodeWebSafe(JSON.stringify(claimSet));
-  var signatureBytes =
-      Utilities.computeRsaSha256Signature(toSign, this.privateKey_);
-  var signature = Utilities.base64EncodeWebSafe(signatureBytes);
-  return toSign + '.' + signature;
+  return encodeJwt_(claimSet, this.privateKey_);
 };
 
 /**
