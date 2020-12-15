@@ -32,6 +32,8 @@ var TOKEN_FORMAT = {
   FORM_URL_ENCODED: 'application/x-www-form-urlencoded'
 };
 
+var STORAGE_PREFIX_ = 'oauth2.';
+
 /**
  * Creates a new OAuth2 service with the name specified. It's usually best to
  * create and configure your service once at the start of your script, and then
@@ -57,10 +59,34 @@ function getRedirectUri(optScriptId) {
       '/usercallback';
 }
 
+/**
+ * Gets the list of services with tokens stored in the given property store.
+ * This is useful if you connect to the same API with multiple accounts and
+ * need to keep track of them. If no stored tokens are found this will return
+ * an empty array.
+ * @param {PropertiesService.Properties} propertyStore The properties to check.
+ * @return {Array.<string>} The service names.
+ */
+function getServiceNames(propertyStore) {
+  var props = propertyStore.getProperties();
+  return Object.keys(props).filter(function(key) {
+    var parts = key.split('.');
+    return key.indexOf(STORAGE_PREFIX_) == 0 && parts.length > 1 && parts[1];
+  }).map(function(key) {
+    return key.split('.')[1];
+  }).reduce(function(result, key) {
+    if (result.indexOf(key) < 0) {
+      result.push(key);
+    }
+    return result;
+  }, []);
+}
+
 if (typeof module === 'object') {
   module.exports = {
     createService: createService,
     getRedirectUri: getRedirectUri,
+    getServiceNames: getServiceNames,
     TOKEN_FORMAT: TOKEN_FORMAT
   };
 }
@@ -676,7 +702,7 @@ Service_.prototype.refresh = function() {
  */
 Service_.prototype.getStorage = function() {
   if (!this.storage_) {
-    var prefix = 'oauth2.' + this.serviceName_;
+    var prefix = STORAGE_PREFIX_ + this.serviceName_;
     this.storage_ = new Storage_(prefix, this.propertyStore_, this.cache_);
   }
   return this.storage_;
