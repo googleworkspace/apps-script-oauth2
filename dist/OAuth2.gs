@@ -672,7 +672,7 @@ Service_.prototype.refresh = function() {
  * Custom values associated with the service can be stored here as well.
  * The key <code>null</code> is used to to store the token and should not
  * be used.
- * @return {Storage} The service's storage.
+ * @return {Storage_} The service's storage.
  */
 Service_.prototype.getStorage = function() {
   if (!this.storage_) {
@@ -703,20 +703,35 @@ Service_.prototype.getToken = function(optSkipMemoryCheck) {
 };
 
 /**
- * Determines if a retrieved token is still valid.
+ * Determines if a retrieved token is still valid. This will return false if
+ * either the authorization token or the ID token has expired.
  * @param {Object} token The token to validate.
  * @return {boolean} True if it has expired, false otherwise.
  * @private
  */
 Service_.prototype.isExpired_ = function(token) {
+  var expired = false;
+  var now = getTimeInSeconds_(new Date());
+
+  // Check the authorization token's expiration.
   var expiresIn = token.expires_in_sec || token.expires_in || token.expires;
-  if (!expiresIn) {
-    return false;
-  } else {
+  if (expiresIn) {
     var expiresTime = token.granted_time + Number(expiresIn);
-    var now = getTimeInSeconds_(new Date());
-    return expiresTime - now < Service_.EXPIRATION_BUFFER_SECONDS_;
+    if (expiresTime - now < Service_.EXPIRATION_BUFFER_SECONDS_) {
+      expired = true;
+    }
   }
+
+  // Check the ID token's expiration, if it exists.
+  if (token.id_token) {
+    var payload = decodeJwt_(token.id_token);
+    if (payload.exp &&
+        payload.exp - now < Service_.EXPIRATION_BUFFER_SECONDS_) {
+      expired = true;
+    }
+  }
+
+  return expired;
 };
 
 /**
@@ -767,10 +782,6 @@ Service_.prototype.createJwt_ = function() {
     'Token URL': this.tokenUrl_,
     'Issuer or Client ID': this.issuer_ || this.clientId_
   });
-  var header = {
-    alg: 'RS256',
-    typ: 'JWT'
-  };
   var now = new Date();
   var expires = new Date(now.getTime());
   expires.setMinutes(expires.getMinutes() + this.expirationMinutes_);
@@ -792,12 +803,7 @@ Service_.prototype.createJwt_ = function() {
       claimSet[key] = additionalClaims[key];
     });
   }
-  var toSign = Utilities.base64EncodeWebSafe(JSON.stringify(header)) + '.' +
-      Utilities.base64EncodeWebSafe(JSON.stringify(claimSet));
-  var signatureBytes =
-      Utilities.computeRsaSha256Signature(toSign, this.privateKey_);
-  var signature = Utilities.base64EncodeWebSafe(signatureBytes);
-  return toSign + '.' + signature;
+  return encodeJwt_(claimSet, this.privateKey_);
 };
 
 /**
@@ -1001,7 +1007,7 @@ Storage_.prototype.reset = function() {
 
 /**
  * Removes a stored value.
- * @param {string} key The key.
+ * @param {string} prefixedKey The key.
  */
 Storage_.prototype.removeValueWithPrefixedKey_ = function(prefixedKey) {
   if (this.properties_) {
@@ -1111,7 +1117,7 @@ function extend_(destination, source) {
  * Gets a copy of an object with all the keys converted to lower-case strings.
  *
  * @param {Object} obj The object to copy.
- * @return {Object} a shallow copy of the object with all lower-case keys.
+ * @return {Object} A shallow copy of the object with all lower-case keys.
  */
 function toLowerCaseKeys_(obj) {
   if (obj === null || typeof obj !== 'object') {
@@ -1123,6 +1129,40 @@ function toLowerCaseKeys_(obj) {
     result[k.toLowerCase()] = obj[k];
     return result;
   }, {});
+}
+
+/* exported encodeJwt_ */
+/**
+ * Encodes and signs a JWT.
+ *
+ * @param {Object} payload The JWT payload.
+ * @param {string} key The key to use when generating the signature.
+ * @return {string} The encoded and signed JWT.
+ */
+function encodeJwt_(payload, key) {
+  var header = {
+    alg: 'RS256',
+    typ: 'JWT'
+  };
+  var toSign = Utilities.base64EncodeWebSafe(JSON.stringify(header)) + '.' +
+      Utilities.base64EncodeWebSafe(JSON.stringify(payload));
+  var signatureBytes =
+      Utilities.computeRsaSha256Signature(toSign, key);
+  var signature = Utilities.base64EncodeWebSafe(signatureBytes);
+  return toSign + '.' + signature;
+}
+
+/* exported decodeJwt_ */
+/**
+ * Decodes and returns the parts of the JWT. The signature is not verified.
+ *
+ * @param {string} jwt The JWT to decode.
+ * @return {Object} The decoded payload.
+ */
+function decodeJwt_(jwt) {
+  var payload = jwt.split('.')[1];
+  var blob = Utilities.newBlob(Utilities.base64DecodeWebSafe(payload));
+  return JSON.parse(blob.getDataAsString());
 }
 
    /****** code end *********/
