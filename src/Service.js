@@ -609,7 +609,7 @@ Service_.prototype.refresh = function() {
  */
 Service_.prototype.getStorage = function() {
   if (!this.storage_) {
-    var prefix = 'oauth2.' + this.serviceName_;
+    var prefix = STORAGE_PREFIX_ + this.serviceName_;
     this.storage_ = new Storage_(prefix, this.propertyStore_, this.cache_);
   }
   return this.storage_;

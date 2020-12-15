@@ -33,6 +33,53 @@ var mocks = {
 };
 var OAuth2 = gas.require('./src', mocks);
 
+describe('OAuth2', function() {
+  describe('#getServiceNames()', function() {
+    it('should return the service names for stored tokens', function() {
+      var props = new MockProperties({
+        'oauth2.foo': '{"access_token": "abc"}',
+        'oauth2.bar': '{"access_token": "abc"}',
+      });
+
+      var names = OAuth2.getServiceNames(props);
+
+      assert.deepEqual(names, ['foo', 'bar']);
+    });
+
+    it('should return an empty array when no tokens are stored', function() {
+      var props = new MockProperties();
+
+      var names = OAuth2.getServiceNames(props);
+
+      assert.deepEqual(names, []);
+    });
+
+    it('should ignore keys without a service name', function() {
+      var props = new MockProperties({
+        'oauth2.': 'foo',
+        'oauth2..bar': 'bar',
+      });
+
+      var names = OAuth2.getServiceNames(props);
+
+      assert.deepEqual(names, []);
+    });
+
+    it('should not have duplicate names when there are custom keys',
+        function() {
+      var props = new MockProperties({
+        'oauth2.foo': '{"access_token": "abc"}',
+        'oauth2.foo.extra': 'my extra stuff',
+        'oauth2.foo.extra2': 'more extra stuff',
+      });
+
+      var names = OAuth2.getServiceNames(props);
+
+      assert.deepEqual(names, ['foo']);
+    });
+  });
+});
+
 describe('Service', function() {
   describe('#getToken()', function() {
     it('should return null when no token is stored', function() {
