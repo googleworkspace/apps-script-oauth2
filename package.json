@@ -28,7 +28,8 @@
     "gulp-expose": "0.0.7",
     "gulp-rename": "^1.4.0",
     "jsdoc": "^3.6.4",
-    "mocha": "^4.1.0"
+    "mocha": "^4.1.0",
+    "urlsafe-base64": "^1.0.0"
   },
   "scripts": {
     "preversion": "npm test && cd src/ && clasp push",

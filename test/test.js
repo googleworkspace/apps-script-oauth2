@@ -5,7 +5,9 @@ var MockProperties = require('./mocks/properties');
 var MockCache = require('./mocks/cache');
 var MockLock = require('./mocks/lock');
 var MockScriptApp = require('./mocks/script');
+var MockBlob = require('./mocks/blob');
 var Future = require('fibers/future');
+var URLSafeBase64 = require('urlsafe-base64');
 
 var mocks = {
   ScriptApp: new MockScriptApp(),
@@ -13,7 +15,19 @@ var mocks = {
   Utilities: {
     base64Encode: function(data) {
       return Buffer.from(data).toString('base64');
-    }
+    },
+    base64EncodeWebSafe: function(data) {
+      return URLSafeBase64.encode(Buffer.from(data));
+    },
+    base64DecodeWebSafe: function(data) {
+      return URLSafeBase64.decode(data);
+    },
+    computeRsaSha256Signature: function(data, key) {
+      return Math.random().toString(36);
+    },
+    newBlob: function(data) {
+      return new MockBlob(data);
+    },
   },
   __proto__: gas.globalMockDefault
 };
@@ -483,6 +497,155 @@ describe('Service', function() {
       assert.equal(state.arguments.foo, 'bar');
     });
   });
+
+  describe('#isExpired_()', function() {
+    const NOW_SECONDS = OAuth2.getTimeInSeconds_(new Date());
+    const ONE_HOUR_AGO_SECONDS = NOW_SECONDS - 360;
+
+
+    it('should return false if there is no expiration time in the token',
+        function() {
+      var service = OAuth2.createService('test')
+          .setPropertyStore(new MockProperties())
+          .setCache(new MockCache());
+      var token = {};
+
+      assert.isFalse(service.isExpired_(token));
+    });
+
+    it('should return false if before the time in expires_in', function() {
+      var service = OAuth2.createService('test')
+          .setPropertyStore(new MockProperties())
+          .setCache(new MockCache());
+      var token = {
+        expires_in: 360, // One hour.
+        granted_time: NOW_SECONDS,
+      };
+
+      assert.isFalse(service.isExpired_(token));
+    });
+
+    it('should return true if past the time in "expires_in"', function() {
+      var service = OAuth2.createService('test')
+          .setPropertyStore(new MockProperties())
+          .setCache(new MockCache());
+      var token = {
+        expires_in: 60, // One minute.
+        granted_time: ONE_HOUR_AGO_SECONDS,
+      };
+
+      assert.isTrue(service.isExpired_(token));
+    });
+
+    it('should return false if before the time in "expires"', function() {
+      var service = OAuth2.createService('test')
+          .setPropertyStore(new MockProperties())
+          .setCache(new MockCache());
+      var token = {
+        expires_in: 360, // One hour.
+        granted_time: NOW_SECONDS,
+      };
+
+      assert.isFalse(service.isExpired_(token));
+    });
+
+    it('should return true if past the time in "expires"', function() {
+      var service = OAuth2.createService('test')
+          .setPropertyStore(new MockProperties())
+          .setCache(new MockCache());
+      var token = {
+        expires_in: 60, // One minute.
+        granted_time: ONE_HOUR_AGO_SECONDS,
+      };
+
+      assert.isTrue(service.isExpired_(token));
+    });
+
+    it('should return false if before the time in "expires_in_sec"',
+        function() {
+      var service = OAuth2.createService('test')
+          .setPropertyStore(new MockProperties())
+          .setCache(new MockCache());
+      var token = {
+        expires_in: 360, // One hour.
+        granted_time: NOW_SECONDS,
+      };
+
+      assert.isFalse(service.isExpired_(token));
+    });
+
+    it('should return true if past the time in "expires_in_sec"', function() {
+      var service = OAuth2.createService('test')
+          .setPropertyStore(new MockProperties())
+          .setCache(new MockCache());
+      var token = {
+        expires_in: 60, // One minute.
+        granted_time: ONE_HOUR_AGO_SECONDS,
+      };
+
+      assert.isTrue(service.isExpired_(token));
+    });
+
+    it('should return true if within the buffer', function() {
+      var service = OAuth2.createService('test')
+          .setPropertyStore(new MockProperties())
+          .setCache(new MockCache());
+      var token = {
+        expires_in: 30, // 30 seconds.
+        granted_time: NOW_SECONDS,
+      };
+
+      assert.isTrue(service.isExpired_(token));
+    });
+
+    it('should return true if past the JWT expiration', function() {
+      var service = OAuth2.createService('test')
+          .setPropertyStore(new MockProperties())
+          .setCache(new MockCache());
+      var idToken = OAuth2.encodeJwt_({
+            exp: NOW_SECONDS - 60, // One minute ago.
+          }, 'key');
+      var token = {
+        id_token: idToken,
+      };
+
+      assert.isTrue(service.isExpired_(token));
+    });
+
+    it('should return false if the JWT is expired but the token is not',
+        function() {
+      var service = OAuth2.createService('test')
+          .setPropertyStore(new MockProperties())
+          .setCache(new MockCache());
+      var idToken = OAuth2.encodeJwt_({
+            exp: NOW_SECONDS - 60, // One minute ago.
+          }, 'key');
+      var token = {
+        id_token: idToken,
+        expires_in: 360, // One hour.
+        granted_time: NOW_SECONDS,
+      };
+
+      assert.isTrue(service.isExpired_(token));
+    });
+
+    it('should return false if the token expired but the JWT is not',
+        function() {
+      var service = OAuth2.createService('test')
+          .setPropertyStore(new MockProperties())
+          .setCache(new MockCache());
+      var idToken = OAuth2.encodeJwt_({
+            exp: NOW_SECONDS + 360, // One hour from now.
+          }, 'key');
+      var token = {
+        id_token: idToken,
+        expires_in: 60, // One minute.
+        granted_time: ONE_HOUR_AGO_SECONDS,
+      };
+
+      assert.isTrue(service.isExpired_(token));
+    });
+  });
 });
 
 describe('Utilities', function() {
@@ -529,6 +692,35 @@ describe('Utilities', function() {
       assert.isNull(toLowerCaseKeys_(null));
       assert.isUndefined(toLowerCaseKeys_(undefined));
       assert.isEmpty(toLowerCaseKeys_({}));
+    });
+  });
+
+  describe('#encodeJwt_()', function() {
+    var encodeJwt_ = OAuth2.encodeJwt_;
+
+    it('should encode correctly', function() {
+      var payload = {
+         'foo': 'bar'
+      };
+
+      var jwt = encodeJwt_(payload, 'key');
+      var parts = jwt.split('.');
+
+      // Expexted values from jwt.io.
+      assert.equal(parts[0], 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9');
+      assert.equal(parts[1], 'eyJmb28iOiJiYXIifQ');
+    });
+  });
+
+  describe('#decodeJwt_()', function() {
+    var decodeJwt_ = OAuth2.decodeJwt_;
+
+    it('should decode correctly', function() {
+      var jwt = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJmb28iOiJiYXIifQ.sig';
+
+      var payload = decodeJwt_(jwt);
+
+      assert.deepEqual(payload, {'foo': 'bar'});
     });
   });
 });

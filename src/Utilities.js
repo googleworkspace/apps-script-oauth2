@@ -82,7 +82,7 @@ function extend_(destination, source) {
  * Gets a copy of an object with all the keys converted to lower-case strings.
  *
  * @param {Object} obj The object to copy.
- * @return {Object} a shallow copy of the object with all lower-case keys.
+ * @return {Object} A shallow copy of the object with all lower-case keys.
  */
 function toLowerCaseKeys_(obj) {
   if (obj === null || typeof obj !== 'object') {
@@ -94,4 +94,38 @@ function toLowerCaseKeys_(obj) {
     result[k.toLowerCase()] = obj[k];
     return result;
   }, {});
+}
+
+/* exported encodeJwt_ */
+/**
+ * Encodes and signs a JWT.
+ *
+ * @param {Object} payload The JWT payload.
+ * @param {string} key The key to use when generating the signature.
+ * @return {string} The encoded and signed JWT.
+ */
+function encodeJwt_(payload, key) {
+  var header = {
+    alg: 'RS256',
+    typ: 'JWT'
+  };
+  var toSign = Utilities.base64EncodeWebSafe(JSON.stringify(header)) + '.' +
+      Utilities.base64EncodeWebSafe(JSON.stringify(payload));
+  var signatureBytes =
+      Utilities.computeRsaSha256Signature(toSign, key);
+  var signature = Utilities.base64EncodeWebSafe(signatureBytes);
+  return toSign + '.' + signature;
+}
+
+/* exported decodeJwt_ */
+/**
+ * Decodes and returns the parts of the JWT. The signature is not verified.
+ *
+ * @param {string} jwt The JWT to decode.
+ * @return {Object} The decoded payload.
+ */
+function decodeJwt_(jwt) {
+  var payload = jwt.split('.')[1];
+  var blob = Utilities.newBlob(Utilities.base64DecodeWebSafe(payload));
+  return JSON.parse(blob.getDataAsString());
 }
