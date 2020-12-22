@@ -6,9 +6,6 @@
 var CLIENT_ID = '...';
 var CLIENT_SECRET = '...';
 
-var CLIENT_ID = '1000.7ETQMTBW3CZ8904161FVI075OUAH9H';
-var CLIENT_SECRET = 'ff6ccb4c2e10105c1ba90ae92729570a7a783d918c';
-
 /**
  * Authorizes and makes a request to the Zoho CRM API.
  */
