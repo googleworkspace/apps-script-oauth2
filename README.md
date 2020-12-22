@@ -316,7 +316,7 @@ See the [FitBit sample](samples/FitBit.gs) for the complete code.
 #### Modifying the access token payload
 
 Some OAuth providers, such as the Smartsheet API, require you to
-[add a hash to the access token request payloads]().
+[add a hash to the access token request payloads](https://smartsheet-platform.github.io/api-docs/#request-an-access-token).
 The `setTokenPayloadHandler` method allows you to pass in a function to modify
 the payload of an access token request before the request is sent to the token
 endpoint:
