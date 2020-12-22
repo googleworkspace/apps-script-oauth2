@@ -8,6 +8,7 @@
  */
 
 // Test credentials for the Demo API.
+// @credentialsOK
 var CLIENT_ID = 'server.code';
 var CLIENT_SECRET = 'secret';
 

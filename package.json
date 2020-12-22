@@ -24,6 +24,7 @@
     "gulp": "^4.0.2",
     "gulp-clean": "^0.4.0",
     "gulp-concat": "^2.6.1",
+    "gulp-contains": "^1.2.0",
     "gulp-eslint": "^4.0.2",
     "gulp-expose": "0.0.7",
     "gulp-rename": "^1.4.0",
