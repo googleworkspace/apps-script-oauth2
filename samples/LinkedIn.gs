@@ -42,7 +42,10 @@ function getService() {
       // Set the client ID and secret.
       .setClientId(CLIENT_ID)
       .setClientSecret(CLIENT_SECRET)
-
+      
+      // Set the scope of the request.
+      .setScope('r_network')
+      
       // Set the name of the callback function that should be invoked to
       // complete the OAuth flow.
       .setCallbackFunction('authCallback')
