@@ -15,7 +15,7 @@ var CLIENT_SECRET = '...';
 function run() {
   var service = getService();
   if (service.hasAccess()) {
-    var url = 'https://api.twitter.com/1.1/users/show.json?screen_name=gsuitedevs';
+    var url = 'https://api.twitter.com/1.1/users/show.json?screen_name=googleworkspace';
     var response = UrlFetchApp.fetch(url, {
       headers: {
         Authorization: 'Bearer ' + service.getAccessToken()
