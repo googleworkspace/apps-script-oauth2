@@ -13,7 +13,7 @@ var CLIENT_SECRET = '...';
 function run() {
   var service = getService();
   if (service.hasAccess()) {
-    var url = 'https://graph.facebook.com/v2.6/me';
+    var url = 'https://graph.facebook.com/v10.0/me';
     var response = UrlFetchApp.fetch(url, {
       headers: {
         'Authorization': 'Bearer ' + service.getAccessToken()
