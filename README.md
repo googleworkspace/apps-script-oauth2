@@ -313,6 +313,13 @@ in these requests.
 
 See the [FitBit sample](samples/FitBit.gs) for the complete code.
 
+#### Setting the token HTTP method
+
+Almost all services use the `POST` HTTP method when retrieving the access token,
+but a few services deviate from the spec and use the `PUT` method instead. To
+accomodate those cases you can use the `setTokenMethod()` method to specify the
+HTTP method to use when making the request.
+
 #### Modifying the access token payload
 
 Some OAuth providers, such as the Smartsheet API, require you to
