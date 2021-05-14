@@ -126,6 +126,7 @@ var Service_ = function(serviceName) {
   this.params_ = {};
   this.tokenFormat_ = TOKEN_FORMAT.JSON;
   this.tokenHeaders_ = null;
+  this.tokenMethod_ = 'post';
   this.expirationMinutes_ = 60;
 };
 
@@ -196,6 +197,17 @@ Service_.prototype.setTokenFormat = function(tokenFormat) {
  */
 Service_.prototype.setTokenHeaders = function(tokenHeaders) {
   this.tokenHeaders_ = tokenHeaders;
+  return this;
+};
+
+/**
+ * Sets the HTTP method to use when retrieving or refreshing the access token.
+ * Default: "post".
+ * @param {string} tokenMethod The HTTP method to use.
+ * @return {!Service_} This service, for chaining.
+ */
+Service_.prototype.setTokenMethod = function(tokenMethod) {
+  this.tokenMethod_ = tokenMethod;
   return this;
 };
 
@@ -601,7 +613,7 @@ Service_.prototype.fetchToken_ = function(payload, optUrl) {
     payload = this.tokenPayloadHandler_(payload);
   }
   var response = UrlFetchApp.fetch(url, {
-    method: 'post',
+    method: this.tokenMethod_,
     headers: headers,
     payload: payload,
     muteHttpExceptions: true
