@@ -21,7 +21,8 @@ function run() {
     Logger.log(JSON.stringify(result, null, 2));
   } else {
     var authorizationUrl = service.getAuthorizationUrl();
-    Logger.log('Open the following URL and re-run the script: %s', authorizationUrl);
+    Logger.log('Open the following URL and re-run the script: %s',
+        authorizationUrl);
   }
 }
 
@@ -53,7 +54,8 @@ function getService() {
     .setPropertyStore(PropertiesService.getUserProperties())
 
     .setTokenHeaders({
-      'Authorization': 'Basic ' + Utilities.base64Encode(CLIENT_ID + ':' + CLIENT_SECRET)
+      'Authorization': 'Basic ' +
+          Utilities.base64Encode(CLIENT_ID + ':' + CLIENT_SECRET)
     });
 }
 
