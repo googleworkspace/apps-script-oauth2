@@ -772,8 +772,6 @@ describe('Utilities', function() {
   });
 
   describe('#setTokenMethod()', function() {
-    var decodeJwt_ = OAuth2.decodeJwt_;
-
     it('should defautl to POST', function(done) {
       mocks.UrlFetchApp.resultFunction = function(url, urlOptions) {
         assert.equal(urlOptions.method, 'post');
@@ -781,7 +779,7 @@ describe('Utilities', function() {
       };
       var service = OAuth2.createService('test')
           .setGrantType('client_credentials')
-          .setTokenUrl('http://www.example.com')
+          .setTokenUrl('http://www.example.com');
       service.exchangeGrant_();
     });
 
