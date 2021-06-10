@@ -29,7 +29,7 @@
     "gulp-expose": "0.0.7",
     "gulp-rename": "1.4.0",
     "jsdoc": "3.6.4",
-    "mocha": "5.0.3",
+    "mocha": "5.2.0",
     "urlsafe-base64": "1.0.0"
   },
   "scripts": {
