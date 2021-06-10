@@ -45,23 +45,23 @@ function reset() {
  */
 function getService() {
   return OAuth2.createService('Mailchimp')
-    // Set the endpoint URLs.
-    .setAuthorizationBaseUrl('https://login.mailchimp.com/oauth2/authorize')
-    .setTokenUrl('https://login.mailchimp.com/oauth2/token')
+      // Set the endpoint URLs.
+      .setAuthorizationBaseUrl('https://login.mailchimp.com/oauth2/authorize')
+      .setTokenUrl('https://login.mailchimp.com/oauth2/token')
 
-    // Set the client ID and secret.
-    .setClientId(CLIENT_ID)
-    .setClientSecret(CLIENT_SECRET)
+      // Set the client ID and secret.
+      .setClientId(CLIENT_ID)
+      .setClientSecret(CLIENT_SECRET)
 
-    // Set the name of the callback function that should be invoked to
-    // complete the OAuth flow.
-    .setCallbackFunction('authCallback')
+      // Set the name of the callback function that should be invoked to
+      // complete the OAuth flow.
+      .setCallbackFunction('authCallback')
 
-    // Set the property store where authorized tokens should be persisted.
-    .setPropertyStore(PropertiesService.getUserProperties())
+      // Set the property store where authorized tokens should be persisted.
+      .setPropertyStore(PropertiesService.getUserProperties())
 
-    // Set the cache store where authorized tokens should be persisted.
-    .setCache(CacheService.getUserCache());
+      // Set the cache store where authorized tokens should be persisted.
+      .setCache(CacheService.getUserCache());
 };
 
 /**

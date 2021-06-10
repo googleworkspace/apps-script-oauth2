@@ -51,31 +51,31 @@ function reset() {
  */
 function getService() {
   return OAuth2.createService('DocuSign')
-    // Set the endpoint URLs.
-    .setAuthorizationBaseUrl('https://' + OAUTH_HOST + '/oauth/auth')
-    .setTokenUrl('https://' + OAUTH_HOST + '/oauth/token')
+      // Set the endpoint URLs.
+      .setAuthorizationBaseUrl('https://' + OAUTH_HOST + '/oauth/auth')
+      .setTokenUrl('https://' + OAUTH_HOST + '/oauth/token')
 
-    // Set the client ID and secret.
-    .setClientId(CLIENT_ID)
-    .setClientSecret(CLIENT_SECRET)
+      // Set the client ID and secret.
+      .setClientId(CLIENT_ID)
+      .setClientSecret(CLIENT_SECRET)
 
-    // Set the name of the callback function that should be invoked to
-    // complete the OAuth flow.
-    .setCallbackFunction('authCallback')
+      // Set the name of the callback function that should be invoked to
+      // complete the OAuth flow.
+      .setCallbackFunction('authCallback')
 
-    // Set the property store where authorized tokens should be persisted.
-    .setPropertyStore(PropertiesService.getUserProperties())
+      // Set the property store where authorized tokens should be persisted.
+      .setPropertyStore(PropertiesService.getUserProperties())
 
-    // Set the scope. The "signature" scope is used for all endpoints in the
-    // eSignature REST API.
-    .setScope('signature')
+      // Set the scope. The "signature" scope is used for all endpoints in the
+      // eSignature REST API.
+      .setScope('signature')
 
-    // Set the "Authorization" header when requesting tokens, as required by the
-    // API.
-    .setTokenHeaders({
-      'Authorization': 'Basic ' +
-          Utilities.base64Encode(CLIENT_ID + ':' + CLIENT_SECRET)
-    });
+      // Set the "Authorization" header when requesting tokens, as required by
+      // the API.
+      .setTokenHeaders({
+        'Authorization': 'Basic ' +
+            Utilities.base64Encode(CLIENT_ID + ':' + CLIENT_SECRET)
+      });
 };
 
 /**

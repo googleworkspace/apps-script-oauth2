@@ -599,10 +599,10 @@ Service_.prototype.refresh = function() {
       throw new Error('Offline access is required.');
     }
     var payload = {
-        refresh_token: token.refresh_token,
-        client_id: this.clientId_,
-        client_secret: this.clientSecret_,
-        grant_type: 'refresh_token'
+      refresh_token: token.refresh_token,
+      client_id: this.clientId_,
+      client_secret: this.clientSecret_,
+      grant_type: 'refresh_token',
     };
     var newToken = this.fetchToken_(payload, this.refreshUrl_);
     if (!newToken.refresh_token) {

@@ -44,26 +44,26 @@ function reset() {
  */
 function getService() {
   return OAuth2.createService('Xero')
-    // Set the endpoint URLs.
-    .setAuthorizationBaseUrl(
-        'https://login.xero.com/identity/connect/authorize')
-    .setTokenUrl('https://identity.xero.com/connect/token')
+      // Set the endpoint URLs.
+      .setAuthorizationBaseUrl(
+          'https://login.xero.com/identity/connect/authorize')
+      .setTokenUrl('https://identity.xero.com/connect/token')
 
-    // Set the client ID and secret.
-    .setClientId(CLIENT_ID)
-    .setClientSecret(CLIENT_SECRET)
+      // Set the client ID and secret.
+      .setClientId(CLIENT_ID)
+      .setClientSecret(CLIENT_SECRET)
 
-    // Set the name of the callback function that should be invoked to
-    // complete the OAuth flow.
-    .setCallbackFunction('authCallback')
+      // Set the name of the callback function that should be invoked to
+      // complete the OAuth flow.
+      .setCallbackFunction('authCallback')
 
-    // Set the property store where authorized tokens should be persisted.
-    .setPropertyStore(PropertiesService.getScriptProperties())
+      // Set the property store where authorized tokens should be persisted.
+      .setPropertyStore(PropertiesService.getScriptProperties())
 
-    // Set the scopes to request from the user. The scope "offline_access" is
-    // required to refresh the token. The full list of scopes is available here:
-    // https://developer.xero.com/documentation/oauth2/scopes
-    .setScope('accounting.settings.read offline_access');
+      // Set the scopes to request from the user. The scope "offline_access" is
+      // required to refresh the token. Full list of scopes is available here:
+      // https://developer.xero.com/documentation/oauth2/scopes
+      .setScope('accounting.settings.read offline_access');
 };
 
 /**

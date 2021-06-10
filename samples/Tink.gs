@@ -41,28 +41,28 @@ function reset() {
  */
 function getService() {
   var service = OAuth2.createService('Tink')
-    // Set the endpoint URLs.
-    .setAuthorizationBaseUrl('https://link.tink.com/1.0/authorize/')
-    .setTokenUrl('https://api.tink.com/api/v1/oauth/token')
+      // Set the endpoint URLs.
+      .setAuthorizationBaseUrl('https://link.tink.com/1.0/authorize/')
+      .setTokenUrl('https://api.tink.com/api/v1/oauth/token')
 
-    // Set the client ID and secret.
-    .setClientId(CLIENT_ID)
-    .setClientSecret(CLIENT_SECRET)
+      // Set the client ID and secret.
+      .setClientId(CLIENT_ID)
+      .setClientSecret(CLIENT_SECRET)
 
-    // Set the name of the callback function that should be invoked to
-    // complete the OAuth flow.
-    .setCallbackFunction('authCallback')
+      // Set the name of the callback function that should be invoked to
+      // complete the OAuth flow.
+      .setCallbackFunction('authCallback')
 
-    // Set the property store where authorized tokens should be persisted.
-    .setPropertyStore(PropertiesService.getUserProperties())
+      // Set the property store where authorized tokens should be persisted.
+      .setPropertyStore(PropertiesService.getUserProperties())
 
-    // Set the scopes to request from the user.
-    // https://docs.tink.com/api/#introduction-authentication-authentication-scopes
-    .setScope('identity:read user:read')
+      // Set the scopes to request from the user.
+      // https://docs.tink.com/api/#introduction-authentication-authentication-scopes
+      .setScope('identity:read user:read')
 
-    // Use testing providers (instead of real data).
-    // https://docs.tink.com/resources/aggregation/use-test-providers
-    .setParam('test', 'true');
+      // Use testing providers (instead of real data).
+      // https://docs.tink.com/resources/aggregation/use-test-providers
+      .setParam('test', 'true');
 
   // Determine if the user data still exists.
   if (service.hasAccess()) {

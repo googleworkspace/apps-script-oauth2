@@ -40,20 +40,20 @@ function reset() {
  */
 function getService() {
   return OAuth2.createService('Facebook')
-    // Set the endpoint URLs.
-    .setAuthorizationBaseUrl('https://www.facebook.com/dialog/oauth')
-    .setTokenUrl('https://graph.facebook.com/v2.6/oauth/access_token')
+      // Set the endpoint URLs.
+      .setAuthorizationBaseUrl('https://www.facebook.com/dialog/oauth')
+      .setTokenUrl('https://graph.facebook.com/v2.6/oauth/access_token')
 
-    // Set the client ID and secret.
-    .setClientId(CLIENT_ID)
-    .setClientSecret(CLIENT_SECRET)
+      // Set the client ID and secret.
+      .setClientId(CLIENT_ID)
+      .setClientSecret(CLIENT_SECRET)
 
-    // Set the name of the callback function that should be invoked to complete
-    // the OAuth flow.
-    .setCallbackFunction('authCallback')
+      // Set the name of the callback function that should be invoked to
+      // complete the OAuth flow.
+      .setCallbackFunction('authCallback')
 
-    // Set the property store where authorized tokens should be persisted.
-    .setPropertyStore(PropertiesService.getUserProperties());
+      // Set the property store where authorized tokens should be persisted.
+      .setPropertyStore(PropertiesService.getUserProperties());
 }
 
 /**

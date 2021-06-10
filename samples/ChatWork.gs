@@ -17,7 +17,7 @@ function run() {
   } else {
     var authorizationUrl = service.getAuthorizationUrl();
     Logger.log('Open the following URL and re-run the script: %s',
-      authorizationUrl);
+        authorizationUrl);
   }
 }
 
@@ -34,34 +34,33 @@ function reset() {
 function getService() {
   var scope = 'users.profile.me:read rooms.messages:read';
   return OAuth2.createService('ChatWork')
-    // Set the endpoint URLs.
-    .setAuthorizationBaseUrl(
-        'https://www.chatwork.com/packages/oauth2/login.php')
-    .setTokenUrl('https://oauth.chatwork.com/token')
+      // Set the endpoint URLs.
+      .setAuthorizationBaseUrl(
+          'https://www.chatwork.com/packages/oauth2/login.php')
+      .setTokenUrl('https://oauth.chatwork.com/token')
 
-    // Set the client ID and secret.
-    .setClientId(CLIENT_ID)
-    .setClientSecret(CLIENT_SECRET)
+      // Set the client ID and secret.
+      .setClientId(CLIENT_ID)
+      .setClientSecret(CLIENT_SECRET)
 
-    // Set the name of the callback function that should be invoked to
-    // complete the OAuth flow.
-    .setCallbackFunction('authCallback')
+      // Set the name of the callback function that should be invoked to
+      // complete the OAuth flow.
+      .setCallbackFunction('authCallback')
 
-    .setScope(scope)
+      .setScope(scope)
 
-    .setTokenHeaders({
-      'Authorization': 'Basic ' +
-          Utilities.base64Encode(CLIENT_ID + ':' + CLIENT_SECRET)
-    })
-    // Avoid "invalid_client error".
-    // This service does not support form field authentication.
-    .setTokenPayloadHandler(function(tokenPayload) {
-      delete tokenPayload.client_id;
-      return tokenPayload;
-    })
-    // Set the property store where authorized tokens should be persisted.
-    .setPropertyStore(PropertiesService.getUserProperties())
-  ;
+      .setTokenHeaders({
+        'Authorization': 'Basic ' +
+            Utilities.base64Encode(CLIENT_ID + ':' + CLIENT_SECRET)
+      })
+      // Avoid "invalid_client error".
+      // This service does not support form field authentication.
+      .setTokenPayloadHandler(function(tokenPayload) {
+        delete tokenPayload.client_id;
+        return tokenPayload;
+      })
+      // Set the property store where authorized tokens should be persisted.
+      .setPropertyStore(PropertiesService.getUserProperties());
 }
 
 /**

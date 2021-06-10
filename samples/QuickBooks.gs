@@ -83,7 +83,7 @@ function authCallback(request) {
   if (authorized) {
     // Save the Company ID in the service's storage.
     service.getStorage().setValue('QuickBooks.companyId',
-                                  request.parameter.realmId);
+        request.parameter.realmId);
     return HtmlService.createHtmlOutput('Success!');
   } else {
     return HtmlService.createHtmlOutput('Denied');
