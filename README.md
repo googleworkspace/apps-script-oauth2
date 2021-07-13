@@ -151,7 +151,7 @@ function showSidebar() {
         'Reopen the sidebar when the authorization is complete.');
     template.authorizationUrl = authorizationUrl;
     var page = template.evaluate();
-    DocumentApp.getUi().showSidebar(page);
+    SpreadsheetApp.getUi().showSidebar(page);
   } else {
   // ...
   }
