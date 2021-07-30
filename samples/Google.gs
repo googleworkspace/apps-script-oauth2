@@ -58,7 +58,7 @@ function getService() {
       // Set the scope and additional Google-specific parameters.
       .setScope('https://www.googleapis.com/auth/drive')
       .setParam('access_type', 'offline')
-      .setParam('approval_prompt', 'force')
+      .setParam('prompt', 'consent')
       .setParam('login_hint', Session.getActiveUser().getEmail());
 }
 
