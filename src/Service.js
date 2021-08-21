@@ -289,6 +289,20 @@ Service_.prototype.setAdditionalClaims = function(additionalClaims) {
 };
 
 /**
+ * Sets custom JWT encoding options to use for Service Account authorization.
+ * @param {Object} customJWTEncodingOptions Custom JWT encoding options, as key-value pairs.
+ * @param {Object} [customJWTEncodingOptions.header] Custom JWT header properties
+ * @param {function} [customJWTEncodingOptions.computeJWTSignature] Custom function
+ *    to compute JWT signature.
+ * @return {!Service_} This service, for chaining.
+ */
+ Service_.prototype.setCustomJWTEncodingOptions = function(customJWTEncodingOptions) {
+  this.customJWTEncodingOptions_ = customJWTEncodingOptions;
+  return this;
+};
+
+
+/**
  * Sets the subject (sub) value to use for Service Account authorization.
  * @param {string} subject This subject value
  * @return {!Service_} This service, for chaining.
@@ -748,7 +762,7 @@ Service_.prototype.createJwt_ = function() {
       claimSet[key] = additionalClaims[key];
     });
   }
-  return encodeJwt_(claimSet, this.privateKey_);
+  return encodeJwt_(claimSet, this.privateKey_, this.customJWTEncodingOptions_);
 };
 
 /**

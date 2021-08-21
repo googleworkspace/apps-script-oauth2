@@ -96,24 +96,46 @@ function toLowerCaseKeys_(obj) {
   }, {});
 }
 
+/**
+ * Default method to compute JWT signature.
+ * 
+ * @param {string} toSign String to Sign
+ * @param {string} key Key used to sign string
+ * @return {string} JWT Signature
+ */
+function computeJWTSignatureDefault_(toSign, key) {
+  var signatureBytes =
+      Utilities.computeRsaSha256Signature(toSign, key);
+  return Utilities.base64EncodeWebSafe(signatureBytes);
+}
+
 /* exported encodeJwt_ */
 /**
  * Encodes and signs a JWT.
  *
  * @param {Object} payload The JWT payload.
  * @param {string} key The key to use when generating the signature.
+ * @param {Object} [customOptions] Options to customize JWT encoding
+ * @param {Object} [customOptions.header] Supply custom header properties
+ * @param {Function} [customOptions.computeJWTSignature] Custom function 
+ *    to compute JWT signature.
  * @return {string} The encoded and signed JWT.
  */
-function encodeJwt_(payload, key) {
-  var header = {
+function encodeJwt_(payload, key, customOptions) {
+  var customOptions = customOptions || {};
+  
+  var header = Object.assign({
     alg: 'RS256',
     typ: 'JWT'
-  };
+  }, customOptions.header || {});
+
+  var computeJWTSignature = typeof customOptions.computeJWTSignature === 'function' ?
+      customOptions.computeJWTSignature : computeJWTSignatureDefault_;
+
   var toSign = Utilities.base64EncodeWebSafe(JSON.stringify(header)) + '.' +
       Utilities.base64EncodeWebSafe(JSON.stringify(payload));
-  var signatureBytes =
-      Utilities.computeRsaSha256Signature(toSign, key);
-  var signature = Utilities.base64EncodeWebSafe(signatureBytes);
+
+  var signature = computeJWTSignature(toSign, key);
   return toSign + '.' + signature;
 }
 
