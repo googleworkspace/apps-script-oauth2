@@ -13,6 +13,8 @@ function run() {
   var service = getService();
   if (service.hasAccess()) {
     // GET requests require access_token parameter
+
+    // note: The API version parameter is required https://vk.com/dev/api_requests
     var url = 'https://api.vk.com/method/users.get?&v=5.131&fields=first_name,last_name&access_token=' + service.getAccessToken();
     var response = UrlFetchApp.fetch(url);
 
