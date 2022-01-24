@@ -5,30 +5,12 @@ var MockProperties = require('./mocks/properties');
 var MockCache = require('./mocks/cache');
 var MockLock = require('./mocks/lock');
 var MockScriptApp = require('./mocks/script');
-var MockBlob = require('./mocks/blob');
 var Future = require('fibers/future');
-var URLSafeBase64 = require('urlsafe-base64');
-
+var MockUtilities = require('./mocks/utilities');
 var mocks = {
   ScriptApp: new MockScriptApp(),
   UrlFetchApp: new MockUrlFetchApp(),
-  Utilities: {
-    base64Encode: (data) => {
-      return Buffer.from(data).toString('base64');
-    },
-    base64EncodeWebSafe: (data) => {
-      return URLSafeBase64.encode(Buffer.from(data));
-    },
-    base64DecodeWebSafe: (data) => {
-      return URLSafeBase64.decode(data);
-    },
-    computeRsaSha256Signature: (data, key) => {
-      return Math.random().toString(36);
-    },
-    newBlob: (data) => {
-      return new MockBlob(data);
-    },
-  },
+  Utilities: new MockUtilities(),
   __proto__: gas.globalMockDefault
 };
 var OAuth2 = gas.require('./src', mocks);
@@ -506,6 +488,31 @@ describe('Service', () => {
           .setClientId('abc')
           .setClientSecret('def');
       service.exchangeGrant_();
+    });
+  });
+
+  describe('#generateCodeVerifier()', () => {
+    it('should not include code challenge unless requested', () => {
+      var service = OAuth2.createService('test')
+          .setAuthorizationBaseUrl('http://www.example.com')
+          .setClientId('abc')
+          .setClientSecret('def')
+          .setCallbackFunction('authCallback');
+      var authorizationUrl = service.getAuthorizationUrl({});
+      assert.notInclude(authorizationUrl, 'code_challenge');
+      assert.notInclude(authorizationUrl, 'code_challenge_method');
+    });
+
+    it('should use generated challenge string', () => {
+      var service = OAuth2.createService('test')
+          .setAuthorizationBaseUrl('http://www.example.com')
+          .setClientId('abc')
+          .setClientSecret('def')
+          .setCallbackFunction('authCallback')
+          .generateCodeVerifier();
+      var authorizationUrl = service.getAuthorizationUrl({});
+      assert.include(authorizationUrl, 'code_challenge');
+      assert.include(authorizationUrl, 'code_challenge_method=S256');
     });
   });
 
