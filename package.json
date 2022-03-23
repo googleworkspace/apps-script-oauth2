@@ -14,7 +14,7 @@
   },
   "homepage": "https://github.com/googlesamples/apps-script-oauth2",
   "devDependencies": {
-    "@google/clasp": "2.3.2",
+    "@google/clasp": "2.4.0",
     "chai": "4.2.0",
     "del": "1.2.1",
     "eslint": "4.19.1",
