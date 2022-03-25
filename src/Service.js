@@ -135,7 +135,7 @@ Service_.prototype.setCodeVerififer = function(codeVerifier) {
 };
 
 /**
- * Sets teh code verifier to a randomly generated challenge string.
+ * Sets the code verifier to a randomly generated challenge string.
  * @return {!Service_} This service, for chaining
  */
 Service_.prototype.generateCodeVerifier = function() {
