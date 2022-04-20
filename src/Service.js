@@ -605,9 +605,11 @@ Service_.prototype.refresh = function() {
       grant_type: 'refresh_token',
     };
     var newToken = this.fetchToken_(payload, this.refreshUrl_);
-    if (!newToken.refresh_token) {
-      newToken.refresh_token = token.refresh_token;
-    }
+    Object.keys(token).forEach((tokenKey) => {
+      if (tokenKey.startsWith('refresh_') && !newToken[tokenKey]) {
+        newToken[tokenKey] = token[tokenKey]
+      }
+    });
     this.saveToken_(newToken);
   });
 };
