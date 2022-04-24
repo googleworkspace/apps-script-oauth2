@@ -1,7 +1,7 @@
 language: node_js
 node_js:
   # Select a Node version where there is a Fibers binary available.
-  - 12.16.1
+  - 12.22.12
 branches:
   only:
     - master
