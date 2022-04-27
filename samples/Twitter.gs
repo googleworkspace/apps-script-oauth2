@@ -22,7 +22,7 @@ function run() {
   } else {
     var authorizationUrl = service.getAuthorizationUrl();
     Logger.log('Open the following URL and re-run the script: %s',
-      authorizationUrl);
+        authorizationUrl);
   }
 }
 
@@ -31,8 +31,8 @@ function run() {
  */
 function reset() {
   getService().reset();
-  PropertiesService.getUserProperties().deleteProperty("code_challenge");
-  PropertiesService.getUserProperties().deleteProperty("code_verifier");
+  PropertiesService.getUserProperties().deleteProperty('code_challenge');
+  PropertiesService.getUserProperties().deleteProperty('code_verifier');
 }
 
 /**
@@ -41,31 +41,22 @@ function reset() {
 function getService() {
   pkceChallengeVerifier();
   var userProps = PropertiesService.getUserProperties();
+  var authUrl = 'https://twitter.com/i/oauth2/authorize?code_challenge_method=S256&code_challenge=' +
+      userProps.getProperty('code_challenge');
+  var tokenUrl = 'https://api.twitter.com/2/oauth2/token?code_verifier=' + 
+      userProps.getProperty('code_verifier');
   return OAuth2.createService('Twitter')
-    // Set the endpoint URLs.
-    .setAuthorizationBaseUrl(
-      'https://twitter.com/i/oauth2/authorize?code_challenge_method=S256&code_challenge=' + userProps.getProperty("code_challenge"))
-    .setTokenUrl(
-      'https://api.twitter.com/2/oauth2/token?code_verifier=' + userProps.getProperty("code_verifier"))
-
-    // Set the client ID and secret.
-    .setClientId(CLIENT_ID)
-    .setClientSecret(CLIENT_SECRET)
-
-    // Set the name of the callback function that should be invoked to
-    // complete the OAuth flow.
-    .setCallbackFunction('authCallback')
-
-    // Set the property store where authorized tokens should be persisted.
-    .setPropertyStore(userProps)
-
-    // Set the scopes to request (space-separated for Twitter services).
-    .setScope('users.read tweet.read offline.access')
-
-    .setTokenHeaders({
-      'Authorization': 'Basic ' + Utilities.base64Encode(CLIENT_ID + ':' + CLIENT_SECRET),
-      'Content-Type': 'application/x-www-form-urlencoded'
-    })
+      .setAuthorizationBaseUrl(authUrl)
+      .setTokenUrl(tokenUrl)
+      .setClientId(CLIENT_ID)
+      .setClientSecret(CLIENT_SECRET)
+      .setCallbackFunction('authCallback')
+      .setPropertyStore(userProps)
+      .setScope('users.read tweet.read offline.access')
+      .setTokenHeaders({
+        'Authorization': 'Basic ' + Utilities.base64Encode(CLIENT_ID + ':' + CLIENT_SECRET),
+        'Content-Type': 'application/x-www-form-urlencoded'
+      });
 }
 
 /**
@@ -93,21 +84,21 @@ function logRedirectUri() {
  */
 function pkceChallengeVerifier() {
   var userProps = PropertiesService.getUserProperties();
-  if (!userProps.getProperty("code_verifier")) {
-    var verifier = "";
-    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
+  if (!userProps.getProperty('code_verifier')) {
+    var verifier = '';
+    var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
 
     for (var i = 0; i < 128; i++) {
       verifier += possible.charAt(Math.floor(Math.random() * possible.length));
     }
 
-    var sha256Hash = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, verifier)
+    var sha256Hash = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, verifier);
 
     var challenge = Utilities.base64Encode(sha256Hash)
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_')
-      .replace(/=+$/, '')
-    userProps.setProperty("code_verifier", verifier)
-    userProps.setProperty("code_challenge", challenge)
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=+$/, '');
+    userProps.setProperty('code_verifier', verifier);
+    userProps.setProperty('code_challenge', challenge);
   }
 }
