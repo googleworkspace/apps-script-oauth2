@@ -682,7 +682,7 @@ Service_.prototype.refresh = function() {
       newToken.refresh_token = token.refresh_token;
     }
     this.setExpiresAt_(token);
-    if (!token.refreshTokenExpiresAt) {
+    if (token.refreshTokenExpiresAt) {
       newToken.refreshTokenExpiresAt = token.refreshTokenExpiresAt;
     }
     this.saveToken_(newToken);
