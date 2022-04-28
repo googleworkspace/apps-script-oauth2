@@ -398,8 +398,7 @@ describe('Service', () => {
       var storedToken = JSON.parse(properties.getProperty('oauth2.test'));
       assert.equal(storedToken.access_token, 'token');
       assert.equal(storedToken.refresh_token, 'bar');
-      assert.equal(storedToken.granted_time, NOW_SECONDS);
-      assert.equal(storedToken.refresh_token_expires_in, 360);
+      assert.equal(storedToken.refreshTokenExpiresAt, NOW_SECONDS + 360);
     });
   });
 
