@@ -641,6 +641,11 @@ Service_.prototype.parseToken_ = function(content) {
  * @private
  */
 Service_.prototype.setExpiresAt_ = function(token) {
+  // handle prior migrations
+  if (token.expiresAt) {
+    return;
+  }
+
   // granted_time was added in prior versions of this library
   var grantedTime = token.granted_time || getTimeInSeconds_(new Date());
   var expiresIn = token.expires_in_sec || token.expires_in || token.expires;
@@ -740,14 +745,14 @@ Service_.prototype.isExpired_ = function(token) {
     if (token.expiresAt - now < Service_.EXPIRATION_BUFFER_SECONDS_) {
       expired = true;
     }
-  } else {
-    // Previous code path, provided for migration purpose, can be removed later
-    var expiresIn = token.expires_in_sec || token.expires_in || token.expires;
-    if (expiresIn) {
-      var expiresTime = token.granted_time + Number(expiresIn);
-      if (expiresTime - now < Service_.EXPIRATION_BUFFER_SECONDS_) {
-        expired = true;
-      }
+  }
+
+  // Previous code path, provided for migration purpose, can be removed later
+  var expiresIn = token.expires_in_sec || token.expires_in || token.expires;
+  if (expiresIn) {
+    var expiresTime = token.granted_time + Number(expiresIn);
+    if (expiresTime - now < Service_.EXPIRATION_BUFFER_SECONDS_) {
+      expired = true;
     }
   }
 
@@ -772,18 +777,12 @@ Service_.prototype.isExpired_ = function(token) {
 Service_.prototype.canRefresh_ = function(token) {
   if (!token.refresh_token) return false;
   this.setExpiresAt_(token);
-  if (token.refreshTokenExpiresAt) {
+  if (!token.refreshTokenExpiresAt) {
+    return false;
+  } else {
     return (
       token.refreshTokenExpiresAt - now < Service_.EXPIRATION_BUFFER_SECONDS_
     );
-  }
-  var expiresIn = token.refresh_token_expires_in;
-  if (!expiresIn) {
-    return true;
-  } else {
-    var expiresTime = token.granted_time + Number(expiresIn);
-    var now = getTimeInSeconds_(new Date());
-    return expiresTime - now > Service_.EXPIRATION_BUFFER_SECONDS_;
   }
 };
 
