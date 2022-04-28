@@ -780,6 +780,7 @@ Service_.prototype.canRefresh_ = function(token) {
   if (!token.refreshTokenExpiresAt) {
     return false;
   } else {
+    var now = getTimeInSeconds_(new Date());
     return (
       token.refreshTokenExpiresAt - now < Service_.EXPIRATION_BUFFER_SECONDS_
     );
