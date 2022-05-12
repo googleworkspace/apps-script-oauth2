@@ -43,8 +43,7 @@ function getService() {
   var userProps = PropertiesService.getUserProperties();
   return OAuth2.createService('Twitter')
     // Set the endpoint URLs.
-    .setAuthorizationBaseUrl(
-      'https://twitter.com/i/oauth2/authorize?code_challenge_method=S256&code_challenge=' + userProps.getProperty("code_challenge"))
+    .setAuthorizationBaseUrl('https://twitter.com/i/oauth2/authorize')
     .setTokenUrl(
       'https://api.twitter.com/2/oauth2/token?code_verifier=' + userProps.getProperty("code_verifier"))
 
@@ -61,6 +60,11 @@ function getService() {
 
     // Set the scopes to request (space-separated for Twitter services).
     .setScope('users.read tweet.read offline.access')
+  
+    // Add parameters in the authorization url
+    .setParam('response_type', 'code')
+    .setParam('code_challenge_method', 'S256')
+    .setParam('code_challenge', userProps.getProperty("code_challenge"))
 
     .setTokenHeaders({
       'Authorization': 'Basic ' + Utilities.base64Encode(CLIENT_ID + ':' + CLIENT_SECRET),
