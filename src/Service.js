@@ -782,7 +782,7 @@ Service_.prototype.canRefresh_ = function(token) {
   } else {
     var now = getTimeInSeconds_(new Date());
     return (
-      token.refreshTokenExpiresAt - now < Service_.EXPIRATION_BUFFER_SECONDS_
+      token.refreshTokenExpiresAt - now > Service_.EXPIRATION_BUFFER_SECONDS_
     );
   }
 };
