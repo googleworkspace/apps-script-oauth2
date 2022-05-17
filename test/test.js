@@ -575,7 +575,7 @@ describe('Service', () => {
     });
   });
 
-  describe('#setExpiresAt_()', () => {
+  describe('#ensureExpiresAtSet_()', () => {
     const NOW_SECONDS = OAuth2.getTimeInSeconds_(new Date());
     var service = OAuth2.createService('test')
         .setPropertyStore(new MockProperties())
@@ -586,7 +586,7 @@ describe('Service', () => {
         granted_time: NOW_SECONDS,
         expires_in_sec: 100
       };
-      service.setExpiresAt_(token);
+      service.ensureExpiresAtSet_(token);
       assert.include(token, {
         expiresAt: NOW_SECONDS + 100
       });
@@ -597,7 +597,7 @@ describe('Service', () => {
         granted_time: NOW_SECONDS,
         refresh_token_expires_in: 200
       };
-      service.setExpiresAt_(token);
+      service.ensureExpiresAtSet_(token);
       assert.include(token, {
         refreshTokenExpiresAt: NOW_SECONDS + 200
       });
