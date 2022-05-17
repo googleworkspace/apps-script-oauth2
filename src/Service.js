@@ -631,18 +631,18 @@ Service_.prototype.parseToken_ = function(content) {
   } else {
     throw new Error('Unknown token format: ' + this.tokenFormat_);
   }
-  this.setExpiresAt_(token);
+  this.ensureExpiresAtSet_(token);
   return token;
 };
 
 /**
- * Adds expiresAt annotations on the token.
+ * Adds expiresAt annotations on the token if not set.
  * @param {string} token A token.
  * @private
  */
-Service_.prototype.setExpiresAt_ = function(token) {
+Service_.prototype.ensureExpiresAtSet_ = function(token) {
   // handle prior migrations
-  if (token.expiresAt) {
+  if (token.expiresAt !== undefined) {
     return;
   }
 
@@ -686,8 +686,9 @@ Service_.prototype.refresh = function() {
     if (!newToken.refresh_token) {
       newToken.refresh_token = token.refresh_token;
     }
-    this.setExpiresAt_(token);
-    if (token.refreshTokenExpiresAt) {
+    this.ensureExpiresAtSet_(token);
+    // Propagate refresh token expiry if new token omits it
+    if (newToken.refreshTokenExpiresAt === undefined) {
       newToken.refreshTokenExpiresAt = token.refreshTokenExpiresAt;
     }
     this.saveToken_(newToken);
@@ -776,8 +777,8 @@ Service_.prototype.isExpired_ = function(token) {
  */
 Service_.prototype.canRefresh_ = function(token) {
   if (!token.refresh_token) return false;
-  this.setExpiresAt_(token);
-  if (!token.refreshTokenExpiresAt) {
+  this.ensureExpiresAtSet_(token);
+  if (token.refreshTokenExpiresAt === undefined) {
     return true;
   } else {
     var now = getTimeInSeconds_(new Date());
