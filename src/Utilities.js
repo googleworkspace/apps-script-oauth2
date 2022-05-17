@@ -129,3 +129,41 @@ function decodeJwt_(jwt) {
   var blob = Utilities.newBlob(Utilities.base64DecodeWebSafe(payload));
   return JSON.parse(blob.getDataAsString());
 }
+
+/* exported encodeUrlSafeBase64NoPadding_ */
+/**
+ * Wrapper around base64 encoded to strip padding.
+ * @param {string} value
+ * @return {string} Web safe base64 encoded with padding removed.
+ */
+function encodeUrlSafeBase64NoPadding_(value) {
+  let encodedValue = Utilities.base64EncodeWebSafe(value);
+  encodedValue = encodedValue.slice(0, encodedValue.indexOf('='));
+  return encodedValue;
+}
+
+/* exported encodeChallenge_ */
+/**
+ * Encodes a challenge string for PKCE.
+ *
+ * @param {string} method Encoding method (S256 or plain)
+ * @param {string} codeVerifier String to encode
+ * @return {string} BASE64(SHA256(ASCII(codeVerifier)))
+ */
+function encodeChallenge_(method, codeVerifier) {
+  method = method.toLowerCase();
+
+  if (method === 'plain') {
+    return codeVerifier;
+  }
+
+  if (method === 's256') {
+    const hashedValue = Utilities.computeDigest(
+        Utilities.DigestAlgorithm.SHA_256,
+        codeVerifier,
+        Utilities.Charset.US_ASCII);
+    return encodeUrlSafeBase64NoPadding_(hashedValue);
+  }
+
+  throw new Error('Unsupported challenge method: ' + method);
+}

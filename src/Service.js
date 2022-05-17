@@ -119,6 +119,47 @@ Service_.prototype.setTokenMethod = function(tokenMethod) {
 };
 
 /**
+ * Set the code verifier used for PKCE. For most use cases,
+ * prefer `generateCodeVerifier` to automatically initialize the
+ * value with a generated challenge string.
+ *
+ * @param {string} codeVerifier A random challenge string
+ * @return {!Service_} This service, for chaining
+ */
+Service_.prototype.setCodeVerififer = function(codeVerifier) {
+  this.codeVerifier_ = codeVerifier;
+  if (!this.codeChallengeMethod_) {
+    this.codeChallengeMethod_ = 'S256';
+  }
+  return this;
+};
+
+/**
+ * Sets the code verifier to a randomly generated challenge string.
+ * @return {!Service_} This service, for chaining
+ */
+Service_.prototype.generateCodeVerifier = function() {
+  const rawBytes = [];
+  for (let i = 0; i < 32; ++i) {
+    const r = Math.floor(Math.random() * 255);
+    rawBytes[i] = r;
+  }
+  const verifier = encodeUrlSafeBase64NoPadding_(rawBytes);
+  return this.setCodeVerififer(verifier);
+};
+
+/**
+ * Set the code challenge method for PKCE. The default value method
+ * when a code verifier is set is S256.
+ * @param {string} method Challenge method, either "S256" or "plain"
+ * @return {!Service_} This service, for chaining
+ */
+Service_.prototype.setCodeChallengeMethod = function(method) {
+  this.codeChallengeMethod_ = method;
+  return this;
+};
+
+/**
  * @callback tokenHandler
  * @param tokenPayload {Object} A hash of parameters to be sent to the token
  *     URL.
@@ -364,17 +405,26 @@ Service_.prototype.getAuthorizationUrl = function(optAdditionalParameters) {
       .withMethod(this.callbackFunctionName_)
       .withArgument('serviceName', this.serviceName_)
       .withTimeout(3600);
+  if (this.codeVerifier_) {
+    stateTokenBuilder.withArgument('codeVerifier_', this.codeVerifier_);
+  }
   if (optAdditionalParameters) {
     Object.keys(optAdditionalParameters).forEach(function(key) {
       stateTokenBuilder.withArgument(key, optAdditionalParameters[key]);
     });
   }
+
   var params = {
     client_id: this.clientId_,
     response_type: 'code',
     redirect_uri: this.getRedirectUri(),
     state: stateTokenBuilder.createToken()
   };
+  if (this.codeVerifier_) {
+    params['code_challenge'] = encodeChallenge_(this.codeChallengeMethod_,
+        this.codeVerifier_);
+    params['code_challenge_method'] = this.codeChallengeMethod_;
+  }
   params = extend_(params, this.params_);
   return buildUrl_(this.authorizationBaseUrl_, params);
 };
@@ -408,6 +458,9 @@ Service_.prototype.handleCallback = function(callbackRequest) {
     redirect_uri: this.getRedirectUri(),
     grant_type: 'authorization_code'
   };
+  if (callbackRequest.parameter.codeVerifier_) {
+    payload['code_verifier'] = callbackRequest.parameter.codeVerifier_;
+  }
   var token = this.fetchToken_(payload);
   this.saveToken_(token);
   return true;
@@ -578,18 +631,18 @@ Service_.prototype.parseToken_ = function(content) {
   } else {
     throw new Error('Unknown token format: ' + this.tokenFormat_);
   }
-  this.setExpiresAt_(token);
+  this.ensureExpiresAtSet_(token);
   return token;
 };
 
 /**
- * Adds expiresAt annotations on the token.
+ * Adds expiresAt annotations on the token if not set.
  * @param {string} token A token.
  * @private
  */
-Service_.prototype.setExpiresAt_ = function(token) {
+Service_.prototype.ensureExpiresAtSet_ = function(token) {
   // handle prior migrations
-  if (token.expiresAt) {
+  if (token.expiresAt !== undefined) {
     return;
   }
 
@@ -633,8 +686,9 @@ Service_.prototype.refresh = function() {
     if (!newToken.refresh_token) {
       newToken.refresh_token = token.refresh_token;
     }
-    this.setExpiresAt_(token);
-    if (token.refreshTokenExpiresAt) {
+    this.ensureExpiresAtSet_(token);
+    // Propagate refresh token expiry if new token omits it
+    if (newToken.refreshTokenExpiresAt === undefined) {
       newToken.refreshTokenExpiresAt = token.refreshTokenExpiresAt;
     }
     this.saveToken_(newToken);
@@ -723,8 +777,8 @@ Service_.prototype.isExpired_ = function(token) {
  */
 Service_.prototype.canRefresh_ = function(token) {
   if (!token.refresh_token) return false;
-  this.setExpiresAt_(token);
-  if (!token.refreshTokenExpiresAt) {
+  this.ensureExpiresAtSet_(token);
+  if (token.refreshTokenExpiresAt === undefined) {
     return true;
   } else {
     var now = getTimeInSeconds_(new Date());
