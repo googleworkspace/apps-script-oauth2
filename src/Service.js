@@ -778,7 +778,7 @@ Service_.prototype.canRefresh_ = function(token) {
   if (!token.refresh_token) return false;
   this.setExpiresAt_(token);
   if (!token.refreshTokenExpiresAt) {
-    return false;
+    return true;
   } else {
     var now = getTimeInSeconds_(new Date());
     return (
