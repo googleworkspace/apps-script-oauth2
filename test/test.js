@@ -604,6 +604,46 @@ describe('Service', () => {
     });
   });
 
+  describe('#canRefresh_()', () => {
+    const NOW_SECONDS = OAuth2.getTimeInSeconds_(new Date());
+    const ONE_HOUR_AGO_SECONDS = NOW_SECONDS - 360;
+    const ONE_HOUR_LATER_SECONDS = NOW_SECONDS + 360;
+    var service = OAuth2.createService('test')
+        .setPropertyStore(new MockProperties())
+        .setCache(new MockCache());
+
+    it('should return false if no refresh token', () => {
+      const token = {};
+      assert.isFalse(service.canRefresh_(token));
+    });
+
+    it('should return true if there is a refresh token', () => {
+      const token = {
+        refresh_token: 'bar',
+      };
+      assert.isTrue(service.canRefresh_(token));
+    });
+
+    it('should return true if it is not expired', () => {
+      const token = {
+        refresh_token: 'bar',
+        expiresAt: ONE_HOUR_LATER_SECONDS,
+        refreshTokenExpiresAt: ONE_HOUR_LATER_SECONDS
+      };
+      console.log('test')
+      assert.isTrue(service.canRefresh_(token));
+    });
+
+    it('should return false if it is expired', () => {
+      const token = {
+        refresh_token: 'bar',
+        expiresAt: ONE_HOUR_LATER_SECONDS,
+        refreshTokenExpiresAt: ONE_HOUR_AGO_SECONDS
+      };
+      assert.isFalse(service.canRefresh_(token));
+    });
+  });
+
   describe('#isExpired_()', () => {
     const NOW_SECONDS = OAuth2.getTimeInSeconds_(new Date());
     const ONE_HOUR_AGO_SECONDS = NOW_SECONDS - 360;
