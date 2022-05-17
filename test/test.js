@@ -582,7 +582,6 @@ describe('Service', () => {
         .setCache(new MockCache());
 
     it('should set expires at', () => {
-      // This is more of an optimization
       const token = {
         granted_time: NOW_SECONDS,
         expires_in_sec: 100
@@ -594,7 +593,6 @@ describe('Service', () => {
     });
 
     it('should set refresh expires at', () => {
-      // This is more of an optimization
       const token = {
         granted_time: NOW_SECONDS,
         refresh_token_expires_in: 200
