@@ -568,6 +568,37 @@ describe('Service', () => {
     });
   });
 
+  describe('#setExpiresAt_()', () => {
+    const NOW_SECONDS = OAuth2.getTimeInSeconds_(new Date());
+    var service = OAuth2.createService('test')
+        .setPropertyStore(new MockProperties())
+        .setCache(new MockCache());
+
+    it('should set expires at', () => {
+      // This is more of an optimization
+      const token = {
+        granted_time: NOW_SECONDS,
+        expires_in_sec: 100
+      };
+      service.setExpiresAt_(token);
+      assert.include(token, {
+        expiresAt: NOW_SECONDS + 100
+      });
+    });
+
+    it('should set refresh expires at', () => {
+      // This is more of an optimization
+      const token = {
+        granted_time: NOW_SECONDS,
+        refresh_token_expires_in: 200
+      };
+      service.setExpiresAt_(token);
+      assert.include(token, {
+        refreshTokenExpiresAt: NOW_SECONDS + 200
+      });
+    });
+  });
+
   describe('#isExpired_()', () => {
     const NOW_SECONDS = OAuth2.getTimeInSeconds_(new Date());
     const ONE_HOUR_AGO_SECONDS = NOW_SECONDS - 360;
