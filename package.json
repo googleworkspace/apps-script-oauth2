@@ -16,7 +16,7 @@
   "devDependencies": {
     "@google/clasp": "2.3.2",
     "chai": "4.2.0",
-    "del": "1.2.1",
+    "del": "6.1.1",
     "eslint": "4.19.1",
     "eslint-config-google": "0.14.0",
     "fibers": "5.0.0",
