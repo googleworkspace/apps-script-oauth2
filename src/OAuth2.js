@@ -44,7 +44,7 @@ function createService(serviceName) {
 /**
  * Returns the redirect URI that will be used for a given script. Often this URI
  * needs to be entered into a configuration screen of your OAuth provider.
- * @param {string} [optScriptId] The script ID of your script, which can be
+ * @param {string=} optScriptId The script ID of your script, which can be
  *     found in the Script Editor UI under "File > Project properties". Defaults
  *     to the script ID of the script being executed.
  * @return {string} The redirect URI.
@@ -52,7 +52,7 @@ function createService(serviceName) {
 function getRedirectUri(optScriptId) {
   var scriptId = optScriptId || ScriptApp.getScriptId();
   return 'https://script.google.com/macros/d/' + encodeURIComponent(scriptId) +
-      '/usercallback';
+    '/usercallback';
 }
 
 /**
@@ -65,12 +65,12 @@ function getRedirectUri(optScriptId) {
  */
 function getServiceNames(propertyStore) {
   var props = propertyStore.getProperties();
-  return Object.keys(props).filter(function(key) {
+  return Object.keys(props).filter(function (key) {
     var parts = key.split('.');
     return key.indexOf(STORAGE_PREFIX_) == 0 && parts.length > 1 && parts[1];
-  }).map(function(key) {
+  }).map(function (key) {
     return key.split('.')[1];
-  }).reduce(function(result, key) {
+  }).reduce(function (result, key) {
     if (result.indexOf(key) < 0) {
       result.push(key);
     }
