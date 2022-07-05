@@ -11,7 +11,7 @@ var CLIENT_SECRET = '...';
  * Authorizes and makes a request to the Xero API.
  */
 function run() {
-  var service = getService();
+  var service = getService_();
   if (service.hasAccess()) {
     // Retrieve the tenantId from storage.
     var tenantId = service.getStorage().getValue('tenantId');
@@ -36,13 +36,13 @@ function run() {
  * Reset the authorization state, so that it can be re-tested.
  */
 function reset() {
-  getService().reset();
+  getService_().reset();
 }
 
 /**
  * Configures the service.
  */
-function getService() {
+function getService_() {
   return OAuth2.createService('Xero')
       // Set the endpoint URLs.
       .setAuthorizationBaseUrl(
@@ -70,7 +70,7 @@ function getService() {
  * Handles the OAuth callback.
  */
 function authCallback(request) {
-  var service = getService();
+  var service = getService_();
   var authorized = service.handleCallback(request);
   if (authorized) {
     // Retrieve the connected tenants.

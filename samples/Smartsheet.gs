@@ -5,7 +5,7 @@ var CLIENT_SECRET = '...';
  * Authorizes and makes a request to the Smartsheet API.
  */
 function run() {
-  var service = getService();
+  var service = getService_();
   if (service.hasAccess()) {
     var url = 'https://api.smartsheet.com/2.0/users/me';
     var response = UrlFetchApp.fetch(url, {
@@ -26,13 +26,13 @@ function run() {
  * Reset the authorization state, so that it can be re-tested.
  */
 function reset() {
-  getService().reset();
+  getService_().reset();
 }
 
 /**
  * Configures the service.
  */
-function getService() {
+function getService_() {
   return OAuth2.createService('Smartsheet')
       // Set the endpoint URLs.
       .setAuthorizationBaseUrl('https://app.smartsheet.com/b/authorize')
@@ -61,7 +61,7 @@ function getService() {
  * Handles the OAuth callback.
  */
 function authCallback(request) {
-  var service = getService();
+  var service = getService_();
   var authorized = service.handleCallback(request);
   if (authorized) {
     return HtmlService.createHtmlOutput('Success!');

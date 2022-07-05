@@ -14,7 +14,7 @@ var CLOUDID_KEY = 'cloudid';
  * Authorizes and makes a request to the UltraCart API.
  */
 function run() {
-  var service = getService();
+  var service = getService_();
   if (service.hasAccess()) {
     var cloudid = getCloudId(service);
     var url = 'https://api.atlassian.com/ex/jira/' + cloudid +
@@ -63,13 +63,13 @@ function getCloudId(service) {
  * Reset the authorization state, so that it can be re-tested.
  */
 function reset() {
-  getService().reset();
+  getService_().reset();
 }
 
 /**
  * Configures the service.
  */
-function getService() {
+function getService_() {
   return OAuth2.createService('Jira')
       // Set the endpoint URLs.
       .setAuthorizationBaseUrl('https://auth.atlassian.com/authorize')
@@ -96,7 +96,7 @@ function getService() {
  * Handles the OAuth callback.
  */
 function authCallback(request) {
-  var service = getService();
+  var service = getService_();
   var authorized = service.handleCallback(request);
   if (authorized) {
     return HtmlService.createHtmlOutput('Success!');

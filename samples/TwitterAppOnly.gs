@@ -13,7 +13,7 @@ var CLIENT_SECRET = '...';
  * Authorizes and makes a request to the Twitter API.
  */
 function run() {
-  var service = getService();
+  var service = getService_();
   if (service.hasAccess()) {
     var url = 'https://api.twitter.com/1.1/users/show.json?screen_name=googleworkspace';
     var response = UrlFetchApp.fetch(url, {
@@ -32,13 +32,13 @@ function run() {
  * Reset the authorization state, so that it can be re-tested.
  */
 function reset() {
-  getService().reset();
+  getService_().reset();
 }
 
 /**
  * Configures the service.
  */
-function getService() {
+function getService_() {
   return OAuth2.createService('Twitter App Only')
       // Set the endpoint URLs.
       .setTokenUrl('https://api.twitter.com/oauth2/token')
