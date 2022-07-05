@@ -12,7 +12,7 @@ var CLIENT_SECRET = '...';
  * Authorizes and makes a request to the Onshape API.
  */
 function run() {
-  var service = getService();
+  var service = getService_();
   if (service.hasAccess()) {
     // Make a request to retrieve a list of the user's documents.
     // This requires enabling the OAuth2Read scope for the application in the
@@ -36,13 +36,13 @@ function run() {
  * Reset the authorization state, so that it can be re-tested.
  */
 function reset() {
-  getService().reset();
+  getService_().reset();
 }
 
 /**
  * Configures the service.
  */
-function getService() {
+function getService_() {
   return OAuth2.createService('Onshape')
       // Set the Onshape OAuth endpoint URLs.
       .setAuthorizationBaseUrl('https://oauth.onshape.com/oauth/authorize')
@@ -64,7 +64,7 @@ function getService() {
  * Handles the OAuth callback.
  */
 function authCallback(request) {
-  var service = getService();
+  var service = getService_();
   var authorized = service.handleCallback(request);
   if (authorized) {
     return HtmlService.createHtmlOutput('Success!');
