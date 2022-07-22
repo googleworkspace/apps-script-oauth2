@@ -1,4 +1,4 @@
-# OAuth2 for Apps Script [![Build Status](https://travis-ci.org/googleworkspace/apps-script-oauth2.svg?branch=master)](https://travis-ci.org/googleworkspace/apps-script-oauth2)
+# OAuth2 for Apps Script [![Build Status](https://travis-ci.org/googleworkspace/apps-script-oauth2.svg?branch=main)](https://travis-ci.org/googleworkspace/apps-script-oauth2)
 
 OAuth2 for Apps Script is a library for Google Apps Script that provides the
 ability to create and authorize OAuth2 tokens as well as refresh them when they
