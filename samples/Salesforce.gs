@@ -10,7 +10,7 @@ var CLIENT_SECRET = '...';
  * Authorizes and makes a request to the Saleforce API.
  */
 function run() {
-  var service = getService();
+  var service = getService_();
   if (service.hasAccess()) {
     var url = service.getToken().instance_url +
         '/services/data/v24.0/chatter/users/me';
@@ -60,13 +60,13 @@ function withRetry(service, func) {
  * Reset the authorization state, so that it can be re-tested.
  */
 function reset() {
-  getService().reset();
+  getService_().reset();
 }
 
 /**
  * Configures the service.
  */
-function getService() {
+function getService_() {
   return OAuth2.createService('Saleforce')
       // Set the endpoint URLs.
       .setAuthorizationBaseUrl(
@@ -92,7 +92,7 @@ function getService() {
  * Handles the OAuth callback.
  */
 function authCallback(request) {
-  var service = getService();
+  var service = getService_();
   var authorized = service.handleCallback(request);
   if (authorized) {
     return HtmlService.createHtmlOutput('Success!');

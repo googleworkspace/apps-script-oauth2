@@ -5,7 +5,7 @@ var CLIENT_SECRET = '...';
  * Authorizes and makes a request to the Harvest API.
  */
 function run() {
-  var service = getService();
+  var service = getService_();
   if (service.hasAccess()) {
     // Retrieve the account ID from storage.
     var accountId = service.getStorage().getValue('Harvest-Account-Id');
@@ -30,13 +30,13 @@ function run() {
  * Reset the authorization state, so that it can be re-tested.
  */
 function reset() {
-  getService().reset();
+  getService_().reset();
 }
 
 /**
  * Configures the service.
  */
-function getService() {
+function getService_() {
   return OAuth2.createService('Harvest')
       // Set the endpoint URLs.
       .setAuthorizationBaseUrl('https://id.getharvest.com/oauth2/authorize')
@@ -59,7 +59,7 @@ function getService() {
  * Handles the OAuth callback.
  */
 function authCallback(request) {
-  var service = getService();
+  var service = getService_();
   var authorized = service.handleCallback(request);
   if (authorized) {
     // Gets the authorized account ID from the scope string. Assumes the

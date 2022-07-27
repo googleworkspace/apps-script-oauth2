@@ -11,7 +11,7 @@ var CLIENT_SECRET = '...';
  * Authorizes and makes a request to the Google Drive API.
  */
 function run() {
-  var service = getService();
+  var service = getService_();
   if (service.hasAccess()) {
     var url = 'https://www.googleapis.com/drive/v3/files?pageSize=1';
     var response = UrlFetchApp.fetch(url, {
@@ -32,13 +32,13 @@ function run() {
  * Reset the authorization state, so that it can be re-tested.
  */
 function reset() {
-  getService().reset();
+  getService_().reset();
 }
 
 /**
  * Configures the service.
  */
-function getService() {
+function getService_() {
   return OAuth2.createService('Google')
       // Set the endpoint URLs.
       .setAuthorizationBaseUrl('https://accounts.google.com/o/oauth2/v2/auth')
@@ -66,7 +66,7 @@ function getService() {
  * Handles the OAuth callback.
  */
 function authCallback(request) {
-  var service = getService();
+  var service = getService_();
   var authorized = service.handleCallback(request);
   if (authorized) {
     return HtmlService.createHtmlOutput('Success!');

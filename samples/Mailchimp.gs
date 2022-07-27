@@ -11,7 +11,7 @@ var CLIENT_SECRET = '...';
  * Authorizes and makes a request to the Docusign API.
  */
 function run() {
-  var service = getService();
+  var service = getService_();
   if (service.hasAccess()) {
     // Retrieve the account ID and base URI from storage.
     var storage = service.getStorage();
@@ -37,13 +37,13 @@ function run() {
  * Reset the authorization state, so that it can be re-tested.
  */
 function reset() {
-  getService().reset();
+  getService_().reset();
 }
 
 /**
  * Configures the service.
  */
-function getService() {
+function getService_() {
   return OAuth2.createService('Mailchimp')
       // Set the endpoint URLs.
       .setAuthorizationBaseUrl('https://login.mailchimp.com/oauth2/authorize')
@@ -68,7 +68,7 @@ function getService() {
  * Handles the OAuth callback.
  */
 function authCallback(request) {
-  var service = getService();
+  var service = getService_();
   var authorized = service.handleCallback(request);
   if (authorized) {
     // Get the user info to determine the data center needed for

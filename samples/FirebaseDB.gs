@@ -13,7 +13,7 @@ var CLIENT_EMAIL = '...';
  * Authorizes and makes a request to a Firebase Database.
  */
 function run() {
-  var service = getService();
+  var service = getService_();
   if (service.hasAccess()) {
     var url = 'https://' + PROJECT_ID + '.firebaseio.com/.json?shallow=true';
     var response = UrlFetchApp.fetch(url, {
@@ -32,14 +32,14 @@ function run() {
  * Reset the authorization state, so that it can be re-tested.
  */
 function reset() {
-  var service = getService();
+  var service = getService_();
   service.reset();
 }
 
 /**
  * Configures the service.
  */
-function getService() {
+function getService_() {
   return OAuth2.createService('FirebaseDB')
       // Set the endpoint URL.
       .setTokenUrl('https://accounts.google.com/o/oauth2/token')

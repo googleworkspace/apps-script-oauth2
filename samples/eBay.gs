@@ -13,7 +13,7 @@ var RU_NAME = '...'; // eBay Redirect URL name.
  * Authorizes and makes a request to the Ebay API.
  */
 function run() {
-  var service = getService();
+  var service = getService_();
   if (service.hasAccess()) {
     // Sandbox environment.
     var url = 'https://api.sandbox.ebay.com/sell/inventory/v1/inventory_item';
@@ -35,13 +35,13 @@ function run() {
  * Reset the authorization state, so that it can be re-tested.
  */
 function reset() {
-  getService().reset();
+  getService_().reset();
 }
 
 /**
  * Configures the service.
  */
-function getService() {
+function getService_() {
   return OAuth2.createService('eBay')
       // Set the endpoint URLs (sandbox environment).
       .setTokenUrl('https://api.sandbox.ebay.com/identity/v1/oauth2/token')
@@ -75,7 +75,7 @@ function getService() {
  * Handles the OAuth2 callback.
  */
 function authCallback(request) {
-  var service = getService();
+  var service = getService_();
   var authorized = service.handleCallback(request);
   if (authorized) {
     return HtmlService.createHtmlOutput('Success!');

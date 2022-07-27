@@ -5,7 +5,7 @@ var CLIENT_SECRET = '...';
  * Authorizes and makes a request to the Basecamp 3 API.
  */
 function run() {
-  var service = getService();
+  var service = getService_();
   if (service.hasAccess()) {
     var url = 'https://launchpad.37signals.com/authorization.json';
     var response = UrlFetchApp.fetch(url, {
@@ -26,13 +26,13 @@ function run() {
  * Reset the authorization state, so that it can be re-tested.
  */
 function reset() {
-  getService().reset();
+  getService_().reset();
 }
 
 /**
  * Configures the service.
  */
-function getService() {
+function getService_() {
   return OAuth2.createService('Basecamp')
       // Set the endpoint URLs.
       .setAuthorizationBaseUrl(
@@ -56,7 +56,7 @@ function getService() {
  * Handles the OAuth callback.
  */
 function authCallback(request) {
-  var service = getService();
+  var service = getService_();
   var authorized = service.handleCallback(request);
   if (authorized) {
     return HtmlService.createHtmlOutput('Success!');
