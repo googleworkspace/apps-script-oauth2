@@ -12,7 +12,7 @@ var API_ACCESS_POINT_KEY = 'api_access_point';
  * Authorizes and makes a request to the Adobe Sign API.
  */
 function run() {
-  var service = getService();
+  var service = getService_();
   if (service.hasAccess()) {
     // Retrieve the API access point from storage.
     var apiAccessPoint = service.getStorage().getValue(API_ACCESS_POINT_KEY);
@@ -38,13 +38,13 @@ function run() {
  * Reset the authorization state, so that it can be re-tested.
  */
 function reset() {
-  getService().reset();
+  getService_().reset();
 }
 
 /**
  * Configures the service.
  */
-function getService(optApiAccessPoint) {
+function getService_(optApiAccessPoint) {
   var service = OAuth2.createService('AdobeSign')
       // Set the endpoint URLs.
       .setAuthorizationBaseUrl('https://secure.echosign.com/public/oauth')
@@ -82,7 +82,7 @@ function getService(optApiAccessPoint) {
 function authCallback(request) {
   // Get the API access point specified in the URL parameters.
   var apiAccessPoint = request.parameter[API_ACCESS_POINT_KEY];
-  var service = getService(apiAccessPoint);
+  var service = getService_(apiAccessPoint);
   var authorized = service.handleCallback(request);
   if (authorized) {
     // Save the API access point in the service's storage.

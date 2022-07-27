@@ -14,7 +14,7 @@ var SERVER = 'https://platform.devtest.ringcentral.com';
  * Authorizes and makes a request to the RingCentral API.
  */
 function run() {
-  var service = getService();
+  var service = getService_();
   if (service.hasAccess()) {
     var url = SERVER + '/restapi/v1.0/account/~';
     var response = UrlFetchApp.fetch(url, {
@@ -35,13 +35,13 @@ function run() {
  * Reset the authorization state, so that it can be re-tested.
  */
 function reset() {
-  getService().reset();
+  getService_().reset();
 }
 
 /**
  * Configures the service.
  */
-function getService() {
+function getService_() {
   return OAuth2.createService('RingCentral')
       // Set the endpoint URLs.
       .setAuthorizationBaseUrl(SERVER + '/restapi/oauth/authorize')
@@ -69,7 +69,7 @@ function getService() {
  * Handles the OAuth callback.
  */
 function authCallback(request) {
-  var service = getService();
+  var service = getService_();
   var authorized = service.handleCallback(request);
   if (authorized) {
     return HtmlService.createHtmlOutput('Success!');

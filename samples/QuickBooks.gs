@@ -13,7 +13,7 @@ var CLIENT_SECRET = '';
  * https://developer.intuit.com/v2/ui#/app/<YOURAPPID>/keys
  */
 function logRedirectUri() {
-  Logger.log(getService().getRedirectUri());
+  Logger.log(getService_().getRedirectUri());
 }
 
 /**
@@ -21,7 +21,7 @@ function logRedirectUri() {
  * sandbox company.
  */
 function run() {
-  var service = getService();
+  var service = getService_();
   if (service.hasAccess()) {
     // Get the Company ID to be used in the request.
     var companyId = service.getStorage().getValue('QuickBooks.companyId');
@@ -49,14 +49,14 @@ function run() {
  * Reset the authorization state, so that it can be re-tested.
  */
 function reset() {
-  var service = getService();
+  var service = getService_();
   service.reset();
 }
 
 /**
  * Configures the service.
  */
-function getService() {
+function getService_() {
   return OAuth2.createService('Quickbooks')
       // Set the endpoint URLs.
       .setAuthorizationBaseUrl('https://appcenter.intuit.com/connect/oauth2')
@@ -78,7 +78,7 @@ function getService() {
  * Handles the OAuth callback.
  */
 function authCallback(request) {
-  var service = getService();
+  var service = getService_();
   var authorized = service.handleCallback(request);
   if (authorized) {
     // Save the Company ID in the service's storage.

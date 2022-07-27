@@ -26,7 +26,7 @@
  * project file.
  */
 function doGet() {
-  var service = getGitHubService();
+  var service = getGitHubService_();
   var template = HtmlService.createTemplateFromFile('Page');
   template.email = Session.getEffectiveUser().getEmail();
   template.isSignedIn = service.hasAccess();
@@ -40,7 +40,7 @@ function doGet() {
  * @return {String} The authorization URL.
  */
 function getAuthorizationUrl() {
-  return getGitHubService().getAuthorizationUrl();
+  return getGitHubService_().getAuthorizationUrl();
 }
 
 /**
@@ -48,7 +48,7 @@ function getAuthorizationUrl() {
  * additional authorization-required API calls can be made.
  */
 function signOut() {
-  getGitHubService().reset();
+  getGitHubService_().reset();
 }
 
 /**
@@ -69,7 +69,7 @@ function getGitHubRepos() {
  * Fetches the specified resource from the GitHub API.
  */
 function getGitHubResource(resource) {
-  var service = getGitHubService();
+  var service = getGitHubService_();
   if (!service.hasAccess()) {
     throw new Error('Error: Missing GitHub authorization.');
   }
@@ -86,7 +86,7 @@ function getGitHubResource(resource) {
  * Gets an OAuth2 service configured for the GitHub API.
  * @return {OAuth2.Service} The OAuth2 service
  */
-function getGitHubService() {
+function getGitHubService_() {
   return OAuth2.createService('github')
       // Set the endpoint URLs.
       .setAuthorizationBaseUrl('https://github.com/login/oauth/authorize')
@@ -115,7 +115,7 @@ function authCallback(request) {
   template.error = null;
   var title;
   try {
-    var service = getGitHubService();
+    var service = getGitHubService_();
     var authorized = service.handleCallback(request);
     template.isSignedIn = authorized;
     title = authorized ? 'Access Granted' : 'Access Denied';

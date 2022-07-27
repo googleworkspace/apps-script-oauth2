@@ -10,7 +10,7 @@ var CLIENT_SECRET = '...';
  * Authorizes and makes a request to the Zoho CRM API.
  */
 function run() {
-  var service = getService();
+  var service = getService_();
   if (service.hasAccess()) {
     // Retrieve the API server from the token.
     var apiServer = service.getToken().api_domain;
@@ -33,7 +33,7 @@ function run() {
  * Reset the authorization state, so that it can be re-tested.
  */
 function reset() {
-  getService().reset();
+  getService_().reset();
 }
 
 /**
@@ -41,7 +41,7 @@ function reset() {
  * @param {string} optAccountServer The account server to use when requesting
  *     tokens.
  */
-function getService(optAccountServer) {
+function getService_(optAccountServer) {
   var service = OAuth2.createService('Zoho')
       // Set the authorization base URL.
       .setAuthorizationBaseUrl('https://accounts.zoho.com/oauth/v2/auth')
@@ -81,7 +81,7 @@ function getService(optAccountServer) {
  */
 function authCallback(request) {
   var accountServer = request.parameter['accounts-server'];
-  var service = getService(accountServer);
+  var service = getService_(accountServer);
   var authorized = service.handleCallback(request);
   if (authorized) {
     // Save the account server in the service's storage.

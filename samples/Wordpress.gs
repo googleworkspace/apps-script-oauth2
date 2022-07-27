@@ -5,7 +5,7 @@ var CLIENT_SECRET = '...';
  * Authorizes and makes a request to the Wordpress API.
  */
 function run() {
-  var service = getService();
+  var service = getService_();
   if (service.hasAccess()) {
     var blogId = service.getToken().blog_id;
     var url = 'https://public-api.wordpress.com/rest/v1.1/sites/' + blogId + '/posts';
@@ -27,13 +27,13 @@ function run() {
  * Reset the authorization state, so that it can be re-tested.
  */
 function reset() {
-  getService().reset();
+  getService_().reset();
 }
 
 /**
  * Configures the service.
  */
-function getService() {
+function getService_() {
   return OAuth2.createService('Wordpress')
       // Set the endpoint URLs.
       .setTokenUrl('https://public-api.wordpress.com/oauth2/token')
@@ -55,7 +55,7 @@ function getService() {
  * Handles the OAuth2 callback.
  */
 function authCallback(request) {
-  var service = getService();
+  var service = getService_();
   var authorized = service.handleCallback(request);
   if (authorized) {
     return HtmlService.createHtmlOutput('Success!');
