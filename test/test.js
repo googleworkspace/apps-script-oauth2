@@ -21,7 +21,6 @@ var MockProperties = require('./mocks/properties');
 var MockCache = require('./mocks/cache');
 var MockLock = require('./mocks/lock');
 var MockScriptApp = require('./mocks/script');
-var Future = require('fibers/future');
 var MockUtilities = require('./mocks/utilities');
 var mocks = {
   ScriptApp: new MockScriptApp(),
@@ -298,6 +297,7 @@ describe('Service', () => {
         expires_in: 100,
         refresh_token: 'bar'
       };
+      var lock = new MockLock();
       var properties = new MockProperties({
         'oauth2.test': JSON.stringify(token)
       });
@@ -307,32 +307,15 @@ describe('Service', () => {
         access_token: Math.random().toString(36)
       });
 
-      var getAccessToken = (() => {
-        var service = OAuth2.createService('test')
-            .setClientId('abc')
-            .setClientSecret('def')
-            .setTokenUrl('http://www.example.com')
-            .setPropertyStore(properties)
-            .setLock(new MockLock());
-        if (service.hasAccess()) {
-          return service.getAccessToken();
-        } else {
-          throw new Error('No access: ' + service.getLastError());
-        };
-      }).future();
-
-      Future.task(() => {
-        var first = getAccessToken();
-        var second = getAccessToken();
-        Future.wait(first, second);
-        return [first.get(), second.get()];
-      }).resolve((err, accessTokens) => {
-        if (err) {
-          done(err);
-        }
-        assert.equal(accessTokens[0], accessTokens[1]);
-        done();
-      });
+      var service = OAuth2.createService('test')
+      .setClientId('abc')
+      .setClientSecret('def')
+      .setTokenUrl('http://www.example.com')
+      .setPropertyStore(properties)
+      .setLock(lock);
+      service.hasAccess();
+      assert.equal(lock.counter, 1);
+      done();
     });
 
     it('should not acquire a lock when the token is not expired', () => {
@@ -378,61 +361,29 @@ describe('Service', () => {
   });
 
   describe('#refresh()', () => {
-    /*
-      A race condition can occur when two executions attempt to refresh the
-      token at the same time. Some OAuth implementations only allow one
-      valid access token at a time, so we need to ensure that the last access
-      token granted is the one that is persisted. To replicate this, we have the
-      first exeuction wait longer for it's response to return through the
-      "network" and have the second execution get it's response back sooner.
-    */
     it('should use the lock to prevent race conditions', (done) => {
       var token = {
         granted_time: 100,
-        expires_in: 100,
+        expires_in: 0,
         refresh_token: 'bar'
       };
+      var lock = new MockLock();
       var properties = new MockProperties({
         'oauth2.test': JSON.stringify(token)
       });
 
-      var count = 0;
-      mocks.UrlFetchApp.resultFunction = () => {
-        return JSON.stringify({
-          access_token: 'token' + count++
-        });
-      };
-      var delayGenerator = function*() {
-        yield 100;
-        yield 10;
-      }();
-      mocks.UrlFetchApp.delayFunction = () => {
-        return delayGenerator.next().value;
-      };
-
-      var refreshToken = (() => {
-        OAuth2.createService('test')
-            .setClientId('abc')
-            .setClientSecret('def')
-            .setTokenUrl('http://www.example.com')
-            .setPropertyStore(properties)
-            .setLock(new MockLock())
-            .refresh();
-      }).future();
-
-      Future.task(() => {
-        var first = refreshToken();
-        var second = refreshToken();
-        Future.wait(first, second);
-        return [first.get(), second.get()];
-      }).resolve((err) => {
-        if (err) {
-          done(err);
-        }
-        var storedToken = JSON.parse(properties.getProperty('oauth2.test'));
-        assert.equal(storedToken.access_token, 'token1');
-        done();
+      mocks.UrlFetchApp.resultFunction = () => JSON.stringify({
+        access_token: Math.random().toString(36)
       });
+      OAuth2.createService('test')
+        .setClientId('abc')
+        .setClientSecret('def')
+        .setTokenUrl('http://www.example.com')
+        .setPropertyStore(properties)
+        .setLock(lock)
+        .refresh();
+      assert.equal(lock.counter, 1);
+      done();
     });
 
     it('should retain refresh expiry', () => {
