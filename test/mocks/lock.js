@@ -15,12 +15,12 @@
  */
 
 /**
- * @file Mocks out Apps Script's LockService.Lock, using the fibers library to
- * emulate concurrent executions. Like Apps Script's locks, only one execution
- * can hold the lock at a time.
+ * @file Mocks out Apps Script's LockService.Lock. Does not implement correct lock
+ * semantics at the moment. Previous versions relied on node-fibers which is now
+ * obsolete. It's possible to recreate apps script multi-threaded environment
+ * via worker threads and implement proper locking and that may be considered
+ * in the future.
  */
-
-var Fiber = require('fibers');
 
 var locked = false;
 var waitingFibers = [];
@@ -39,9 +39,6 @@ MockLock.prototype.waitLock = function(timeoutInMillis) {
       this.hasLock_ = true;
       this.counter++;
       return;
-    } else {
-      waitingFibers.push(Fiber.current);
-      Fiber.yield();
     }
   } while (new Date().getTime() - start.getTime() < timeoutInMillis);
   throw new Error('Unable to get lock');
@@ -50,9 +47,6 @@ MockLock.prototype.waitLock = function(timeoutInMillis) {
 MockLock.prototype.releaseLock = function() {
   locked = false;
   this.hasLock_ = false;
-  if (waitingFibers.length) {
-    waitingFibers.pop().run();
-  }
 };
 
 MockLock.prototype.hasLock = function() {
