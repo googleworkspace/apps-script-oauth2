@@ -37,6 +37,7 @@
     "postversion": "MESSAGE=$(git log -1 --pretty=%B) && cd src/ && clasp version $MESSAGE",
     "dist": "gulp dist",
     "lint": "gulp lint",
+    "lint:fix": "gulp fix",
     "doc": "jsdoc -c jsdoc.json src/*.js README.md",
     "push": "cd src; clasp push",
     "test": "mocha"

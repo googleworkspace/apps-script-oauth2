@@ -15,15 +15,14 @@
  */
 
 /**
- * @file Mocks out Apps Script's LockService.Lock. Does not implement correct lock
- * semantics at the moment. Previous versions relied on node-fibers which is now
- * obsolete. It's possible to recreate apps script multi-threaded environment
- * via worker threads and implement proper locking and that may be considered
- * in the future.
+ * @file Mocks out Apps Script's LockService.Lock. Does not implement
+ * correct lock semantics at the moment. Previous versions relied on
+ * node-fibers which is now obsolete. It's possible to recreate apps
+ * script multi-threaded environment via worker threads and implement
+ * proper locking and that may be considered in the future.
  */
 
 var locked = false;
-var waitingFibers = [];
 
 var MockLock = function() {
   this.hasLock_ = false;
