@@ -1,0 +1,26 @@
+on: [pull_request]
+name: Update dist folder
+jobs:
+  update-dist-src:
+    if: "${{ contains(github.event.pull_request.labels.*.name, 'autorelease: pending') }}"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          token: ${{ secrets.GOOGLEWORKSPACE_BOT_TOKEN }}
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 16
+      - name: Install dependencies
+        run: npm ci
+      - name: Update dist and doc folders
+        run: |
+          npm run dist
+          npm run docs
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "chore: Update dist/ and docs/ directories"
+          commit_user_name: Google Workspace Bot
+          commit_user_email: googleworkspace-bot@google.com
+          commit_author: Google Workspace Bot <googleworkspace-bot@google.com>
