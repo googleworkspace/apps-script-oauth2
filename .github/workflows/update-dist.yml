@@ -17,7 +17,7 @@ jobs:
       - name: Update dist and doc folders
         run: |
           npm run dist
-          npm run docs
+          npm run doc
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: "chore: Update dist/ and docs/ directories"
