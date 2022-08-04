@@ -5,7 +5,7 @@ var CLIENT_SECRET = '...';
  * Authorizes and makes a request to the Notion API - https://developers.notion.com/reference/intro
  */
 function run() {
-  var service = getService();
+  var service = getService_();
   if (service.hasAccess()) {
     var url = 'https://api.notion.com/v1/search'; // refer https://developers.notion.com/reference/post-search
     var options = {
@@ -30,13 +30,13 @@ function run() {
  * Reset the authorization state, so that it can be re-tested.
  */
 function reset() {
-  getService().reset();
+  getService_().reset();
 }
 
 /**
  * Configures the service.
  */
-function getService() {
+function getService_() {
   return OAuth2.createService('Notion')
       // Set the endpoint URLs.
       .setAuthorizationBaseUrl('https://api.notion.com/v1/oauth/authorize')
@@ -63,7 +63,7 @@ function getService() {
  * Handles the OAuth callback.
  */
 function authCallback(request) {
-  var service = getService();
+  var service = getService_();
   var authorized = service.handleCallback(request);
   if (authorized) {
     return HtmlService.createHtmlOutput('Success!');

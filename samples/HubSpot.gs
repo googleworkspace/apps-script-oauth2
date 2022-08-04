@@ -11,7 +11,7 @@ var CLIENT_SECRET = '...';
  * Authorizes and makes a request to the HubSpot API.
  */
 function run() {
-  var service = getService();
+  var service = getService_();
   if (service.hasAccess()) {
     // Make a request to retrieve the list of CRM owners.
     var url = 'https://api.hubapi.com/crm/v3/owners/';
@@ -33,13 +33,13 @@ function run() {
  * Reset the authorization state, so that it can be re-tested.
  */
 function reset() {
-  getService().reset();
+  getService_().reset();
 }
 
 /**
  * Configures the service.
  */
-function getService() {
+function getService_() {
   return OAuth2.createService('HubSpot')
       // Set the endpoint URLs.
       .setAuthorizationBaseUrl('https://app.hubspot.com/oauth/authorize')
@@ -66,7 +66,7 @@ function getService() {
  * Handles the OAuth callback.
  */
 function authCallback(request) {
-  var service = getService();
+  var service = getService_();
   var authorized = service.handleCallback(request);
   if (authorized) {
     return HtmlService.createHtmlOutput('Success!');

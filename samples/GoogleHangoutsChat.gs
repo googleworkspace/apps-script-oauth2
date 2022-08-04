@@ -9,7 +9,7 @@ var CLIENT_EMAIL = '...';
  * https://codelabs.developers.google.com/codelabs/chat-apps-script/
  */
 function sendPushMessage() {
-  var service = getChatbotService();
+  var service = getChatbotService_();
   if (service.hasAccess()) {
     // We retrieve all the spaces bot has been added
     var url = 'https://chat.googleapis.com/v1/spaces';
@@ -51,7 +51,7 @@ function sendPushMessage() {
  * Reset the authorization state, so that it can be re-tested.
  */
 function reset() {
-  getChatbotService().reset();
+  getChatbotService_().reset();
 }
 
 
@@ -60,7 +60,7 @@ function reset() {
  * For service account setup follow Step 1 on this page
  * https://developers.google.com/hangouts/chat/how-tos/service-accounts
  */
-function getChatbotService() {
+function getChatbotService_() {
   return OAuth2.createService('MyChatBot')
       // Set the endpoint URL.
       .setTokenUrl('https://oauth2.googleapis.com/token')

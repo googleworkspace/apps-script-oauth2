@@ -16,7 +16,7 @@ var USER_EMAIL = '...';
  * Authorizes and makes a request to the Google Drive API.
  */
 function run() {
-  var service = getService();
+  var service = getService_();
   if (service.hasAccess()) {
     var url = 'https://www.googleapis.com/drive/v3/files?pageSize=1';
     var response = UrlFetchApp.fetch(url, {
@@ -35,13 +35,13 @@ function run() {
  * Reset the authorization state, so that it can be re-tested.
  */
 function reset() {
-  getService().reset();
+  getService_().reset();
 }
 
 /**
  * Configures the service.
  */
-function getService() {
+function getService_() {
   return OAuth2.createService('GoogleDrive:' + USER_EMAIL)
       // Set the endpoint URL.
       .setTokenUrl('https://oauth2.googleapis.com/token')
