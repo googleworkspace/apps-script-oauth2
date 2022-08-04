@@ -7,7 +7,7 @@ var CLIENT_SECRET = '...';
  * https://developer.twitter.com/en/docs/authentication/oauth-2-0/user-access-token
  */
 function run() {
-  var service = getService();
+  var service = getService_();
   if (service.hasAccess()) {
     // https://developer.twitter.com/en/docs/twitter-api/users/lookup/api-reference/get-users-by-username-username
     var url = `https://api.twitter.com/2/users/by/username/workspacedevs?user.fields=verified`;
@@ -30,15 +30,15 @@ function run() {
  * Reset the authorization state, so that it can be re-tested.
  */
 function reset() {
-  getService().reset();
-  PropertiesService.getUserProperties().deleteProperty('code_challenge');
-  PropertiesService.getUserProperties().deleteProperty('code_verifier');
+  getService_().reset();
+  PropertiesService.getUserProperties().deleteProperty("code_challenge");
+  PropertiesService.getUserProperties().deleteProperty("code_verifier");
 }
 
 /**
  * Configures the service.
  */
-function getService() {
+function getService_() {
   pkceChallengeVerifier();
   var userProps = PropertiesService.getUserProperties();
   return OAuth2.createService('Twitter')
@@ -76,7 +76,7 @@ function getService() {
  * Handles the OAuth callback.
  */
 function authCallback(request) {
-  var service = getService();
+  var service = getService_();
   var authorized = service.handleCallback(request);
   if (authorized) {
     return HtmlService.createHtmlOutput('Success!');
