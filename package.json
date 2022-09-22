@@ -37,5 +37,6 @@
     "doc": "jsdoc -c jsdoc.json src/*.js README.md",
     "push": "cd src; clasp push",
     "test": "mocha"
-  }
+  },
+  "exports": "./dist/OAuth2.gs"
 }
