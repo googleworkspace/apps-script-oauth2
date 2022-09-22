@@ -65,12 +65,12 @@ function getRedirectUri(optScriptId) {
  */
 function getServiceNames(propertyStore) {
   var props = propertyStore.getProperties();
-  return Object.keys(props).filter(function (key) {
+  return Object.keys(props).filter(function(key) {
     var parts = key.split('.');
     return key.indexOf(STORAGE_PREFIX_) == 0 && parts.length > 1 && parts[1];
-  }).map(function (key) {
+  }).map(function(key) {
     return key.split('.')[1];
-  }).reduce(function (result, key) {
+  }).reduce(function(result, key) {
     if (result.indexOf(key) < 0) {
       result.push(key);
     }

@@ -34,6 +34,7 @@
   "scripts": {
     "dist": "gulp dist",
     "lint": "gulp lint",
+    "lint:fix": "gulp fix",
     "doc": "jsdoc -c jsdoc.json src/*.js README.md",
     "push": "cd src; clasp push",
     "test": "mocha"
