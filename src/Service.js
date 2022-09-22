@@ -653,7 +653,8 @@ Service_.prototype.ensureExpiresAtSet_ = function(token) {
     var expiresAt = grantedTime + Number(expiresIn);
     token.expiresAt = expiresAt;
   }
-  var refreshTokenExpiresIn = token.refresh_token_expires_in;
+  var refreshTokenExpiresIn = token.refresh_token_expires_in ||
+    token.refresh_expires_in;
   if (refreshTokenExpiresIn) {
     var refreshTokenExpiresAt = grantedTime + Number(refreshTokenExpiresIn);
     token.refreshTokenExpiresAt = refreshTokenExpiresAt;
