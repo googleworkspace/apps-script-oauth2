@@ -31,8 +31,8 @@ function run() {
  */
 function reset() {
   getService_().reset();
-  PropertiesService.getUserProperties().deleteProperty("code_challenge");
-  PropertiesService.getUserProperties().deleteProperty("code_verifier");
+  PropertiesService.getUserProperties().deleteProperty('code_challenge');
+  PropertiesService.getUserProperties().deleteProperty('code_verifier');
 }
 
 /**

@@ -28,6 +28,12 @@ module.exports = {
   "rules": {
     "comma-dangle": "off",
     "no-var": "off",
+    "max-len": [
+      "error", {
+        "code": 100,
+        "ignoreUrls": true
+      }
+    ],
     "generator-star-spacing": ["error", {"anonymous": "neither"}],
   }
 };
