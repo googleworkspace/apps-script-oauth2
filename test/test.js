@@ -308,11 +308,11 @@ describe('Service', () => {
       });
 
       var service = OAuth2.createService('test')
-      .setClientId('abc')
-      .setClientSecret('def')
-      .setTokenUrl('http://www.example.com')
-      .setPropertyStore(properties)
-      .setLock(lock);
+          .setClientId('abc')
+          .setClientSecret('def')
+          .setTokenUrl('http://www.example.com')
+          .setPropertyStore(properties)
+          .setLock(lock);
       service.hasAccess();
       assert.equal(lock.counter, 1);
       done();
@@ -376,12 +376,12 @@ describe('Service', () => {
         access_token: Math.random().toString(36)
       });
       OAuth2.createService('test')
-        .setClientId('abc')
-        .setClientSecret('def')
-        .setTokenUrl('http://www.example.com')
-        .setPropertyStore(properties)
-        .setLock(lock)
-        .refresh();
+          .setClientId('abc')
+          .setClientSecret('def')
+          .setTokenUrl('http://www.example.com')
+          .setPropertyStore(properties)
+          .setLock(lock)
+          .refresh();
       assert.equal(lock.counter, 1);
       done();
     });
@@ -597,7 +597,7 @@ describe('Service', () => {
         expiresAt: ONE_HOUR_LATER_SECONDS,
         refreshTokenExpiresAt: ONE_HOUR_LATER_SECONDS
       };
-      console.log('test')
+      console.log('test');
       assert.isTrue(service.canRefresh_(token));
     });
 

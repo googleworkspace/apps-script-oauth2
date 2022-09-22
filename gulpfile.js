@@ -59,3 +59,11 @@ gulp.task('lint', () => {
         }
       }));
 });
+
+gulp.task('fix', () => {
+    return gulp.src(['src/*.js', 'samples/*.gs', 'test/**/*.js', '!node_modules/**'])
+      .pipe(eslint({fix: true}))
+      .pipe(eslint.format())
+      .pipe(gulp.dest(file => file.base))
+});
+
