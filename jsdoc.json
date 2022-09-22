@@ -8,7 +8,8 @@
   },
   "templates": {
     "default": {
-      "outputSourceFiles": false
+      "outputSourceFiles": false,
+      "includeDate": false
     }
   }
 }
