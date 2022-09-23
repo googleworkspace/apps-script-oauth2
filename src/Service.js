@@ -140,7 +140,7 @@ Service_.prototype.setCodeVerififer = function(codeVerifier) {
  */
 Service_.prototype.generateCodeVerifier = function() {
   const rawBytes = [];
-  for (let i = 0; i < 32; ++i) {
+  for (var i = 0; i < 32; ++i) {
     const r = Math.floor(Math.random() * 255);
     rawBytes[i] = r;
   }
