@@ -137,7 +137,7 @@ function decodeJwt_(jwt) {
  * @return {string} Web safe base64 encoded with padding removed.
  */
 function encodeUrlSafeBase64NoPadding_(value) {
-  let encodedValue = Utilities.base64EncodeWebSafe(value);
+  var encodedValue = Utilities.base64EncodeWebSafe(value);
   encodedValue = encodedValue.slice(0, encodedValue.indexOf('='));
   return encodedValue;
 }
