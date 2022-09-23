@@ -1,20 +1,4 @@
 <!DOCTYPE html>
-<!--
- Copyright 2022 Google LLC
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
-      http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
--->
-
 <html lang="en">
 <head>
     <meta charset="utf-8">
@@ -474,6 +458,111 @@ this will be "client_credentials", and a client ID and secret are set an
     <dd>
         
 <span class="param-type">Object</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="generateCodeVerifier"><span class="type-signature"></span>generateCodeVerifier<span class="signature">()</span><span class="type-signature"> &rarr; (non-null) {<a href="Service_.html">Service_</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Sets the code verifier to a randomly generated challenge string.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    This service, for chaining
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Service_.html">Service_</a></span>
 
 
     </dd>
@@ -2706,6 +2795,317 @@ create client IDs and secrets.
         
 <div class="param-desc">
     This service, for chaining.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Service_.html">Service_</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="setCodeChallengeMethod"><span class="type-signature"></span>setCodeChallengeMethod<span class="signature">(method)</span><span class="type-signature"> &rarr; (non-null) {<a href="Service_.html">Service_</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Set the code challenge method for PKCE. The default value method
+when a code verifier is set is S256.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>method</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Challenge method, either "S256" or "plain"</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    This service, for chaining
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Service_.html">Service_</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="setCodeVerififer"><span class="type-signature"></span>setCodeVerififer<span class="signature">(codeVerifier)</span><span class="type-signature"> &rarr; (non-null) {<a href="Service_.html">Service_</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Set the code verifier used for PKCE. For most use cases,
+prefer `generateCodeVerifier` to automatically initialize the
+value with a generated challenge string.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>codeVerifier</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">A random challenge string</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    This service, for chaining
 </div>
 
 
@@ -5316,13 +5716,13 @@ be https://accounts.google.com/o/oauth2/token.
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Service_.html">Service_</a></li><li><a href="Storage_.html">Storage_</a></li></ul><h3>Global</h3><ul><li><a href="global.html#createService">createService</a></li><li><a href="global.html#decodeJwt_">decodeJwt_</a></li><li><a href="global.html#encodeJwt_">encodeJwt_</a></li><li><a href="global.html#extend_">extend_</a></li><li><a href="global.html#getRedirectUri">getRedirectUri</a></li><li><a href="global.html#getServiceNames">getServiceNames</a></li><li><a href="global.html#TOKEN_FORMAT">TOKEN_FORMAT</a></li><li><a href="global.html#toLowerCaseKeys_">toLowerCaseKeys_</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Service_.html">Service_</a></li><li><a href="Storage_.html">Storage_</a></li></ul><h3>Global</h3><ul><li><a href="global.html#createService">createService</a></li><li><a href="global.html#decodeJwt_">decodeJwt_</a></li><li><a href="global.html#encodeChallenge_">encodeChallenge_</a></li><li><a href="global.html#encodeJwt_">encodeJwt_</a></li><li><a href="global.html#encodeUrlSafeBase64NoPadding_">encodeUrlSafeBase64NoPadding_</a></li><li><a href="global.html#extend_">extend_</a></li><li><a href="global.html#getRedirectUri">getRedirectUri</a></li><li><a href="global.html#getServiceNames">getServiceNames</a></li><li><a href="global.html#TOKEN_FORMAT">TOKEN_FORMAT</a></li><li><a href="global.html#toLowerCaseKeys_">toLowerCaseKeys_</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Fri May 14 2021 09:53:29 GMT-0400 (Eastern Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a>
 </footer>
 
 <script> prettyPrint(); </script>
