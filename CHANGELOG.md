@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.42.1](https://github.com/googleworkspace/apps-script-oauth2/compare/v1.42.0...v1.42.1) (2022-09-23)
+
+
+### Bug Fixes
+
+* Remove use of 'let' for Rhino compatibility ([f6fdc9a](https://github.com/googleworkspace/apps-script-oauth2/commit/f6fdc9ac98bb4c099c002c60b1a5ddced66f95f1))
+* Remove use of 'let' for Rhino compatibility ([089a3e4](https://github.com/googleworkspace/apps-script-oauth2/commit/089a3e4af8c06b82156e76ef2b78b5f202a0a0e5))
+
 ## 1.42.0 (2022-09-22)
 
 ### Features
