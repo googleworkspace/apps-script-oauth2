@@ -30,4 +30,4 @@ jobs:
         run: |
           cd src
           npx @google/clasp push
-          MESSAGE=$(git log -1 --pretty=%B) npx @google/clasp version ${MESSAGE}
+          MESSAGE=$(git log -1 --pretty=%B) npx @google/clasp version "${MESSAGE}"
