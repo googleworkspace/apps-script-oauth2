@@ -448,7 +448,6 @@ Service_.prototype.handleCallback = function(callbackRequest) {
   }
   validate_({
     'Client ID': this.clientId_,
-    'Client Secret': this.clientSecret_,
     'Token URL': this.tokenUrl_
   });
   var payload = {

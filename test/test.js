@@ -22,6 +22,7 @@ var MockCache = require('./mocks/cache');
 var MockLock = require('./mocks/lock');
 var MockScriptApp = require('./mocks/script');
 var MockUtilities = require('./mocks/utilities');
+
 var mocks = {
   ScriptApp: new MockScriptApp(),
   UrlFetchApp: new MockUrlFetchApp(),
@@ -514,6 +515,27 @@ describe('Service', () => {
       assert.include(authorizationUrl, 'code_challenge');
       assert.include(authorizationUrl, 'code_challenge_method=S256');
     });
+
+
+    it('should use supply verifier when exchanging code', () => {
+      var service = OAuth2.createService('test')
+          .setAuthorizationBaseUrl('http://www.example.com')
+          .setTokenUrl('http://www.example.com/token')
+          .setClientId('abc')
+          .setCallbackFunction('authCallback')
+          .generateCodeVerifier();
+      var authorizationUrl = service.getAuthorizationUrl({});
+      var state = extractStateTokenFromUrl(authorizationUrl);
+      mocks.UrlFetchApp.resultFunction = (url, opts) => {
+        assert.isNotNull(opts.payload.code_verifier, 'Code verifier not present');
+        return `{ "access_token": "123" }`;
+      };
+      service.handleCallback({
+        parameter: Object.assign({
+          code: 'test',
+        }, state.arguments)
+      });
+    });
   });
 
   describe('#getAuthorizationUrl()', () => {
@@ -527,17 +549,7 @@ describe('Service', () => {
         foo: 'bar'
       });
 
-      // Extract the state token from the URL and parse it. For example, the
-      // URL http://www.example.com?state=%7B%22a%22%3A1%7D would produce
-      // {a: 1}.
-      var querystring = authorizationUrl.split('?')[1];
-      var params = querystring.split('&').reduce((result, pair) => {
-        var parts = pair.split('=').map(decodeURIComponent);
-        result[parts[0]] = parts[1];
-        return result;
-      }, {});
-      var state = JSON.parse(params.state);
-
+      var state = extractStateTokenFromUrl(authorizationUrl);
       assert.equal(state.arguments.foo, 'bar');
     });
   });
@@ -858,3 +870,21 @@ describe('Utilities', () => {
     });
   });
 });
+
+
+/*
+ *Extract the state token from the URL and parse it. For example, the
+ * URL http://www.example.com?state=%7B%22a%22%3A1%7D would produce
+ * {a: 1}.
+ */
+function extractStateTokenFromUrl(authorizationUrl) {
+  var querystring = authorizationUrl.split('?')[1];
+  var params = querystring.split('&').reduce((result, pair) => {
+    var parts = pair.split('=').map(decodeURIComponent);
+    result[parts[0]] = parts[1];
+    return result;
+  }, {});
+  var state = JSON.parse(params.state);
+  return state;
+}
+
