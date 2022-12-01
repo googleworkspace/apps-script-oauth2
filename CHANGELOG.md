@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.43.0](https://github.com/googleworkspace/apps-script-oauth2/compare/v1.42.1...v1.43.0) (2022-12-01)
+
+
+### Features
+
+* Allow usage without client_secret for services that only rely on PKCE ([e6afdfb](https://github.com/googleworkspace/apps-script-oauth2/commit/e6afdfb52d613f4e99002bf72228b32a7299cfc7))
+
 ## [1.42.1](https://github.com/googleworkspace/apps-script-oauth2/compare/v1.42.0...v1.42.1) (2022-09-23)
 
 
