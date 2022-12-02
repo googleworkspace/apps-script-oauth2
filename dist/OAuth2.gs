@@ -233,7 +233,7 @@ Service_.prototype.setCodeVerififer = function(codeVerifier) {
  */
 Service_.prototype.generateCodeVerifier = function() {
   const rawBytes = [];
-  for (let i = 0; i < 32; ++i) {
+  for (var i = 0; i < 32; ++i) {
     const r = Math.floor(Math.random() * 255);
     rawBytes[i] = r;
   }
@@ -541,7 +541,6 @@ Service_.prototype.handleCallback = function(callbackRequest) {
   }
   validate_({
     'Client ID': this.clientId_,
-    'Client Secret': this.clientSecret_,
     'Token URL': this.tokenUrl_
   });
   var payload = {
@@ -1301,7 +1300,7 @@ function decodeJwt_(jwt) {
  * @return {string} Web safe base64 encoded with padding removed.
  */
 function encodeUrlSafeBase64NoPadding_(value) {
-  let encodedValue = Utilities.base64EncodeWebSafe(value);
+  var encodedValue = Utilities.base64EncodeWebSafe(value);
   encodedValue = encodedValue.slice(0, encodedValue.indexOf('='));
   return encodedValue;
 }
