@@ -76,13 +76,10 @@ function authCallback(request) {
  */
 function basecampTokenHandler(payload) {
   // If it's refresh request from library
-  if (payload.grant_type === 'refresh_token')
-  {
+  if (payload.grant_type === 'refresh_token') {
     // Basecamp refresh token API returns error if type is not specified
     payload.type = 'refresh';
-  }
-  else
-  {
+  } else {
     // Basecamp token API returns error if type is not specified
     payload.type = 'web_server';
   }
