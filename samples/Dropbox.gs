@@ -53,8 +53,8 @@ function getService_() {
       // Set the property store where authorized tokens should be persisted.
       .setPropertyStore(PropertiesService.getUserProperties())
 
-      // Set the response type to code (required).
-      .setParam('response_type', 'code');
+      // Enable offline access (refresh_token).
+      .setParam('token_access_type', 'offline');
 }
 
 /**
