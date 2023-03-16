@@ -35,10 +35,11 @@ function reset() {
 function getService_() {
   return OAuth2.createService('Basecamp')
       // Set the endpoint URLs.
-      .setAuthorizationBaseUrl(
-          'https://launchpad.37signals.com/authorization/new?type=web_server')
-      .setTokenUrl(
-          'https://launchpad.37signals.com/authorization/token?type=web_server')
+      .setAuthorizationBaseUrl('https://launchpad.37signals.com/authorization/new')
+      .setTokenUrl('https://launchpad.37signals.com/authorization/token')
+
+      // Set the required type param
+      .setParam('type', 'web_server')
 
       // Set the client ID and secret.
       .setClientId(CLIENT_ID)
@@ -49,7 +50,11 @@ function getService_() {
       .setCallbackFunction('authCallback')
 
       // Set the property store where authorized tokens should be persisted.
-      .setPropertyStore(PropertiesService.getUserProperties());
+      .setPropertyStore(PropertiesService.getUserProperties())
+
+      // Set the handler for adding Basecamp's required type parameter to the
+      // payload:
+      .setTokenPayloadHandler(basecampTokenHandler);
 }
 
 /**
@@ -63,6 +68,23 @@ function authCallback(request) {
   } else {
     return HtmlService.createHtmlOutput('Denied.');
   }
+}
+
+/**
+ * Adds the Basecamp API's required type parameter to the access token
+ * request payload.
+ */
+function basecampTokenHandler(payload) {
+  // If it's refresh request from library
+  if (payload.grant_type === 'refresh_token') {
+    // Basecamp refresh token API returns error if type is not specified
+    payload.type = 'refresh';
+  } else {
+    // Basecamp token API returns error if type is not specified
+    payload.type = 'web_server';
+  }
+
+  return payload;
 }
 
 /**
