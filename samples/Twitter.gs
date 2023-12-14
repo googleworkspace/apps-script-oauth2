@@ -31,21 +31,17 @@ function run() {
  */
 function reset() {
   getService_().reset();
-  PropertiesService.getUserProperties().deleteProperty('code_challenge');
-  PropertiesService.getUserProperties().deleteProperty('code_verifier');
 }
 
 /**
  * Configures the service.
  */
 function getService_() {
-  pkceChallengeVerifier();
   var userProps = PropertiesService.getUserProperties();
   return OAuth2.createService('Twitter')
   // Set the endpoint URLs.
       .setAuthorizationBaseUrl('https://twitter.com/i/oauth2/authorize')
-      .setTokenUrl(
-          'https://api.twitter.com/2/oauth2/token?code_verifier=' + userProps.getProperty('code_verifier'))
+      .setTokenUrl('https://api.twitter.com/2/oauth2/token')
 
   // Set the client ID and secret.
       .setClientId(CLIENT_ID)
@@ -61,10 +57,8 @@ function getService_() {
   // Set the scopes to request (space-separated for Twitter services).
       .setScope('users.read tweet.read offline.access')
 
-  // Add parameters in the authorization url
-      .setParam('response_type', 'code')
-      .setParam('code_challenge_method', 'S256')
-      .setParam('code_challenge', userProps.getProperty('code_challenge'))
+  // Generate code verifier parameter
+      .generateCodeVerifier()
 
       .setTokenHeaders({
         'Authorization': 'Basic ' + Utilities.base64Encode(CLIENT_ID + ':' + CLIENT_SECRET),
@@ -90,28 +84,4 @@ function authCallback(request) {
  */
 function logRedirectUri() {
   Logger.log(OAuth2.getRedirectUri());
-}
-
-/**
- * Generates code_verifier & code_challenge for PKCE
- */
-function pkceChallengeVerifier() {
-  var userProps = PropertiesService.getUserProperties();
-  if (!userProps.getProperty('code_verifier')) {
-    var verifier = '';
-    var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
-
-    for (var i = 0; i < 128; i++) {
-      verifier += possible.charAt(Math.floor(Math.random() * possible.length));
-    }
-
-    var sha256Hash = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, verifier);
-
-    var challenge = Utilities.base64Encode(sha256Hash)
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_')
-        .replace(/=+$/, '');
-    userProps.setProperty('code_verifier', verifier);
-    userProps.setProperty('code_challenge', challenge);
-  }
 }
