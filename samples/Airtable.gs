@@ -54,7 +54,6 @@ function reset() {
  * `state`.
  */
 function getService_() {
-  pkceChallengeVerifier();
   var userProps = PropertiesService.getUserProperties();
   return OAuth2.createService('Airtable')
     // Set the endpoint URLs.
@@ -81,6 +80,9 @@ function getService_() {
 
     // Set scope (required)
     .setScope('data.records:read')
+
+    // Generate code verifier parameter
+    .generateCodeVerifier()
 
     // Add parameters in the authorization url
     .setParam('response_type', 'code')
@@ -113,28 +115,4 @@ function authCallback_(request) {
  */
 function logRedirectUri() {
   Logger.log(OAuth2.getRedirectUri());
-}
-
-/**
- * Generates code_verifier & code_challenge for PKCE
- */
-function pkceChallengeVerifier() {
-  var userProps = PropertiesService.getUserProperties();
-  if (!userProps.getProperty('code_verifier')) {
-    var verifier = '';
-    var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._';
-
-    for (var i = 0; i < 128; i++) {
-      verifier += possible.charAt(Math.floor(Math.random() * possible.length));
-    }
-
-    var sha256Hash = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, verifier);
-
-    var challenge = Utilities.base64Encode(sha256Hash)
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_')
-      .replace(/=+$/, '');
-    userProps.setProperty('code_verifier', verifier);
-    userProps.setProperty('code_challenge', challenge);
-  }
 }
