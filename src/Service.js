@@ -666,7 +666,6 @@ Service_.prototype.ensureExpiresAtSet_ = function(token) {
 Service_.prototype.refresh = function() {
   validate_({
     'Client ID': this.clientId_,
-    'Client Secret': this.clientSecret_,
     'Token URL': this.tokenUrl_
   });
 

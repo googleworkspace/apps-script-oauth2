@@ -387,6 +387,35 @@ describe('Service', () => {
       done();
     });
 
+    it('should refresh token granted for PKCE', () => {
+      const NOW_SECONDS = OAuth2.getTimeInSeconds_(new Date());
+      const ONE_HOUR_AGO_SECONDS = NOW_SECONDS - 360;
+      var token = {
+        granted_time: ONE_HOUR_AGO_SECONDS,
+        expires_in: 100,
+        refresh_token: 'bar',
+        refresh_token_expires_in: 720
+      };
+      var properties = new MockProperties({
+        'oauth2.test': JSON.stringify(token)
+      });
+
+      mocks.UrlFetchApp.resultFunction = () => JSON.stringify({
+        access_token: Math.random().toString(36)
+      });
+
+      OAuth2.createService('test')
+          .setClientId('test')
+          .setTokenUrl('http://www.example.com')
+          .setPropertyStore(properties)
+          .generateCodeVerifier()
+          .refresh();
+
+      var storedToken = JSON.parse(properties.getProperty('oauth2.test'));
+      assert.equal(storedToken.refresh_token, 'bar');
+      assert.equal(storedToken.refreshTokenExpiresAt, NOW_SECONDS + 360);
+    });
+
     it('should retain refresh expiry', () => {
       const NOW_SECONDS = OAuth2.getTimeInSeconds_(new Date());
       const ONE_HOUR_AGO_SECONDS = NOW_SECONDS - 360;
