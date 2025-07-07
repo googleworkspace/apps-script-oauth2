@@ -35,13 +35,13 @@ This library is already published as an Apps Script, making it easy to include
 in your project. To add it to your script, do the following in the Apps Script
 code editor:
 
-1. Click on the menu item "Resources > Libraries..."
-2. In the "Find a Library" text box, enter the script ID
+1. Click on the plus (+) menu item in the left-hand toolbar, underneath the list of files.
+2. In the "Script ID" text box, enter the script ID
    `1B7FSrk5Zi6L1rSxxTDgDEUsPzlukDsi4KGuTMorsTQHhGBzBkMun4iDF` and click the
-   "Select" button.
+   "Look up" button.
 3. Choose a version in the dropdown box (usually best to pick the latest
    version).
-4. Click the "Save" button.
+4. Click the "Add" button.
 
 Alternatively, you can copy and paste the files in the [`/dist`](dist) directory
 directly into your script project.
