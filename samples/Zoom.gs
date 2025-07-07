@@ -57,8 +57,8 @@ function getService_() {
       .setPropertyStore(PropertiesService.getUserProperties())
 
       // Set the required scopes:
-      // https://marketplace.zoom.us/docs/guides/zoom-app-marketplace/permissions#user-managed-app-scopes
-      .setScope('user:read')
+      // https://developers.zoom.us/docs/integrations/oauth-scopes-overview/#granular-scopes
+      .setScope('user:read:user')
 
       // Set the Authorization header for token requests.
       // https://marketplace.zoom.us/docs/guides/authorization/oauth-with-zoom#step-3-exchange-the-authorization-code-for-an-access-token
