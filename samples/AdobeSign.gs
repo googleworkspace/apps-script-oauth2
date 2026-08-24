@@ -58,8 +58,10 @@ function getService_(optApiAccessPoint) {
       .setCallbackFunction('authCallback')
 
       // Set the property store where authorized tokens should be persisted.
+      // Use per-user properties only: script properties are shared by every
+      // user of a deployment, which would leak one user's tokens and stored
+      // API access point to all other users.
       .setPropertyStore(PropertiesService.getUserProperties())
-      .setPropertyStore(PropertiesService.getScriptProperties())
 
       // Set the scopes.
       .setScope('user_read');
@@ -82,6 +84,13 @@ function getService_(optApiAccessPoint) {
 function authCallback(request) {
   // Get the API access point specified in the URL parameters.
   var apiAccessPoint = request.parameter[API_ACCESS_POINT_KEY];
+  // Only accept API access points on Adobe-owned hosts. This parameter is
+  // attacker-controllable in web-app/add-on deployments, and an unchecked
+  // value sends the token exchange (code, client_id, client_secret) and all
+  // later refreshes to an arbitrary host.
+  if (apiAccessPoint && !isValidApiAccessPoint_(apiAccessPoint)) {
+    return HtmlService.createHtmlOutput('Denied.');
+  }
   var service = getService_(apiAccessPoint);
   var authorized = service.handleCallback(request);
   if (authorized) {
@@ -91,6 +100,21 @@ function authCallback(request) {
   } else {
     return HtmlService.createHtmlOutput('Denied.');
   }
+}
+
+/**
+ * Determines whether the given API access point is on an Adobe-owned host.
+ * @param {string} apiAccessPoint The API access point URL to validate.
+ * @return {boolean} True if the host is an Adobe domain served over HTTPS.
+ */
+function isValidApiAccessPoint_(apiAccessPoint) {
+  var match = /^https:\/\/([a-zA-Z0-9.-]+)(\/|$)/.exec(apiAccessPoint);
+  if (!match) {
+    return false;
+  }
+  var host = match[1].toLowerCase();
+  return /(^|\.)adobe\.com$/.test(host) || /(^|\.)adobesign\.com$/.test(host) ||
+      /(^|\.)echosign\.com$/.test(host);
 }
 
 /**
