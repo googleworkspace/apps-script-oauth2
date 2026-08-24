@@ -81,6 +81,13 @@ function getService_(optAccountServer) {
  */
 function authCallback(request) {
   var accountServer = request.parameter['accounts-server'];
+  // Only accept account servers on Zoho-owned hosts. This parameter is
+  // attacker-controllable in web-app/add-on deployments, and an unchecked
+  // value sends the token exchange (code, client_id, client_secret) and all
+  // later refreshes to an arbitrary host.
+  if (accountServer && !isValidAccountServer_(accountServer)) {
+    return HtmlService.createHtmlOutput('Denied.');
+  }
   var service = getService_(accountServer);
   var authorized = service.handleCallback(request);
   if (authorized) {
@@ -90,6 +97,15 @@ function authCallback(request) {
   } else {
     return HtmlService.createHtmlOutput('Denied.');
   }
+}
+
+/**
+ * Determines whether the given account server is a Zoho accounts host.
+ * @param {string} accountServer The account server URL to validate.
+ * @return {boolean} True if it is an https accounts.zoho.* host.
+ */
+function isValidAccountServer_(accountServer) {
+  return /^https:\/\/accounts\.zoho\.[a-z.]+\/?$/.test(accountServer);
 }
 
 /**
