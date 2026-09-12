@@ -477,7 +477,14 @@ Service_.prototype.hasAccess = function() {
   if (token && !this.isExpired_(token)) return true; // Token still has access.
   var canGetToken = (token && this.canRefresh_(token)) ||
       this.privateKey_ || this.grantType_;
-  if (!canGetToken) return false;
+  if (!canGetToken) {
+    this.lastError_ = new Error('No token found and no way to generate one. ' +
+        'The user needs to be redirected to the authorization URL returned ' +
+        'by getAuthorizationUrl(), or the service needs to be configured ' +
+        'with setPrivateKey() or setGrantType() for a token to be ' +
+        'generated automatically.');
+    return false;
+  }
 
   return this.lockable_(function() {
     // Get the token again, bypassing the local memory cache.

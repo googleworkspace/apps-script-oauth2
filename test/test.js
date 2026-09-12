@@ -359,6 +359,23 @@ describe('Service', () => {
       service.hasAccess();
       assert.equal(lock.counter, 0);
     });
+
+    it('should set lastError_ when there is no token and no way to get one',
+        () => {
+          var properties = new MockProperties();
+          var service = OAuth2.createService('test')
+              .setClientId('abc')
+              .setClientSecret('def')
+              .setTokenUrl('http://www.example.com')
+              .setAuthorizationBaseUrl('http://www.example.com')
+              .setPropertyStore(properties);
+
+          var result = service.hasAccess();
+
+          assert.isFalse(result);
+          assert.exists(service.getLastError());
+          assert.match(service.getLastError().message, /no way to generate/);
+        });
   });
 
   describe('#refresh()', () => {
